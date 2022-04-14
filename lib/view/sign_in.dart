@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:urban_forest/main.dart';
 import 'package:urban_forest/utils/color_utils.dart';
+import 'package:urban_forest/view/reset_password.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
 import 'home_screen.dart';
@@ -28,9 +30,9 @@ class _SignInViewState extends State<SignInView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              hexStringToColor("42d87c"),
-              hexStringToColor("a1e84b"),
-              hexStringToColor("4cdae7"),
+              hexStringToColor(background_color_array[0]),
+              hexStringToColor(background_color_array[1]),
+              hexStringToColor(background_color_array[2]),
             ], 
             begin: Alignment.topCenter, 
             end: Alignment.bottomCenter
@@ -52,11 +54,19 @@ class _SignInViewState extends State<SignInView> {
                 ),
                 reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTextController),
                 const SizedBox(
-                  height: 20,
+                  height: 8,
                 ),
-                signInSignUpButton(context, true, () {
+
+                // forget password
+                forgetPassword(context),
+
+                // sign in
+                firebaseButton(context, "Log In", () {
+                  // debug input
                   print("${_emailTextController.text}");
                   print("${_passwordTextController.text}");
+
+                  // check email and password
                   FirebaseAuth.instance.signInWithEmailAndPassword(
                     email: _emailTextController.text, 
                     password: _passwordTextController.text
@@ -73,6 +83,7 @@ class _SignInViewState extends State<SignInView> {
                   });
                 }),
 
+                // sign up
                 signUpOption()
               ]
             ),
@@ -111,6 +122,29 @@ class _SignInViewState extends State<SignInView> {
           ),
         )
       ],
+    );
+  }
+
+  Widget forgetPassword(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 35,
+      alignment: Alignment.bottomRight,
+      child: TextButton(
+        child: const Text(
+          "Forgot Password?",
+          style: TextStyle(color: Colors.white70),
+          textAlign: TextAlign.right,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ResetPasswordView(),
+            )
+          );
+        },
+      ),
     );
   }
 }

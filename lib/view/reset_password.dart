@@ -6,17 +6,15 @@ import '../reusable_widgets/reusable_wiget.dart';
 import '../utils/color_utils.dart';
 import 'home_screen.dart';
 
-class SignUpView extends StatefulWidget {
-  const SignUpView({ Key? key }) : super(key: key);
+class ResetPasswordView extends StatefulWidget {
+  const ResetPasswordView({ Key? key }) : super(key: key);
 
   @override
-  State<SignUpView> createState() => _SignUpViewState();
+  State<ResetPasswordView> createState() => _ResetPasswordViewState();
 }
 
-class _SignUpViewState extends State<SignUpView> {
-  final TextEditingController _passwordTextController = TextEditingController();
+class _ResetPasswordViewState extends State<ResetPasswordView> {
   final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _userNameTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +24,7 @@ class _SignUpViewState extends State<SignUpView> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          "Sign Up",
+          "Reset Password",
           style: TextStyle(
             fontSize: 24, 
             fontWeight: FontWeight.bold
@@ -55,35 +53,20 @@ class _SignUpViewState extends State<SignUpView> {
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter UserName", Icons.person_outline, false,
-                    _userNameTextController),
-                const SizedBox(
-                  height: 20,
-                ),
+                
                 reusableTextField("Enter Email Id", Icons.person_outline, false,
                     _emailTextController),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outlined, true,
-                    _passwordTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                firebaseButton(context, "Sign Up", () {
-                  FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: _emailTextController.text, 
-                        password: _passwordTextController.text
-                  ).then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
-                      )
-                    );
-                  }).onError((error, stackTrace) {
-                    print("Error: ${error.toString()}");
-                  });
+                
+                firebaseButton(context, "Reset", () {
+                  FirebaseAuth.instance
+                    .sendPasswordResetEmail(email: _emailTextController.text)
+                    .then((value) => Navigator.pop(context))
+                    .onError((error, stackTrace) {
+                      print("Error: ${error.toString()}");
+                    });
                 })
               ],
             ),
