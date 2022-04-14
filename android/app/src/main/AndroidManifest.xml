@@ -3,7 +3,7 @@
    <application
         android:label="urban_forest"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/urban_tree">
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:urban_forest/utils/color_utils.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
+import 'sign_up.dart';
 
 const logoFileName = "assets/images/logo1.png"; // logo in assets/images
 
@@ -13,8 +14,8 @@ class SignInView extends StatefulWidget {
 }
 
 class _SignInViewState extends State<SignInView> {
-  TextEditingController _passwordTxtController = TextEditingController();
-  TextEditingController _emailTxtController = TextEditingController();
+  final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _emailTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +26,9 @@ class _SignInViewState extends State<SignInView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              hexStringToColor("CB2B93"),
-              hexStringToColor("9546C4"),
-              hexStringToColor("5E61F4")
+              hexStringToColor("42d87c"),
+              hexStringToColor("a1e84b"),
+              hexStringToColor("4cdae7"),
             ], 
             begin: Alignment.topCenter, 
             end: Alignment.bottomCenter
@@ -43,16 +44,56 @@ class _SignInViewState extends State<SignInView> {
                 const SizedBox(
                   height: 30,
                 ),
-                reusableTextField("Enter UserName", Icons.person_outline, false, _emailTxtController),
+                reusableTextField("Enter UserName", Icons.person_outline, false, _emailTextController),
                 const SizedBox(
-                  height: 30,
+                  height: 20,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTxtController)
+                reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTextController),
+                const SizedBox(
+                  height: 20,
+                ),
+                signInSignUpButton(context, true, () {
+                  
+                }),
+
+                signUpOption()
               ]
             ),
           )
         ),
       ),
+    );
+  }
+
+  // sign up section
+  Row signUpOption() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "Don't have account? ",
+          style: TextStyle(color: Colors.white70),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context, 
+              MaterialPageRoute(
+                builder: ((context) {
+                  return const SignUpView();
+                })
+              )
+            );
+          },
+          child: const Text(
+            "Sign Up",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        )
+      ],
     );
   }
 }
