@@ -3,7 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/view/sign_in.dart';
 
-const background_color_array = ["e636d4", "aa2ae0", "5b2ae0"];
+const background_color_array = ["afef8d", "23cb23", "225508"];
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

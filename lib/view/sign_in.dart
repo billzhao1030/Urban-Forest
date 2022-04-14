@@ -8,7 +8,7 @@ import '../reusable_widgets/reusable_wiget.dart';
 import 'home_screen.dart';
 import 'sign_up.dart';
 
-const logoFileName = "assets/images/logo1.png"; // logo in assets/images
+const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 
 class SignInView extends StatefulWidget {
   const SignInView({Key? key}) : super(key: key);
@@ -41,7 +41,7 @@ class _SignInViewState extends State<SignInView> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.2, 20, 0),
+                20, MediaQuery.of(context).size.height * 0.13, 20, 0),
             child: Column(
               children: <Widget>[
                 logoWidget(logoFileName),
