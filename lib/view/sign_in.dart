@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/utils/color_utils.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
+import 'home_screen.dart';
 import 'sign_up.dart';
 
 const logoFileName = "assets/images/logo1.png"; // logo in assets/images
@@ -53,7 +55,22 @@ class _SignInViewState extends State<SignInView> {
                   height: 20,
                 ),
                 signInSignUpButton(context, true, () {
-                  
+                  print("${_emailTextController.text}");
+                  print("${_passwordTextController.text}");
+                  FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: _emailTextController.text, 
+                    password: _passwordTextController.text
+                  ).then((value) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        )
+                      );
+                    }
+                  ).onError((error, stackTrace) {
+                    print("Error: ${error.toString()}");
+                  });
                 }),
 
                 signUpOption()
