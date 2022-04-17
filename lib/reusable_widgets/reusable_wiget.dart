@@ -99,7 +99,8 @@ class _FormTextBoxState extends State<FormTextBox> {
           "Password should contains 1 Uppercase 1 lowercase and 1 number, length between 6 to 20",
           style: TextStyle(
             fontSize: 14,
-            fontStyle: FontStyle.italic
+            fontStyle: FontStyle.italic,
+            color: Colors.white
           ),
           textAlign: TextAlign.center,
           

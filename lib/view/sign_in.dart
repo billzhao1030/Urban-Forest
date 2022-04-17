@@ -45,7 +45,7 @@ class _SignInViewState extends State<SignInView> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.13, 20, 0),
+                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -130,9 +130,9 @@ class LogoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Image.asset(
       logoFileName,
-      fit: BoxFit.fitWidth,
-      width: 300,
-      height: 300,
+      fit: BoxFit.fitHeight,
+      width: 320,
+      height: 320,
       color: Colors.white,
     );
   }
