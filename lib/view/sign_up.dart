@@ -17,6 +17,7 @@ class _SignUpViewState extends State<SignUpView> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _userNameTextController = TextEditingController();
+  final TextEditingController _confirmPasswordTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -55,21 +56,50 @@ class _SignUpViewState extends State<SignUpView> {
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter UserName", Icons.person_outline, false,
-                    _userNameTextController),
+                FormTextBox(
+                  labelText: "Enter User Name", 
+                  icon: Icons.person_outline, 
+                  isUserName: true, 
+                  isPasswordType: false, 
+                  controller: _userNameTextController
+                ),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Email Id", Icons.person_outline, false,
-                    _emailTextController),
+
+                FormTextBox(
+                  labelText: "Enter Email", 
+                  icon: Icons.email_rounded,
+                  isUserName: false, 
+                  isPasswordType: false, 
+                  controller: _emailTextController
+                ),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outlined, true,
-                    _passwordTextController),
+
+                FormTextBox(
+                  labelText: "Enter Password", 
+                  icon: Icons.lock_outlined, 
+                  isUserName: false, 
+                  isPasswordType: true,
+                  controller: _passwordTextController
+                ),
                 const SizedBox(
                   height: 20,
                 ),
+
+                FormTextBox(
+                  labelText: "Confirm Password", 
+                  icon: Icons.lock_outlined, 
+                  isUserName: false, 
+                  isPasswordType: true, 
+                  controller: _confirmPasswordTextController
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+
                 firebaseButton(context, "Sign Up", () {
                   FirebaseAuth.instance.createUserWithEmailAndPassword(
                         email: _emailTextController.text, 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/string_validate.dart';
 
 // get the logo image form the image file name
 Image logoWidget(String imageName) {
@@ -11,22 +12,65 @@ Image logoWidget(String imageName) {
   );
 }
 
-// text field of email and password
-TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-  TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      obscureText: isPasswordType,
-      enableSuggestions: !isPasswordType,
-      autocorrect: !isPasswordType,
+
+// widget that used for form text,
+// especially for sign in, sign up, and reset
+class FormTextBox extends StatefulWidget {
+  const FormTextBox({ 
+    Key? key, 
+    required this.labelText, 
+    required this.icon, 
+    required this.isUserName, 
+    required this.isPasswordType,
+    required this.controller,  
+  }) : super(key: key);
+
+  final TextEditingController controller;
+  final String labelText;
+  final IconData icon;
+  final bool isUserName;
+  final bool isPasswordType;
+
+  @override
+  State<FormTextBox> createState() => _FormTextBoxState();
+}
+
+class _FormTextBoxState extends State<FormTextBox> {
+  bool _canViewPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      obscureText: widget.isPasswordType && !_canViewPassword,
+      enableSuggestions: !widget.isPasswordType,
+      autocorrect: !widget.isPasswordType,
       cursorColor: Colors.white,
       style: TextStyle(color: Colors.white.withOpacity(0.9)),
       decoration: InputDecoration(
         prefixIcon: Icon(
-          icon,
+          widget.icon,
           color: Colors.white70,
         ),
-        labelText: text,
+        
+        // suffix eye button for password type to view password
+        suffixIcon: widget.isPasswordType ? IconButton(
+          icon: Icon(
+            _canViewPassword ? Icons.visibility : Icons.visibility_off
+          ),
+          onPressed: () {
+            setState(() {
+              _canViewPassword = !_canViewPassword;
+            });
+          },
+        ) : null,
+
+        labelText: widget.labelText,
         labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
         filled: true,
         floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -36,10 +80,30 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType,
             borderSide: const BorderSide(width: 0, style: BorderStyle.none)
         ),
       ),
-      keyboardType: isPasswordType
+      
+      keyboardType: (widget.isPasswordType || widget.isUserName)
           ? TextInputType.visiblePassword
           : TextInputType.emailAddress,
+
+
+      validator: (value) {
+        if (widget.isPasswordType) {
+          if (value == null || value.isEmpty) {
+            return "Please enter";
+          } else if (!value.isValidPassword) {
+            return "Not valid password";
+          } else {
+            return "ok";
+          }
+        } else {
+
+        }
+        
+        return null;
+      },
+      
   );
+  }
 }
 
 // sign-in and sign-up

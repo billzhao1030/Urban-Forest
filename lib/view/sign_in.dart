@@ -10,6 +10,8 @@ import 'sign_up.dart';
 
 const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 
+
+// sign in view -- root widget for sign in
 class SignInView extends StatefulWidget {
   const SignInView({Key? key}) : super(key: key);
 
@@ -20,6 +22,8 @@ class SignInView extends StatefulWidget {
 class _SignInViewState extends State<SignInView> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>(); // for validation
 
   @override
   Widget build(BuildContext context) {
@@ -42,59 +46,137 @@ class _SignInViewState extends State<SignInView> {
           child: Padding(
             padding: EdgeInsets.fromLTRB(
                 20, MediaQuery.of(context).size.height * 0.13, 20, 0),
-            child: Column(
-              children: <Widget>[
-                logoWidget(logoFileName),
-                const SizedBox(
-                  height: 30,
-                ),
-                reusableTextField("Enter UserName", Icons.person_outline, false, _emailTextController),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField("Enter Password", Icons.lock_outline, true, _passwordTextController),
-                const SizedBox(
-                  height: 8,
-                ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  // logo
+                  const LogoWidget(),
+                  const SizedBox(
+                    height: 30,
+                  ),
 
-                // forget password
-                forgetPassword(context),
+                  // email for sign in
+                  FormTextBox(
+                    labelText: "Enter Email", 
+                    icon: Icons.email_rounded, 
+                    isUserName: false, 
+                    isPasswordType: false, 
+                    controller: _emailTextController
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
 
-                // sign in
-                firebaseButton(context, "Log In", () {
-                  // debug input
-                  print("${_emailTextController.text}");
-                  print("${_passwordTextController.text}");
+                  // password for sign in
+                  FormTextBox(
+                    labelText: "Enter Password", 
+                    icon: Icons.lock_outline, 
+                    isUserName: false, 
+                    isPasswordType: true, 
+                    controller: _passwordTextController
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
 
-                  // check email and password
-                  FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: _emailTextController.text, 
-                    password: _passwordTextController.text
-                  ).then((value) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        )
-                      );
+                  // forget password
+                  const ForgetPassword(),
+
+                  // sign in
+                  firebaseButton(context, "Log In", () {
+                    // debug input
+                    print("${_emailTextController.text}");
+                    print("${_passwordTextController.text}");
+
+                    if (_formKey.currentState!.validate()) {
+                      // check email and password
+                      FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: _emailTextController.text, 
+                        password: _passwordTextController.text
+                      ).then((value) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            )
+                          );
+                        }
+                      ).onError((error, stackTrace) {
+                        print("No user name or password");
+                      });
                     }
-                  ).onError((error, stackTrace) {
-                    print("Error: ${error.toString()}");
-                  });
-                }),
+                  }),
 
-                // sign up
-                signUpOption()
-              ]
-            ),
+                  // sign up section
+                  const SignUpOption()
+                ]
+              ),
+            )
           )
         ),
       ),
     );
   }
+}
 
-  // sign up section
-  Row signUpOption() {
+// widget of logo image -- stateless
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      logoFileName,
+      fit: BoxFit.fitWidth,
+      width: 300,
+      height: 300,
+      color: Colors.white,
+    );
+  }
+}
+
+// widget of forget password button -- stateless
+class ForgetPassword extends StatelessWidget {
+  const ForgetPassword({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 35,
+      alignment: Alignment.bottomRight,
+      child: TextButton(
+        child: const Text(
+          "Forgot Password?",
+          style: TextStyle(color: Colors.white70),
+          textAlign: TextAlign.right,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ResetPasswordView(),
+            )
+          );
+        },
+      ),
+    );
+  }
+}
+
+// widget of sign up section -- stateless
+class SignUpOption extends StatelessWidget {
+  const SignUpOption({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -122,29 +204,6 @@ class _SignInViewState extends State<SignInView> {
           ),
         )
       ],
-    );
-  }
-
-  Widget forgetPassword(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 35,
-      alignment: Alignment.bottomRight,
-      child: TextButton(
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: Colors.white70),
-          textAlign: TextAlign.right,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ResetPasswordView(),
-            )
-          );
-        },
-      ),
     );
   }
 }

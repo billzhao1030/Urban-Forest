@@ -14,18 +14,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          child: Text("${(FirebaseAuth.instance.currentUser?.email)}"),
-          onPressed: () {
-            FirebaseAuth.instance.signOut().then((value) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SignInView(),
-                )
-              );
-            });
-          },
+        child: Column(
+          children: [
+            Text("${FirebaseAuth.instance.currentUser?.displayName}"),
+            ElevatedButton(
+              child: Text("${(FirebaseAuth.instance.currentUser?.email)}"),
+              onPressed: () {
+                FirebaseAuth.instance.signOut().then((value) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SignInView(),
+                    )
+                  );
+                });
+              },
+            ),
+          ],
         ),
       ),
     );

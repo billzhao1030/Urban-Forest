@@ -4,7 +4,6 @@ import 'package:urban_forest/main.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
 import '../utils/color_utils.dart';
-import 'home_screen.dart';
 
 class ResetPasswordView extends StatefulWidget {
   const ResetPasswordView({ Key? key }) : super(key: key);
@@ -54,8 +53,13 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   height: 20,
                 ),
                 
-                reusableTextField("Enter Email Id", Icons.person_outline, false,
-                    _emailTextController),
+                FormTextBox(
+                  labelText: "Enter Email", 
+                  icon: Icons.person_outline,
+                  isUserName: false,
+                  isPasswordType: false,
+                  controller: _emailTextController,
+                ),
                 const SizedBox(
                   height: 20,
                 ),
