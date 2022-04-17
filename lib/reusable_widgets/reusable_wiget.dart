@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:urban_forest/controller/form_validation.dart';
 import '../utils/string_validate.dart';
 
 // get the logo image form the image file name
@@ -43,66 +44,68 @@ class _FormTextBoxState extends State<FormTextBox> {
     super.initState();
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      obscureText: widget.isPasswordType && !_canViewPassword,
-      enableSuggestions: !widget.isPasswordType,
-      autocorrect: !widget.isPasswordType,
-      cursorColor: Colors.white,
-      style: TextStyle(color: Colors.white.withOpacity(0.9)),
-      decoration: InputDecoration(
-        prefixIcon: Icon(
-          widget.icon,
-          color: Colors.white70,
-        ),
-        
-        // suffix eye button for password type to view password
-        suffixIcon: widget.isPasswordType ? IconButton(
-          icon: Icon(
-            _canViewPassword ? Icons.visibility : Icons.visibility_off
+    return Column(
+      children: [
+        TextFormField(
+          controller: widget.controller,
+          obscureText: widget.isPasswordType && !_canViewPassword,
+          enableSuggestions: !widget.isPasswordType,
+          autocorrect: !widget.isPasswordType,
+          cursorColor: Colors.white,
+          style: TextStyle(color: Colors.white.withOpacity(0.9)),
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              widget.icon,
+              color: Colors.white70,
+            ),
+            
+            // suffix eye button for password type to view password
+            suffixIcon: widget.isPasswordType ? IconButton(
+              icon: Icon(
+                _canViewPassword ? Icons.visibility : Icons.visibility_off
+              ),
+              onPressed: () {
+                setState(() {
+                  _canViewPassword = !_canViewPassword;
+                });
+              },
+            ) : null,
+
+            labelText: widget.labelText,
+            labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+            filled: true,
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            fillColor: Colors.white.withOpacity(0.3),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
+                borderSide: const BorderSide(width: 0, style: BorderStyle.none)
+            ),
           ),
-          onPressed: () {
-            setState(() {
-              _canViewPassword = !_canViewPassword;
-            });
+          
+          keyboardType: (widget.isPasswordType || widget.isUserName)
+              ? TextInputType.visiblePassword
+              : TextInputType.emailAddress,
+
+
+          validator: (value) {
+            return validate_account(value, widget.isPasswordType, widget.isUserName);
           },
-        ) : null,
-
-        labelText: widget.labelText,
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
-        filled: true,
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: Colors.white.withOpacity(0.3),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30.0),
-            borderSide: const BorderSide(width: 0, style: BorderStyle.none)
         ),
-      ),
-      
-      keyboardType: (widget.isPasswordType || widget.isUserName)
-          ? TextInputType.visiblePassword
-          : TextInputType.emailAddress,
-
-
-      validator: (value) {
-        if (widget.isPasswordType) {
-          if (value == null || value.isEmpty) {
-            return "Please enter";
-          } else if (!value.isValidPassword) {
-            return "Not valid password";
-          } else {
-            return "ok";
-          }
-        } else {
-
-        }
-        
-        return null;
-      },
-      
-  );
+        widget.isPasswordType ? const Text(
+          "Password should contains 1 Uppercase 1 lowercase and 1 number, length between 6 to 20",
+          style: TextStyle(
+            fontSize: 14,
+            fontStyle: FontStyle.italic
+          ),
+          textAlign: TextAlign.center,
+          
+        ) : Container()
+      ],
+    );
   }
 }
 

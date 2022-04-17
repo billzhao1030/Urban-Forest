@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
 import '../utils/color_utils.dart';
@@ -14,6 +15,9 @@ class ResetPasswordView extends StatefulWidget {
 
 class _ResetPasswordViewState extends State<ResetPasswordView> {
   final TextEditingController _emailTextController = TextEditingController();
+
+  final String successSend = "We have sent the password reset email\nYou can close this window safely now";
+  bool isSend = false;
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +71,25 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 firebaseButton(context, "Reset", () {
                   FirebaseAuth.instance
                     .sendPasswordResetEmail(email: _emailTextController.text)
-                    .then((value) => Navigator.pop(context))
+                    .then((value) {
+                      setState(() {
+                        isSend = true;
+                      });
+                    })
                     .onError((error, stackTrace) {
-                      print("Error: ${error.toString()}");
-                    });
-                })
+                      debugState("Error: ${error.toString()}");
+                  });
+                }),
+                
+                isSend ? Text(
+                  successSend,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontStyle: FontStyle.italic
+                  ),
+                ) : Container()
               ],
             ),
           )
