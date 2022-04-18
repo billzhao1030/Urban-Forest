@@ -22,6 +22,8 @@ dependencies:
 
   animated_splash_screen: ^1.2.0
 
+  geolocator: ^8.2.0 # get the geolocation
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
