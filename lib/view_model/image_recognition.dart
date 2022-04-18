@@ -5,16 +5,14 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 
-import 'package:camera/camera.dart';
-import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart';
 
 import 'package:image_picker/image_picker.dart';
 
-final String API_KEY = "2b100KCG6O3OeIMqokoAQCliz";
-final API = "https://my-api.plantnet.org/v2/identify/all?api-key=$API_KEY";
+const String apiAIKey = "2b100KCG6O3OeIMqokoAQCliz";
+const apiAIRecognition = "https://my-api.plantnet.org/v2/identify/all?api-key=$apiAIKey";
 
 class AITemp extends StatefulWidget {
   const AITemp({ Key? key }) : super(key: key);
@@ -45,7 +43,7 @@ class _AITempState extends State<AITemp> {
 
     if (image == null) return;
 
-    var request = http.MultipartRequest("POST", Uri.parse(API));
+    var request = http.MultipartRequest("POST", Uri.parse(apiAIRecognition));
     request.files.add(await MultipartFile.fromPath("images", image.path));
 
     var response = await request.send();

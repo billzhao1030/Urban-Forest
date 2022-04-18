@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:urban_forest/controller/form_validation.dart';
+import 'package:urban_forest/view_model/form_validation.dart';
 import '../utils/string_validate.dart';
 
 // get the logo image form the image file name
@@ -58,6 +58,7 @@ class _FormTextBoxState extends State<FormTextBox> {
           cursorColor: Colors.white,
           style: TextStyle(color: Colors.white.withOpacity(0.9)),
           decoration: InputDecoration(
+            errorMaxLines: 2,
             prefixIcon: Icon(
               widget.icon,
               color: Colors.white70,
@@ -90,21 +91,11 @@ class _FormTextBoxState extends State<FormTextBox> {
               ? TextInputType.visiblePassword
               : TextInputType.emailAddress,
 
-
+          
           validator: (value) {
             return validate_account(value, widget.isPasswordType, widget.isUserName);
           },
         ),
-        widget.isPasswordType ? const Text(
-          "Password should contains 1 Uppercase 1 lowercase and 1 number, length between 6 to 20",
-          style: TextStyle(
-            fontSize: 14,
-            fontStyle: FontStyle.italic,
-            color: Colors.white
-          ),
-          textAlign: TextAlign.center,
-          
-        ) : Container()
       ],
     );
   }
@@ -145,6 +136,6 @@ Container firebaseButton(
           )
         )
       ),
-    ),
+    )
   );
 }

@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:urban_forest/controller/image_recognition.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -9,8 +8,7 @@ import 'package:page_transition/page_transition.dart';
 const backgroundColorArray = ["afef8d", "23cb23", "225508"];
 
 void main() async {
-  //runApp(const SplashScreen());
-  runApp(const AITemp());
+  runApp(const SplashScreen());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
 import 'package:urban_forest/utils/color_utils.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/reset_password.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
@@ -24,6 +25,8 @@ class _SignInViewState extends State<SignInView> {
   final TextEditingController _emailTextController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>(); // for validation
+
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +67,7 @@ class _SignInViewState extends State<SignInView> {
                     isPasswordType: false, 
                     controller: _emailTextController
                   ),
+                  
                   const SizedBox(
                     height: 20,
                   ),
@@ -84,17 +88,17 @@ class _SignInViewState extends State<SignInView> {
                   const ForgetPassword(),
 
                   // sign in
-                  firebaseButton(context, "Log In", () {
-                    // debug input
-                    print("${_emailTextController.text}");
-                    print("${_passwordTextController.text}");
-
+                  !loading ? firebaseButton(context, "Log In", () {
                     if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        loading = true;
+                      });
                       // check email and password
                       FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: _emailTextController.text, 
                         password: _passwordTextController.text
                       ).then((value) {
+                        loading = false;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -103,10 +107,28 @@ class _SignInViewState extends State<SignInView> {
                           );
                         }
                       ).onError((error, stackTrace) {
-                        print("No user name or password");
+                        setState(() {
+                          loading = false;
+                          debugState(error.toString().substring(15, 18));
+
+                          var errText = error.toString().substring(15, 18);
+                          var snackBarText = "";
+                          if (errText.contains("w")) {
+                            snackBarText = "Wrong email or password! Please try again.";
+                          } else {
+                            snackBarText = "Too many request in a short period! Try again later";
+                          }
+                          
+                          ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+                        });
                       });
                     }
-                  }),
+                  }) : Container(
+                    margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
 
                   // sign up section
                   const SignUpOption()
@@ -116,6 +138,26 @@ class _SignInViewState extends State<SignInView> {
           )
         ),
       ),
+    );
+  }
+
+  // snack bar hint about authentication state
+  SnackBar snackBarHint(String hint) {
+    return SnackBar(
+      backgroundColor: const Color.fromARGB(255, 187, 173, 132),
+      padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      behavior: SnackBarBehavior.floating,
+      content: Text(
+        hint,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+          fontSize: 15
+        ),
+      ),
+      duration: const Duration(milliseconds: 3000),
     );
   }
 }
