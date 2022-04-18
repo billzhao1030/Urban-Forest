@@ -24,6 +24,8 @@ dependencies:
 
   geolocator: ^8.2.0 # get the geolocation
 
+  shared_preferences: "2.0.13"
+
   # for image recognition
   http: any
 

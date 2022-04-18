@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:urban_forest/view_model/form_validation.dart';
-import '../utils/string_validate.dart';
 
 // get the logo image form the image file name
 Image logoWidget(String imageName) {
@@ -12,7 +11,6 @@ Image logoWidget(String imageName) {
     color: Colors.white,
   );
 }
-
 
 // widget that used for form text,
 // especially for sign in, sign up, and reset
@@ -43,8 +41,6 @@ class _FormTextBoxState extends State<FormTextBox> {
   void initState() {
     super.initState();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +86,9 @@ class _FormTextBoxState extends State<FormTextBox> {
           keyboardType: (widget.isPasswordType || widget.isUserName)
               ? TextInputType.visiblePassword
               : TextInputType.emailAddress,
-
           
           validator: (value) {
-            return validate_account(value, widget.isPasswordType, widget.isUserName);
+            return validateAccount(value, widget.isPasswordType, widget.isUserName);
           },
         ),
       ],

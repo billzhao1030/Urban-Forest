@@ -1,6 +1,7 @@
 import '../utils/string_validate.dart';
 
-String? validate_account(String? value, bool isPasswordType, bool isUserName) {
+// function that assign to the validator
+String? validateAccount(String? value, bool isPasswordType, bool isUserName) {
   if (isPasswordType) {
     if (value == null || value.isEmpty) {
       return "Please enter password";

@@ -20,7 +20,7 @@ void main() async {
 class SplashScreen extends StatelessWidget {
   const SplashScreen({ Key? key }) : super(key: key);
 
-  final splashDuration = 3000; // the time duration of this screen
+  final splashDuration = 2500; // the time duration of this screen
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +81,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    //print("${FirebaseAuth.instance.currentUser?.email}");
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

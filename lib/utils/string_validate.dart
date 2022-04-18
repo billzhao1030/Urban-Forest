@@ -34,9 +34,10 @@ extension ValidateString on String {
 
   // judge if the string is a valid password
   // rule: 
-  //   all number
+  //   for Australian phone number
+  //   change to ^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$ for any country
   bool get isValidPhone{
-    final phoneRegExp = RegExp(r"^\+?0[0-9]{10}$");
+    final phoneRegExp = RegExp(r"^0[0-9]{9}$");
     return phoneRegExp.hasMatch(this);
   }
 }
