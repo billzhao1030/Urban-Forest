@@ -24,6 +24,16 @@ dependencies:
 
   geolocator: ^8.2.0 # get the geolocation
 
+  # for image recognition
+  http: any
+
+  image_picker: ^0.8.5
+  camera:
+  
+  path_provider:
+  path:
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

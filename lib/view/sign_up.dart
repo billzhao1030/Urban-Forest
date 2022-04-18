@@ -40,9 +40,9 @@ class _SignUpViewState extends State<SignUpView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              hexStringToColor(background_color_array[0]),
-              hexStringToColor(background_color_array[1]),
-              hexStringToColor(background_color_array[2])
+              hexStringToColor(backgroundColorArray[0]),
+              hexStringToColor(backgroundColorArray[1]),
+              hexStringToColor(backgroundColorArray[2])
             ], 
             begin: Alignment.topCenter, 
             end: Alignment.bottomCenter

@@ -34,9 +34,9 @@ class _SignInViewState extends State<SignInView> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              hexStringToColor(background_color_array[0]),
-              hexStringToColor(background_color_array[1]),
-              hexStringToColor(background_color_array[2]),
+              hexStringToColor(backgroundColorArray[0]),
+              hexStringToColor(backgroundColorArray[1]),
+              hexStringToColor(backgroundColorArray[2]),
             ], 
             begin: Alignment.topCenter, 
             end: Alignment.bottomCenter
@@ -181,7 +181,7 @@ class SignUpOption extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
-          "Don't have account? ",
+          "Don't have account?   ",
           style: TextStyle(color: Colors.white70),
         ),
         GestureDetector(
@@ -199,7 +199,9 @@ class SignUpOption extends StatelessWidget {
             "Sign Up",
             style: TextStyle(
               color: Colors.white,
-              fontWeight: FontWeight.bold
+              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              fontStyle: FontStyle.italic
             ),
           ),
         )

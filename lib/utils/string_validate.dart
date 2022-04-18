@@ -11,7 +11,7 @@ extension ValidateString on String {
 
   bool get isValidPassword{
     final passwordRegExp = 
-    RegExp(r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,32}$");
+    RegExp(r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$");
     return passwordRegExp.hasMatch(this);
   }
 

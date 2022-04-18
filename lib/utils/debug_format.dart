@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 void debugState(String debugInfo) {
-  print("DEBUG_PRINT: $debugInfo");
+  log("DEBUG_PRINT: $debugInfo");
 }

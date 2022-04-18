@@ -24,14 +24,30 @@ class _locationTempState extends State<locationTemp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            
-          ],
-        )
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                block(Colors.blue),
+                block(Colors.amber),
+                block(Colors.blue),
+                block(Colors.amber),
+                block(Colors.blue),
+                block(Colors.amber),
+              ],
+            ),
+          )
+        ),
       ),
     );
+  }
+
+  SizedBox block(Color boxColor) {
+    return SizedBox(
+              height: 190,
+              child: Container(color: boxColor),
+            );
   }
 }
