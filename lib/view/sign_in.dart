@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
 import 'package:urban_forest/utils/color_utils.dart';
 import 'package:urban_forest/utils/debug_format.dart';
+import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/reset_password.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
@@ -14,7 +17,14 @@ const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 
 // sign in view -- root widget for sign in
 class SignInView extends StatefulWidget {
-  const SignInView({Key? key}) : super(key: key);
+  const SignInView({
+    Key? key, 
+    required this.filledEmail, 
+    required this.filledPassword
+  }) : super(key: key);
+
+  final String filledEmail;
+  final String filledPassword;
 
   @override
   State<SignInView> createState() => _SignInViewState();
@@ -27,6 +37,17 @@ class _SignInViewState extends State<SignInView> {
   final _formKey = GlobalKey<FormState>(); // for validation
 
   bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    debugState(widget.filledEmail);
+    debugState(widget.filledPassword);
+
+    _emailTextController.text = widget.filledEmail;
+    _passwordTextController.text = widget.filledPassword;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +116,24 @@ class _SignInViewState extends State<SignInView> {
                       });
                       // check email and password
                       FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: _emailTextController.text, 
-                        password: _passwordTextController.text
+                        email: _emailTextController.text.trim(), 
+                        password: _passwordTextController.text.trim()
                       ).then((value) {
+                        debugState(FirebaseAuth.instance.currentUser!.uid);
+                        var uid = FirebaseAuth.instance.currentUser!.uid;
+ 
+                        dbUser.doc(uid).set({
+                          'uid': uid,
+                          'hasSignUpVerified': false 
+                        }).catchError((error) {
+                          debugState(error.toString());
+                        });
+
                         loading = false;
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
+                              builder: (context) => const HomeScreen(fromLogIn: true,),
                             )
                           );
                         }

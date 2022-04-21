@@ -70,7 +70,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 
                 firebaseButton(context, "Reset", () {
                   FirebaseAuth.instance
-                    .sendPasswordResetEmail(email: _emailTextController.text)
+                    .sendPasswordResetEmail(email: _emailTextController.text.trim())
                     .then((value) {
                       setState(() {
                         isSend = true;

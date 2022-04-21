@@ -86,7 +86,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SignInView(),
+      home: const SignInView(
+        filledEmail: "",
+        filledPassword: "",
+      ),
     );
   }
 }
