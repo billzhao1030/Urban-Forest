@@ -54,7 +54,7 @@ class _FormTextBoxState extends State<FormTextBox> {
           cursorColor: Colors.white,
           style: TextStyle(color: Colors.white.withOpacity(0.9)),
           decoration: InputDecoration(
-            errorMaxLines: 2,
+            errorMaxLines: 3,
             prefixIcon: Icon(
               widget.icon,
               color: Colors.white70,
@@ -134,3 +134,23 @@ Container firebaseButton(
     )
   );
 }
+
+// snack bar hint about authentication state
+  SnackBar snackBarHint(String hint) {
+    return SnackBar(
+      backgroundColor: const Color.fromARGB(255, 187, 173, 132),
+      padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      behavior: SnackBarBehavior.floating,
+      content: Text(
+        hint,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+          fontSize: 15
+        ),
+      ),
+      duration: const Duration(milliseconds: 3000),
+    );
+  }

@@ -20,6 +20,10 @@ class _SignUpViewState extends State<SignUpView> {
   final TextEditingController _userNameTextController = TextEditingController();
   final TextEditingController _confirmPasswordTextController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>(); // for validation
+
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,75 +56,101 @@ class _SignUpViewState extends State<SignUpView> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 20,
-                ),
-                FormTextBox(
-                  labelText: "Enter User Name", 
-                  icon: Icons.person_outline, 
-                  isUserName: true, 
-                  isPasswordType: false, 
-                  controller: _userNameTextController
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                FormTextBox(
-                  labelText: "Enter Email", 
-                  icon: Icons.email_rounded,
-                  isUserName: false, 
-                  isPasswordType: false, 
-                  controller: _emailTextController
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                FormTextBox(
-                  labelText: "Enter Password", 
-                  icon: Icons.lock_outlined, 
-                  isUserName: false, 
-                  isPasswordType: true,
-                  controller: _passwordTextController
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                FormTextBox(
-                  labelText: "Confirm Password", 
-                  icon: Icons.lock_outlined, 
-                  isUserName: false, 
-                  isPasswordType: true, 
-                  controller: _confirmPasswordTextController
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                firebaseButton(context, "Sign Up", () {
-                  FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: _emailTextController.text.trim(), 
-                        password: _passwordTextController.text.trim()
-                  ).then((value) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VerifyEmail()
-                      )
-                    );
-                  }).onError((error, stackTrace) {
-                    print("Error: ${error.toString()}");
-                  });
-                })
-              ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(
+                    height: 20,
+                  ),
+            
+                  // user name
+                  FormTextBox(
+                    labelText: "Enter User Name", 
+                    icon: Icons.person_outline, 
+                    isUserName: true, 
+                    isPasswordType: false, 
+                    controller: _userNameTextController
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+            
+                  // email
+                  FormTextBox(
+                    labelText: "Enter Email", 
+                    icon: Icons.email_rounded,
+                    isUserName: false, 
+                    isPasswordType: false, 
+                    controller: _emailTextController
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+            
+                  // password
+                  FormTextBox(
+                    labelText: "Enter Password", 
+                    icon: Icons.lock_outlined, 
+                    isUserName: false, 
+                    isPasswordType: true,
+                    controller: _passwordTextController
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+            
+                  // confirm password
+                  FormTextBox(
+                    labelText: "Confirm Password", 
+                    icon: Icons.lock_outlined, 
+                    isUserName: false, 
+                    isPasswordType: true, 
+                    controller: _confirmPasswordTextController
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+            
+                  !loading ? firebaseButton(context, "Sign Up", () {
+                    if (_formKey.currentState!.validate()) {
+                      if (_emailTextController.text.compareTo(_confirmPasswordTextController.text) == 0) {
+                        FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: _emailTextController.text.trim(), 
+                          password: _passwordTextController.text.trim()
+                        ).then((value) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const VerifyEmail()
+                            )
+                          );
+                        }).onError((error, stackTrace) {
+                          print("Error: ${error.toString()}");
+                        });
+                      } else {
+                        String snackBarText = "Password didn't match!";
+                        ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+                      }             
+                    }
+                  }) : Container (
+                    margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           )
         )
       ),
     );
   } 
+
+  void firebaseLoading(bool loading) {
+    setState(() {
+      this.loading = loading;
+    });
+  }
 }

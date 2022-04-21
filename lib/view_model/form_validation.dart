@@ -11,7 +11,12 @@ String? validateAccount(String? value, bool isPasswordType, bool isUserName) {
     } 
   } else {
     if (isUserName) {
-      
+      if (value == null || value.isEmpty) {
+        return "Please enter username";
+      } else if (!value.isValidUserName) {
+        return "Invalid user, should contains only letter, number or _-." 
+        "(must not be the first or last character, not appear consecutively), length between 5 and 20";
+      }
     } else {
       if (value == null || value.isEmpty) {
         return "Please enter email";

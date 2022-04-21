@@ -13,6 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+
 }
 
 // splash screen of the mobile app
@@ -31,7 +32,7 @@ class SplashScreen extends StatelessWidget {
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
           backgroundColor: const Color.fromARGB(255, 165, 229, 165),
-          nextScreen: const MyApp(),
+          nextScreen: const MyApp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
             child: Column(children: [
