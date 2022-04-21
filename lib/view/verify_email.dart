@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:urban_forest/view/sign_in.dart';
 
 import '../utils/debug_format.dart';
+import '../utils/reference.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({ Key? key }) : super(key: key);
@@ -23,6 +24,15 @@ class _VerifyEmailState extends State<VerifyEmail> {
     super.initState();
 
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    debugState(FirebaseAuth.instance.currentUser!.uid);
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+
+    dbUser.doc(uid).set({
+      'uid': uid,
+      'hasSignUpVerified': false 
+    }).catchError((error) {
+      debugState(error.toString());
+    });
 
     if (!isEmailVerified) {
       sendVerificationEmail();
@@ -52,10 +62,20 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
     setState(() {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-      debugState("verfied: $isEmailVerified");
+      
     });
 
-    if (isEmailVerified) timer?.cancel();
+    if (isEmailVerified) {
+      timer?.cancel();
+
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+
+    await dbUser.doc(uid).update({
+      'hasSignUpVerified': true 
+    }).catchError((error) {
+      debugState(error.toString());
+    });
+    }
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
+import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/color_utils.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -111,35 +112,44 @@ class _SignInViewState extends State<SignInView> {
                   // sign in
                   !loading ? firebaseButton(context, "Log In", () {
                     if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        loading = true;
-                      });
+                      firebaseLoading(true);
+
                       // check email and password
                       FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: _emailTextController.text.trim(), 
                         password: _passwordTextController.text.trim()
-                      ).then((value) {
-                        debugState(FirebaseAuth.instance.currentUser!.uid);
+                      ).then((value) async {
+                        // get the uid
                         var uid = FirebaseAuth.instance.currentUser!.uid;
- 
-                        dbUser.doc(uid).set({
-                          'uid': uid,
-                          'hasSignUpVerified': false 
-                        }).catchError((error) {
-                          debugState(error.toString());
-                        });
+                        UserAccount user;
 
-                        loading = false;
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(fromLogIn: true,),
-                            )
+                        // if the this account never verified
+                        await dbUser.doc(uid).get().then((value) {
+                          user = UserAccount.fromJson(
+                            value.data()! as Map<String, dynamic>, 
+                            value.id
                           );
-                        }
-                      ).onError((error, stackTrace) {
+
+                          debugState(user.hasSignUpVerified.toString());
+
+                          if (user.hasSignUpVerified) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomeScreen(fromLogIn: true,),
+                              )
+                            );
+                          } else {
+                            String snackBarText = "You have not verify this email yet!";
+                            ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+
+                            FirebaseAuth.instance.signOut();
+
+                            firebaseLoading(false);
+                          }
+                        });
+                      }).onError((error, stackTrace) {
                         setState(() {
-                          loading = false;
                           debugState(error.toString().substring(15, 18));
 
                           var errText = error.toString().substring(15, 18);
@@ -151,10 +161,11 @@ class _SignInViewState extends State<SignInView> {
                           }
                           
                           ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+                          loading = false;
                         });
                       });
                     }
-                  }) : Container(
+                  }) : Container (
                     margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                     child: const CircularProgressIndicator(
                       color: Colors.white,
@@ -170,6 +181,12 @@ class _SignInViewState extends State<SignInView> {
         ),
       ),
     );
+  }
+
+  void firebaseLoading(bool loading) {
+    setState(() {
+      this.loading = loading;
+    });
   }
 
   // snack bar hint about authentication state

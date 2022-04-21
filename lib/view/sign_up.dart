@@ -103,8 +103,8 @@ class _SignUpViewState extends State<SignUpView> {
 
                 firebaseButton(context, "Sign Up", () {
                   FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: _emailTextController.text, 
-                        password: _passwordTextController.text
+                        email: _emailTextController.text.trim(), 
+                        password: _passwordTextController.text.trim()
                   ).then((value) {
                     Navigator.push(
                       context,
