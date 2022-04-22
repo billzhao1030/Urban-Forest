@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:urban_forest/main.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/verify_email.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
 import '../utils/color_utils.dart';
+import '../utils/reference.dart';
 import 'home_screen.dart';
 
 class SignUpView extends StatefulWidget {

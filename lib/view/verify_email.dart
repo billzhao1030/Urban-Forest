@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/view/sign_in.dart';
 
+import '../utils/color_utils.dart';
 import '../utils/debug_format.dart';
 import '../utils/reference.dart';
 
@@ -85,34 +86,58 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) {
-    return !isEmailVerified ? Scaffold(
-      appBar: AppBar(
-        title: const Text("Verify Email"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "A verification email has been sent to your email",
-            style: TextStyle(fontSize: 20),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size.fromHeight(50)
-            ),
-            icon: const Icon(Icons.email, size: 32),
-            label: const Text(
-              "Resent Email",
-              style: TextStyle(fontSize: 24),
-            ),
-            onPressed: canResendEmail ? sendVerificationEmail : null
+    return !isEmailVerified ? verifyScaffold() : SignInView(
+      filledEmail: FirebaseAuth.instance.currentUser!.email!, 
+      filledPassword: ""
+    );
+  }
+
+  Scaffold verifyScaffold() {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Verify Email")),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              hexStringToColor(backgroundColorArray[0]),
+              hexStringToColor(backgroundColorArray[1]),
+              hexStringToColor(backgroundColorArray[2]),
+            ], 
+            begin: Alignment.topCenter, 
+            end: Alignment.bottomCenter
           )
-        ],
-      )
-      // TODO: resend button 
-      // TODO: cancel button for sign out
-    ) : SignInView(filledEmail: FirebaseAuth.instance.currentUser!.email!, filledPassword: "");
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "A verification email has been sent to your email",
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50)
+                  ),
+                  icon: const Icon(Icons.email, size: 32),
+                  label: const Text(
+                    "Resent Email",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  onPressed: canResendEmail ? sendVerificationEmail : null
+                )
+              ],
+            )
+          )
+        ),
+      ),
+    );
   }
 }

@@ -6,7 +6,6 @@ import 'package:urban_forest/view/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
-const backgroundColorArray = ["afef8d", "23cb23", "225508"];
 
 void main() async {
   runApp(const SplashScreen());
@@ -26,6 +25,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       home: Scaffold(
         body: AnimatedSplashScreen(
           duration: splashDuration,
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: const SignInView(
         filledEmail: "",
