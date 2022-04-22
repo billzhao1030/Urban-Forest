@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/verify_email.dart';
 
@@ -116,8 +117,9 @@ class _SignUpViewState extends State<SignUpView> {
                   !loading ? firebaseButton(context, "Sign Up", () {
                     // hide current snack bar
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    firebaseLoading(true);
+                    
                     if (_formKey.currentState!.validate()) {
+                      firebaseLoading(true);
                       if (_passwordTextController.text.trim().compareTo(_confirmPasswordTextController.text.trim()) == 0) {
                         FirebaseAuth.instance.createUserWithEmailAndPassword(
                           email: _emailTextController.text.trim(), 
@@ -149,8 +151,7 @@ class _SignUpViewState extends State<SignUpView> {
                           firebaseLoading(false);
                         });
                       } else {
-                        String snackBarText = "Password didn't match!";
-                        ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+                        showHint(context, "Password didn't match!");
 
                         firebaseLoading(false);
                       }             
@@ -170,6 +171,7 @@ class _SignUpViewState extends State<SignUpView> {
     );
   } 
 
+  // set the loading state
   void firebaseLoading(bool loading) {
     setState(() {
       this.loading = loading;

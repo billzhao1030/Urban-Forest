@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
 import 'package:urban_forest/provider/user.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/color_utils.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -125,6 +126,18 @@ class _SignInViewState extends State<SignInView> {
                         var uid = FirebaseAuth.instance.currentUser!.uid;
                         UserAccount user;
 
+                        // get the state of email verification and update if true
+                        bool isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+                        debugState(isEmailVerified.toString());
+
+                        if (isEmailVerified) {
+                          await dbUser.doc(uid).update({
+                            'hasSignUpVerified' : isEmailVerified
+                          }).catchError((error) {
+                            showHint(context, "Error when authenticating!");
+                          });
+                        }
+
                         // if the this account never verified
                         await dbUser.doc(uid).get().then((value) {
                           user = UserAccount.fromJson(
@@ -142,10 +155,7 @@ class _SignInViewState extends State<SignInView> {
                               )
                             );
                           } else {
-                            String snackBarText = "You have not verify this email yet!";
-                            ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
-
-                            FirebaseAuth.instance.signOut();
+                            showHint(context, "You have not verify this email yet!", verify: true);
 
                             firebaseLoading(false);
                           }
@@ -154,17 +164,18 @@ class _SignInViewState extends State<SignInView> {
                         setState(() {
                           debugState(error.toString());
 
-                          var errText = error.toString().substring(15, 18);
-                          var snackBarText = "";
-                          if (errText.contains("w")) {
-                            snackBarText = "Wrong email or password! Please try again";
+                          var errText = error.toString().substring(15, 20);
+                          
+                          if (errText.contains("wro")) {
+                            showHint(context, "Wrong email or password! Please try again");
                           } else if (errText.contains("too")) {
-                            snackBarText = "Too many request in a short period! Try again later";
+                            showHint(context, "Too many request in a short period! Try again later");
+                          } else if (errText.contains("user-d")) {
+                            showHint(context, "The user account has been disabled by an administrator");
                           } else {
-                            snackBarText = "This email doesn't link to an account! Please sign up";
+                            showHint(context, "This email doesn't link to an account! Please sign up");
                           }
                           
-                          ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
                           loading = false;
                         });
                       });

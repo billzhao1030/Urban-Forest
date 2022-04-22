@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/view_model/form_validation.dart';
+
+import '../utils/debug_format.dart';
 
 // get the logo image form the image file name
 Image logoWidget(String imageName) {
@@ -135,8 +139,10 @@ Container firebaseButton(
   );
 }
 
+
+
 // snack bar hint about authentication state
-SnackBar snackBarHint(String hint) {
+SnackBar snackBarHint(String hint, {bool verify = false, BuildContext? context}) {
   return SnackBar(
     backgroundColor: const Color.fromARGB(255, 187, 173, 132),
     padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
@@ -151,6 +157,25 @@ SnackBar snackBarHint(String hint) {
         fontSize: 15
       ),
     ),
-    duration: const Duration(milliseconds: 3000),
+    duration: verify ? 
+      const Duration(days: 1) : 
+      const Duration(milliseconds: 3000),
+    action: verify ? SnackBarAction(
+      label: "Verify",
+      textColor: const Color.fromARGB(221, 35, 5, 168),
+      onPressed: () async {
+        try {
+          final user = FirebaseAuth.instance.currentUser!;
+          await user.sendEmailVerification();
+        } catch (error) {
+          var errorText = error.toString().substring(15, 18);
+          if (errorText.contains("too")) {
+            showHint(context!, "Too many request in a short period! Try again later");
+          } else {
+            showHint(context!, "Unknown error! Please try again later");
+          }
+        }
+      },
+    ) : null,
   );
 }
