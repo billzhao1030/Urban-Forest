@@ -26,6 +26,7 @@ class FormTextBox extends StatefulWidget {
     required this.isUserName, 
     required this.isPasswordType,
     required this.controller,  
+    this.nameField
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -33,6 +34,7 @@ class FormTextBox extends StatefulWidget {
   final IconData icon;
   final bool isUserName;
   final bool isPasswordType;
+  final bool? nameField;
 
   @override
   State<FormTextBox> createState() => _FormTextBoxState();
@@ -92,7 +94,11 @@ class _FormTextBoxState extends State<FormTextBox> {
               : TextInputType.emailAddress,
           
           validator: (value) {
-            return validateAccount(value, widget.isPasswordType, widget.isUserName);
+            if (widget.nameField == null) {
+              return validateAccount(value, widget.isPasswordType, widget.isUserName);
+            } else {
+              return validateName(value);
+            }
           },
         ),
       ],

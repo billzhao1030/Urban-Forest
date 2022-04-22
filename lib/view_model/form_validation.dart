@@ -28,3 +28,13 @@ String? validateAccount(String? value, bool isPasswordType, bool isUserName) {
   
   return null;
 }
+
+String? validateName(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Please enter";
+  } else if (!value.isValidName) {
+    return "Invalid name, please contain only letters, spaces and -";
+  }
+
+  return null;
+}

@@ -40,4 +40,10 @@ extension ValidateString on String {
     final phoneRegExp = RegExp(r"^0[0-9]{9}$");
     return phoneRegExp.hasMatch(this);
   }
+
+  // judge if the string is a valid first or last name
+  bool get isValidName{
+    final nameRegExp = RegExp(r"^([A-Za-z- ])+$");
+    return nameRegExp.hasMatch(this);
+  }
 }

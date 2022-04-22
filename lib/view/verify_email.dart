@@ -9,7 +9,16 @@ import '../utils/debug_format.dart';
 import '../utils/reference.dart';
 
 class VerifyEmail extends StatefulWidget {
-  const VerifyEmail({ Key? key }) : super(key: key);
+  const VerifyEmail({ 
+    Key? key, 
+    required this.firstName, 
+    required this.lastName, 
+    required this.userName 
+  }) : super(key: key);
+
+  final String firstName;
+  final String lastName;
+  final String userName;
 
   @override
   State<VerifyEmail> createState() => _VerifyEmailState();
@@ -26,11 +35,19 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     debugState(FirebaseAuth.instance.currentUser!.uid);
-    var uid = FirebaseAuth.instance.currentUser!.uid;
+
+    var user = FirebaseAuth.instance.currentUser!;
+    var uid = user.uid;
+    var email = user.email;
 
     dbUser.doc(uid).set({
       'uid': uid,
-      'hasSignUpVerified': false 
+      'email': email,
+      'firstName': widget.firstName,
+      'lastName': widget.lastName,
+      'userName': widget.userName,
+      'hasSignUpVerified': false,
+      'accessLevel': 1
     }).catchError((error) {
       debugState(error.toString());
     });

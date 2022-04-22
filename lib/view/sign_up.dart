@@ -22,6 +22,9 @@ class _SignUpViewState extends State<SignUpView> {
   final TextEditingController _userNameTextController = TextEditingController();
   final TextEditingController _confirmPasswordTextController = TextEditingController();
 
+  final TextEditingController _firstNameTextController = TextEditingController();
+  final TextEditingController _lastNameTextController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>(); // for validation
 
   bool loading = false;
@@ -66,6 +69,32 @@ class _SignUpViewState extends State<SignUpView> {
                     height: 20,
                   ),
             
+                  // first name
+                  FormTextBox(
+                    labelText: "First Name", 
+                    icon: Icons.person_outline, 
+                    isUserName: true, 
+                    isPasswordType: false, 
+                    controller: _firstNameTextController,
+                    nameField: true,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  // last name
+                  FormTextBox(
+                    labelText: "Last Name", 
+                    icon: Icons.person_outline, 
+                    isUserName: true, 
+                    isPasswordType: false, 
+                    controller: _lastNameTextController,
+                    nameField: true,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+
                   // user name
                   FormTextBox(
                     labelText: "Enter User Name", 
@@ -128,7 +157,11 @@ class _SignUpViewState extends State<SignUpView> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const VerifyEmail()
+                              builder: (context) => VerifyEmail(
+                                userName: _userNameTextController.text.trim(),
+                                lastName: _lastNameTextController.text.trim(),
+                                firstName: _firstNameTextController.text.trim()
+                              )
                             )
                           );
                           firebaseLoading(false);
