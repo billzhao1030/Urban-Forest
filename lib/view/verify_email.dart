@@ -62,7 +62,6 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
     setState(() {
       isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-      
     });
 
     if (isEmailVerified) {
@@ -88,9 +87,30 @@ class _VerifyEmailState extends State<VerifyEmail> {
   Widget build(BuildContext context) {
     return !isEmailVerified ? Scaffold(
       appBar: AppBar(
-        title: Text("Verify"),
+        title: const Text("Verify Email"),
       ),
-
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "A verification email has been sent to your email",
+            style: TextStyle(fontSize: 20),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50)
+            ),
+            icon: const Icon(Icons.email, size: 32),
+            label: const Text(
+              "Resent Email",
+              style: TextStyle(fontSize: 24),
+            ),
+            onPressed: canResendEmail ? sendVerificationEmail : null
+          )
+        ],
+      )
       // TODO: resend button 
       // TODO: cancel button for sign out
     ) : SignInView(filledEmail: FirebaseAuth.instance.currentUser!.email!, filledPassword: "");
