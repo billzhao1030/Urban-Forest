@@ -20,8 +20,8 @@ const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 class SignInView extends StatefulWidget {
   const SignInView({
     Key? key, 
-    required this.filledEmail, 
-    required this.filledPassword
+    required this.filledEmail, // pre-entered email
+    required this.filledPassword // pre-entered password
   }) : super(key: key);
 
   final String filledEmail;
@@ -43,9 +43,7 @@ class _SignInViewState extends State<SignInView> {
   void initState() {
     super.initState();
 
-    debugState(widget.filledEmail);
-    debugState(widget.filledPassword);
-
+    // set the controller text if has pre-entered fields
     _emailTextController.text = widget.filledEmail;
     _passwordTextController.text = widget.filledPassword;
   }
@@ -111,6 +109,10 @@ class _SignInViewState extends State<SignInView> {
 
                   // sign in
                   !loading ? firebaseButton(context, "Log In", () {
+                    // hide the current snackbar
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                    // perform frontend validation
                     if (_formKey.currentState!.validate()) {
                       firebaseLoading(true);
 
@@ -150,14 +152,16 @@ class _SignInViewState extends State<SignInView> {
                         });
                       }).onError((error, stackTrace) {
                         setState(() {
-                          debugState(error.toString().substring(15, 18));
+                          debugState(error.toString());
 
                           var errText = error.toString().substring(15, 18);
                           var snackBarText = "";
                           if (errText.contains("w")) {
-                            snackBarText = "Wrong email or password! Please try again.";
-                          } else {
+                            snackBarText = "Wrong email or password! Please try again";
+                          } else if (errText.contains("too")) {
                             snackBarText = "Too many request in a short period! Try again later";
+                          } else {
+                            snackBarText = "This email doesn't link to an account! Please sign up";
                           }
                           
                           ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));

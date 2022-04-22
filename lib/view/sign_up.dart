@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/main.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/verify_email.dart';
 
 import '../reusable_widgets/reusable_wiget.dart';
@@ -113,8 +114,11 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
             
                   !loading ? firebaseButton(context, "Sign Up", () {
+                    // hide current snack bar
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    firebaseLoading(true);
                     if (_formKey.currentState!.validate()) {
-                      if (_emailTextController.text.compareTo(_confirmPasswordTextController.text) == 0) {
+                      if (_passwordTextController.text.trim().compareTo(_confirmPasswordTextController.text.trim()) == 0) {
                         FirebaseAuth.instance.createUserWithEmailAndPassword(
                           email: _emailTextController.text.trim(), 
                           password: _passwordTextController.text.trim()
@@ -125,12 +129,30 @@ class _SignUpViewState extends State<SignUpView> {
                               builder: (context) => const VerifyEmail()
                             )
                           );
+                          firebaseLoading(false);
                         }).onError((error, stackTrace) {
-                          print("Error: ${error.toString()}");
+                          debugState(error.toString());
+
+                          var errText = error.toString().substring(15, 18);
+                          debugState(errText);
+                          var snackBarText = "";
+                          if (errText.contains("ema")) {
+                            snackBarText = "The email address is already in use by another account!";
+                          } else if (errText.contains("too")) {
+                            snackBarText = "Too many request in a short period! Try again later";
+                          } else if (errText.contains("inv")) {
+                            snackBarText = "This email address doen't exist!";
+                          }
+                          
+                          ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+
+                          firebaseLoading(false);
                         });
                       } else {
                         String snackBarText = "Password didn't match!";
                         ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
+
+                        firebaseLoading(false);
                       }             
                     }
                   }) : Container (

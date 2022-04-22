@@ -70,11 +70,11 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
       var uid = FirebaseAuth.instance.currentUser!.uid;
 
-    await dbUser.doc(uid).update({
-      'hasSignUpVerified': true 
-    }).catchError((error) {
-      debugState(error.toString());
-    });
+      await dbUser.doc(uid).update({
+        'hasSignUpVerified': true 
+      }).catchError((error) {
+        debugState(error.toString());
+      });
     }
   }
 

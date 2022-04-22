@@ -136,21 +136,21 @@ Container firebaseButton(
 }
 
 // snack bar hint about authentication state
-  SnackBar snackBarHint(String hint) {
-    return SnackBar(
-      backgroundColor: const Color.fromARGB(255, 187, 173, 132),
-      padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      behavior: SnackBarBehavior.floating,
-      content: Text(
-        hint,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.black87,
-          fontWeight: FontWeight.bold,
-          fontSize: 15
-        ),
+SnackBar snackBarHint(String hint) {
+  return SnackBar(
+    backgroundColor: const Color.fromARGB(255, 187, 173, 132),
+    padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+    margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+    behavior: SnackBarBehavior.floating,
+    content: Text(
+      hint,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.bold,
+        fontSize: 15
       ),
-      duration: const Duration(milliseconds: 3000),
-    );
-  }
+    ),
+    duration: const Duration(milliseconds: 3000),
+  );
+}
