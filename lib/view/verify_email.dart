@@ -88,7 +88,6 @@ class _VerifyEmailState extends State<VerifyEmail> {
   Widget build(BuildContext context) {
     return !isEmailVerified ? verifyScaffold() : SignInView(
       filledEmail: FirebaseAuth.instance.currentUser!.email!, 
-      filledPassword: ""
     );
   }
 
@@ -112,7 +111,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+                20, MediaQuery.of(context).size.height * 0.3, 20, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -132,7 +131,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                     style: TextStyle(fontSize: 24),
                   ),
                   onPressed: canResendEmail ? sendVerificationEmail : null
-                )
+                ),
               ],
             )
           )

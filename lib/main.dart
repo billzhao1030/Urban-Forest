@@ -89,7 +89,6 @@ class MyApp extends StatelessWidget {
       ),
       home: const SignInView(
         filledEmail: "",
-        filledPassword: "",
       ),
     );
   }

@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     MaterialPageRoute(
                       builder: (context) => const SignInView(
                         filledEmail: "",
-                        filledPassword: "",
                       ),
                     )
                   );

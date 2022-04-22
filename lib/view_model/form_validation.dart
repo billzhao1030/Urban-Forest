@@ -21,7 +21,7 @@ String? validateAccount(String? value, bool isPasswordType, bool isUserName) {
       if (value == null || value.isEmpty) {
         return "Please enter email";
       } else if (!value.isValidEmail) {
-        return "Invalid email!";
+        return "Invalid email";
       } 
     }
   }

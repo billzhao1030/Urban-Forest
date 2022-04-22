@@ -137,16 +137,14 @@ class _SignUpViewState extends State<SignUpView> {
 
                           var errText = error.toString().substring(15, 18);
                           debugState(errText);
-                          var snackBarText = "";
+
                           if (errText.contains("ema")) {
-                            snackBarText = "The email address is already in use by another account!";
+                            showHint(context, "The email address is already in use by another account!");
                           } else if (errText.contains("too")) {
-                            snackBarText = "Too many request in a short period! Try again later";
+                            showHint(context, "Too many request in a short period! Try again later");
                           } else if (errText.contains("inv")) {
-                            snackBarText = "This email address doen't exist!";
+                            showHint(context, "This email address doen't exist!");
                           }
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(snackBarHint(snackBarText));
 
                           firebaseLoading(false);
                         });

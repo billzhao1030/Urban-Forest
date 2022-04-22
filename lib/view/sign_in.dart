@@ -22,11 +22,9 @@ class SignInView extends StatefulWidget {
   const SignInView({
     Key? key, 
     required this.filledEmail, // pre-entered email
-    required this.filledPassword // pre-entered password
   }) : super(key: key);
 
   final String filledEmail;
-  final String filledPassword;
 
   @override
   State<SignInView> createState() => _SignInViewState();
@@ -46,7 +44,6 @@ class _SignInViewState extends State<SignInView> {
 
     // set the controller text if has pre-entered fields
     _emailTextController.text = widget.filledEmail;
-    _passwordTextController.text = widget.filledPassword;
   }
 
   @override
@@ -164,7 +161,8 @@ class _SignInViewState extends State<SignInView> {
                         setState(() {
                           debugState(error.toString());
 
-                          var errText = error.toString().substring(15, 20);
+                          var errText = error.toString().substring(15, 21);
+                          debugState(errText);
                           
                           if (errText.contains("wro")) {
                             showHint(context, "Wrong email or password! Please try again");
@@ -172,7 +170,7 @@ class _SignInViewState extends State<SignInView> {
                             showHint(context, "Too many request in a short period! Try again later");
                           } else if (errText.contains("user-d")) {
                             showHint(context, "The user account has been disabled by an administrator");
-                          } else {
+                          } else if (errText.contains("user-n")) {
                             showHint(context, "This email doesn't link to an account! Please sign up");
                           }
                           
