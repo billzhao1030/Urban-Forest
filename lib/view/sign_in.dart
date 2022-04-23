@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
-import 'package:urban_forest/utils/color_utils.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/reset_password.dart';

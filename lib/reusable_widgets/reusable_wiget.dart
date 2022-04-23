@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/view_model/form_validation.dart';
 
-import '../utils/debug_format.dart';
 
 // get the logo image form the image file name
 Image logoWidget(String imageName) {

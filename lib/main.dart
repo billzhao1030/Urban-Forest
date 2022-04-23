@@ -7,6 +7,7 @@ import 'package:urban_forest/view/acknowledge.dart';
 import 'package:urban_forest/view/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:urban_forest/view_model/image_recognition.dart';
 
 void main() async {
   // run the splash animation then initialize environment
@@ -36,44 +37,46 @@ class SplashScreen extends StatelessWidget {
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
           backgroundColor: const Color.fromARGB(255, 165, 229, 165),
-          nextScreen: const StartApp(), // the next screen
+          nextScreen: const AITemp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
-            child: Column(children: [
-              // logo image
-              Image.asset(
-                "assets/images/logo1.png",
-                width: 250,
-                color: const Color.fromARGB(138, 14, 150, 32),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-
-              // app name
-              const Text(
-                "Urban Forest",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
+            child: Column(
+              children: [
+                // logo image
+                Image.asset(
+                  "assets/images/logo1.png",
+                  width: 250,
+                  color: const Color.fromARGB(138, 14, 150, 32),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // copyright info
-              const Text(
-                copyRightInfo,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic
+                const SizedBox(
+                  height: 40,
                 ),
-              ),
-            ]),
+
+                // app name
+                const Text(
+                  "Urban Forest",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+
+                // copyright info
+                const Text(
+                  copyRightInfo,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic
+                  ),
+                ),
+              ]
+            ),
           ),
         ),
       ),
@@ -117,6 +120,7 @@ class _StartAppState extends State<StartApp> {
     setState(() {
       //hasAcknowledged = acknowledge;
       hasAcknowledged = false;
+      // TODO: change this back after finish
     });
   }
 }

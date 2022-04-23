@@ -33,8 +33,8 @@ class _AcknowledgeState extends State<Acknowledge> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.6,
         child: AlertDialog(
-          title: Text("title"),
-          backgroundColor: Color.fromARGB(255, 247, 244, 199),
+          title: const Text("title"),
+          backgroundColor: const Color.fromARGB(255, 247, 244, 199),
           content: Scrollbar(
             child: SingleChildScrollView(
               child: Column(
