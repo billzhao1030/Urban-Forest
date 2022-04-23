@@ -185,3 +185,4 @@ SnackBar snackBarHint(String hint, {bool verify = false, BuildContext? context})
     ) : null,
   );
 }
+

@@ -46,96 +46,86 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              hexStringToColor(backgroundColorArray[0]),
-              hexStringToColor(backgroundColorArray[1]),
-              hexStringToColor(backgroundColorArray[2]),
-            ], 
-            begin: Alignment.topCenter, 
-            end: Alignment.bottomCenter
-          )
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.1, 20, 0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  // logo
-                  const LogoWidget(),
-                  const SizedBox(
-                    height: 30,
-                  ),
+      body: backgroundDecoration(
+        context, 
+        signInPageView(context)
+      )
+    );
+  }
 
-                  // email for sign in
-                  FormTextBox(
-                    labelText: "Enter Email", 
-                    icon: Icons.email_rounded, 
-                    isUserName: false, 
-                    isPasswordType: false, 
-                    controller: _emailTextController
-                  ),
-                  
-                  const SizedBox(
-                    height: 20,
-                  ),
+  Padding signInPageView(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            // logo
+            const LogoWidget(),
+            const SizedBox(
+              height: 30,
+            ),
 
-                  // password for sign in
-                  FormTextBox(
-                    labelText: "Enter Password", 
-                    icon: Icons.lock_outline, 
-                    isUserName: false, 
-                    isPasswordType: true, 
-                    controller: _passwordTextController
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
+            // email for sign in
+            FormTextBox(
+              labelText: "Enter Email", 
+              icon: Icons.email_rounded, 
+              isUserName: false, 
+              isPasswordType: false, 
+              controller: _emailTextController
+            ),
+            
+            const SizedBox(
+              height: 20,
+            ),
 
-                  // forget password
-                  const ForgetPassword(),
+            // password for sign in
+            FormTextBox(
+              labelText: "Enter Password", 
+              icon: Icons.lock_outline, 
+              isUserName: false, 
+              isPasswordType: true, 
+              controller: _passwordTextController
+            ),
+            const SizedBox(
+              height: 8,
+            ),
 
-                  // sign in
-                  !loading ? firebaseButton(context, "Log In", () {
-                    // hide the current snackbar
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            // forget password
+            const ForgetPassword(),
 
-                    // perform frontend validation
-                    if (_formKey.currentState!.validate()) {
-                      firebaseLoading(true);
+            // sign in
+            !loading ? firebaseButton(context, "Log In", () {
+              // hide the current snackbar
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                      // check email and password
-                      FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: _emailTextController.text.trim(), 
-                        password: _passwordTextController.text.trim()
-                      ).then((value) async {
-                        firebaseSignIn(value);
-                      }).onError((error, stackTrace) {
-                        onFormSubmitError(error);
-                      });
-                    }
-                  }) : Container (
-                    margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
+              // perform frontend validation
+              if (_formKey.currentState!.validate()) {
+                firebaseLoading(true);
 
-                  // sign up section
-                  const SignUpOption()
-                ]
+                // check email and password
+                FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: _emailTextController.text.trim(), 
+                  password: _passwordTextController.text.trim()
+                ).then((value) async {
+                  firebaseSignIn(value);
+                }).onError((error, stackTrace) {
+                  onFormSubmitError(error);
+                });
+              }
+            }) : Container (
+              margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+              child: const CircularProgressIndicator(
+                color: Colors.white,
               ),
-            )
-          )
+            ),
+
+            // sign up section
+            const SignUpOption()
+          ]
         ),
-      ),
+      )
     );
   }
 

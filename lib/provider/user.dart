@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
 class UserAccount {
@@ -36,5 +37,11 @@ class UserAccount {
   {
     'hasSignUpVerified': hasSignUpVerified
   };
+}
+
+
+// user account provider
+class UserModel extends ChangeNotifier {
+
 }
 

@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/utils/debug_format.dart';
+import 'package:urban_forest/utils/reference.dart';
+import 'package:urban_forest/view/acknowledge.dart';
 import 'package:urban_forest/view/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
@@ -33,7 +36,7 @@ class SplashScreen extends StatelessWidget {
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
           backgroundColor: const Color.fromARGB(255, 165, 229, 165),
-          nextScreen: const MyApp(), // the next screen
+          nextScreen: const StartApp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
             child: Column(children: [
@@ -78,8 +81,22 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+
+class StartApp extends StatefulWidget {
+  const StartApp({ Key? key }) : super(key: key);
+
+  @override
+  State<StartApp> createState() => _StartAppState();
+}
+
+class _StartAppState extends State<StartApp> {
+  bool hasAcknowledged = false;
+  @override
+  void initState() {
+    super.initState();
+
+    getAcknowledge();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +104,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green, // primary color
       ),
-      home: const SignInView(
+      home: hasAcknowledged ? const SignInView(
         filledEmail: "",
-      ),
+      ) : const Acknowledge(),
     );
+  }
+
+  void getAcknowledge() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool acknowledge = prefs.getBool(ack) ?? false;
+
+    setState(() {
+      //hasAcknowledged = acknowledge;
+      hasAcknowledged = false;
+    });
   }
 }
