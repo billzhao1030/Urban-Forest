@@ -1,8 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:urban_forest/main.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/color_utils.dart';
@@ -119,63 +116,9 @@ class _SignInViewState extends State<SignInView> {
                         email: _emailTextController.text.trim(), 
                         password: _passwordTextController.text.trim()
                       ).then((value) async {
-                        // get the uid
-                        var uid = FirebaseAuth.instance.currentUser!.uid;
-                        UserAccount user;
-
-                        // get the state of email verification and update if true
-                        bool isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-                        debugState(isEmailVerified.toString());
-
-                        if (isEmailVerified) {
-                          await dbUser.doc(uid).update({
-                            'hasSignUpVerified' : isEmailVerified
-                          }).catchError((error) {
-                            showHint(context, "Error when authenticating!");
-                          });
-                        }
-
-                        // if the this account never verified
-                        await dbUser.doc(uid).get().then((value) {
-                          user = UserAccount.fromJson(
-                            value.data()! as Map<String, dynamic>, 
-                            value.id
-                          );
-
-                          debugState(user.hasSignUpVerified.toString());
-
-                          if (user.hasSignUpVerified) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomeScreen(fromLogIn: true,),
-                              )
-                            );
-                          } else {
-                            showHint(context, "You have not verify this email yet!", verify: true);
-
-                            firebaseLoading(false);
-                          }
-                        });
+                        firebaseSignIn(value);
                       }).onError((error, stackTrace) {
-                        setState(() {
-                          debugState(error.toString());
-
-                          var errText = error.toString().substring(15, 21);
-                          debugState(errText);
-                          
-                          if (errText.contains("wro")) {
-                            showHint(context, "Wrong email or password! Please try again");
-                          } else if (errText.contains("too")) {
-                            showHint(context, "Too many request in a short period! Try again later");
-                          } else if (errText.contains("user-d")) {
-                            showHint(context, "The user account has been disabled by an administrator");
-                          } else if (errText.contains("user-n")) {
-                            showHint(context, "This email doesn't link to an account! Please sign up");
-                          }
-                          
-                          loading = false;
-                        });
+                        onFormSubmitError(error);
                       });
                     }
                   }) : Container (
@@ -196,9 +139,73 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 
+  // change the loading state
   void firebaseLoading(bool loading) {
     setState(() {
       this.loading = loading;
+    });
+  }
+
+  Future<void> firebaseSignIn(UserCredential value) async {
+    // get the uid
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    UserAccount user;
+
+    // get the state of email verification and update if true
+    bool isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    debugState(isEmailVerified.toString());
+
+    if (isEmailVerified) {
+      await dbUser.doc(uid).update({
+        'hasSignUpVerified' : isEmailVerified
+      }).catchError((error) {
+        showHint(context, "Error when authenticating!");
+      });
+    }
+
+    // if the this account never verified
+    await dbUser.doc(uid).get().then((value) {
+      user = UserAccount.fromJson(
+        value.data()! as Map<String, dynamic>, 
+        value.id
+      );
+
+      user.profileToDebug(); // DEBUG
+
+      if (user.hasSignUpVerified) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(fromLogIn: true,),
+          )
+        );
+      } else {
+        showHint(context, "You have not verify this email yet!", verify: true);
+
+        firebaseLoading(false);
+      }
+    });
+  }
+
+  //firebase sign in error 
+  void onFormSubmitError(Object? error) {
+    setState(() {
+      debugState(error.toString());
+
+      var errText = error.toString().substring(15, 21);
+      debugState(errText);
+      
+      if (errText.contains("wro")) {
+        showHint(context, "Wrong email or password! Please try again");
+      } else if (errText.contains("too")) {
+        showHint(context, "Too many request in a short period! Try again later");
+      } else if (errText.contains("user-d")) {
+        showHint(context, "The user account has been disabled by an administrator");
+      } else if (errText.contains("user-n")) {
+        showHint(context, "This email doesn't link to an account! Please sign up");
+      }
+      
+      loading = false;
     });
   }
 }

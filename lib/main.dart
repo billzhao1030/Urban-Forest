@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/utils/debug_format.dart';
@@ -6,13 +5,13 @@ import 'package:urban_forest/view/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
-
 void main() async {
+  // run the splash animation then initialize environment
   runApp(const SplashScreen());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-
+  debugState("Initialization finished");
 }
 
 // splash screen of the mobile app
@@ -21,6 +20,8 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({ Key? key }) : super(key: key);
 
   final splashDuration = 2500; // the time duration of this screen
+
+  static const String copyRightInfo = "\u00A9 City of Launceston & University of Tasmania";
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class SplashScreen extends StatelessWidget {
 
               // copyright info
               const Text(
-                "\u00A9 City of Launceston & University of Tasmania",
+                copyRightInfo,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -83,9 +84,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.green, // primary color
       ),
       home: const SignInView(
         filledEmail: "",

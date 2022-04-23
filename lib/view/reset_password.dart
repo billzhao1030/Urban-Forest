@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:urban_forest/main.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
 import '../reusable_widgets/reusable_methods.dart';
@@ -100,7 +99,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                           showHint(context, "The user account has been disabled by an administrator");
                         } else if (errText.contains("user-n")){
                           showHint(context, "This email doesn't link to an account! Please sign up");
-                        }
+                        } else if (errText.contains("inv")) {
+                          showHint(context, "This email address doen't exist!");
+                        } 
 
                         firebaseLoading(false);
                       });

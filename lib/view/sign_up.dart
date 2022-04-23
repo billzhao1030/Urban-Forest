@@ -166,20 +166,7 @@ class _SignUpViewState extends State<SignUpView> {
                           );
                           firebaseLoading(false);
                         }).onError((error, stackTrace) {
-                          debugState(error.toString());
-
-                          var errText = error.toString().substring(15, 18);
-                          debugState(errText);
-
-                          if (errText.contains("ema")) {
-                            showHint(context, "The email address is already in use by another account!");
-                          } else if (errText.contains("too")) {
-                            showHint(context, "Too many request in a short period! Try again later");
-                          } else if (errText.contains("inv")) {
-                            showHint(context, "This email address doen't exist!");
-                          }
-
-                          firebaseLoading(false);
+                          onFormSubmitError(error);
                         });
                       } else {
                         showHint(context, "Password didn't match!");
@@ -207,5 +194,22 @@ class _SignUpViewState extends State<SignUpView> {
     setState(() {
       this.loading = loading;
     });
+  }
+
+  void onFormSubmitError(Object? error) {
+    debugState(error.toString());
+
+    var errText = error.toString().substring(15, 18);
+    debugState(errText);
+
+    if (errText.contains("ema")) {
+      showHint(context, "The email address is already in use by another account!");
+    } else if (errText.contains("too")) {
+      showHint(context, "Too many request in a short period! Try again later");
+    } else if (errText.contains("inv")) {
+      showHint(context, "This email address doen't exist!");
+    }
+
+    firebaseLoading(false);
   }
 }
