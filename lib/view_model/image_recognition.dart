@@ -77,6 +77,7 @@ class _AITempState extends State<AITemp> {
   uploadImage(XFile image) async {
     log("can here");
     var request = http.MultipartRequest("POST", Uri.parse(apiAIRecognition));
+    request.fields['organs'] = 'flower';
     request.files.add(await MultipartFile.fromPath("images", image.path));
 
     var response = await request.send();

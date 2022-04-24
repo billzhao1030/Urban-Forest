@@ -37,7 +37,7 @@ class SplashScreen extends StatelessWidget {
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
           backgroundColor: const Color.fromARGB(255, 165, 229, 165),
-          nextScreen: const AITemp(), // the next screen
+          nextScreen: const StartApp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
             child: Column(

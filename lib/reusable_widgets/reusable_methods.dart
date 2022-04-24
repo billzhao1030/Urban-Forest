@@ -25,6 +25,6 @@ Container backgroundDecoration(BuildContext context, Widget? child) {
         end: Alignment.bottomCenter
       )
     ),
-    child: child,
+    child: SingleChildScrollView(child: child),
   );
 }
