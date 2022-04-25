@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 
 class TreeMap extends StatefulWidget {
   const TreeMap({ Key? key }) : super(key: key);
@@ -10,8 +11,9 @@ class TreeMap extends StatefulWidget {
 class _TreeMapState extends State<TreeMap> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return backgroundDecoration(
+      context, 
+      Container()
     );
   }
 }

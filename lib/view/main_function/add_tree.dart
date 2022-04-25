@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
@@ -23,6 +24,7 @@ class AddTree extends StatefulWidget {
 }
 
 class _AddTreeState extends State<AddTree> {
+  bool imageProcessing = false;
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -84,7 +86,7 @@ class _AddTreeState extends State<AddTree> {
                 onPressed: () async {
                   getFromGallery();
                 },
-                child: formText("pick")
+                child: imageProcessing ? CircularProgressIndicator(color: Colors.white) : formText("pick")
               ),
             ],
           ),
@@ -116,18 +118,32 @@ class _AddTreeState extends State<AddTree> {
   }
 
   uploadImage(XFile image) async {
-    log("can here");
+    setState(() {
+      imageProcessing = true;
+    });
     var request = http.MultipartRequest("POST", Uri.parse(apiAIRecognition));
     request.fields['organs'] = 'flower';
     request.files.add(await MultipartFile.fromPath("images", image.path));
 
     var response = await request.send();
 
-    var str = await http.Response.fromStream(response);
+    processResponse(await http.Response.fromStream(response));
+  }
 
-    var json = jsonDecode(str.body);
+  processResponse(http.Response response) {
+    var json = jsonDecode(response.body);
 
-    log(json.toString());
+    final badImage = json['statusCode'].toString().contains("404");
+    if (!badImage) {
+      AIResponse predict = AIResponse.fromJson(json);
+      predict.todebug();
+    } else {
+      debugState("wrong image");
+    }
+    
+    setState(() {
+      imageProcessing = false;
+    });
   }
 
   DefaultTextStyle formText(String text, {double fontsize = 24, FontStyle fontStyle = FontStyle.normal}) {

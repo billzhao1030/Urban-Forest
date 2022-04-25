@@ -68,7 +68,8 @@ class _FormTextBoxState extends State<FormTextBox> {
             // suffix eye button for password type to view password
             suffixIcon: widget.isPasswordType ? IconButton(
               icon: Icon(
-                _canViewPassword ? Icons.visibility : Icons.visibility_off
+                _canViewPassword ? Icons.visibility : Icons.visibility_off,
+                color: Colors.white,
               ),
               onPressed: () {
                 setState(() {
