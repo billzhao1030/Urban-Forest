@@ -4,10 +4,10 @@ import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/reset_password.dart';
+import 'package:urban_forest/view/account/reset_password.dart';
 
-import '../reusable_widgets/reusable_wiget.dart';
-import 'home_screen.dart';
+import '../../reusable_widgets/reusable_wiget.dart';
+import '../main_function/home_screen.dart';
 import 'sign_up.dart';
 
 const logoFileName = "assets/images/logo2.png"; // logo in assets/images

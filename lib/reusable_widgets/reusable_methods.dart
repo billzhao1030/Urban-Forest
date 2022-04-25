@@ -28,3 +28,12 @@ Container backgroundDecoration(BuildContext context, Widget? child) {
     child: SingleChildScrollView(child: child),
   );
 }
+
+void showError(BuildContext context, String message, double paddingBottom) {
+  try {
+    ScaffoldMessenger.of(context).showSnackBar(snackBarHint(message, b: paddingBottom));
+  } catch(e) {
+    print(e.toString());
+  }
+  
+}

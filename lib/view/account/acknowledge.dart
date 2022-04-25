@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/sign_in.dart';
+import 'package:urban_forest/view/account/sign_in.dart';
 
 class Acknowledge extends StatefulWidget {
   const Acknowledge({ Key? key }) : super(key: key);

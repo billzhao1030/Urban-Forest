@@ -147,10 +147,10 @@ Container firebaseButton(
 
 
 // snack bar hint about authentication state
-SnackBar snackBarHint(String hint, {bool verify = false, BuildContext? context}) {
+SnackBar snackBarHint(String hint, {bool verify = false, BuildContext? context, double b = 12}) {
   return SnackBar(
     backgroundColor: const Color.fromARGB(255, 187, 173, 132),
-    padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+    padding: EdgeInsets.fromLTRB(0, 12, 0, b),
     margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
     behavior: SnackBarBehavior.floating,
     content: Text(

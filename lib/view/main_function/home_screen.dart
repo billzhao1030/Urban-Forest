@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/add_tree.dart';
-import 'package:urban_forest/view/profile.dart';
-import 'package:urban_forest/view/tree_map_arcgis.dart';
+import 'package:urban_forest/view/main_function/add_tree.dart';
+import 'package:urban_forest/view/main_function/profile.dart';
+import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({ Key? key }) : super(key: key);

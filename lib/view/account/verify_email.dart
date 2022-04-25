@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:urban_forest/view/sign_in.dart';
+import 'package:urban_forest/view/account/sign_in.dart';
 
-import '../utils/color_utils.dart';
-import '../utils/debug_format.dart';
-import '../utils/reference.dart';
+import '../../utils/color_utils.dart';
+import '../../utils/debug_format.dart';
+import '../../utils/reference.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({ 
