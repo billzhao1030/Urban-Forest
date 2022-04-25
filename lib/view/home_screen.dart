@@ -2,18 +2,14 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/add_tree.dart';
 import 'package:urban_forest/view/profile.dart';
-import 'package:urban_forest/view/sign_in.dart';
 import 'package:urban_forest/view/tree_map_arcgis.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({ Key? key, required this.fromLogIn }) : super(key: key);
-
-  final bool fromLogIn;
+  const HomeScreen({ Key? key }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late UserAccount currentUser;
 
-  TextEditingController _passwordTextController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -31,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     getUser();
   }
 
+  // get the signed in user
   void getUser() async {
     final user = FirebaseAuth.instance.currentUser!;
 

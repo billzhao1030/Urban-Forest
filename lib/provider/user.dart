@@ -13,6 +13,8 @@ class UserAccount {
 
   int accessLevel = 0;
 
+  String? phoneNumber;
+
   UserAccount();
 
   void profileToDebug() {

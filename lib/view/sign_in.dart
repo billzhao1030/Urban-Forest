@@ -55,7 +55,7 @@ class _SignInViewState extends State<SignInView> {
   Padding signInPageView(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, MediaQuery.of(context).size.height * 0.1, 20, 0),
+          20, MediaQuery.of(context).size.height * 0.16, 20, 0),
       child: Form(
         key: _formKey,
         child: Column(
@@ -63,7 +63,7 @@ class _SignInViewState extends State<SignInView> {
             // logo
             const LogoWidget(),
             const SizedBox(
-              height: 30,
+              height: 45,
             ),
 
             // email for sign in
@@ -165,7 +165,7 @@ class _SignInViewState extends State<SignInView> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const HomeScreen(fromLogIn: true,),
+            builder: (context) => const HomeScreen(),
           )
         );
       } else {
@@ -211,8 +211,8 @@ class LogoWidget extends StatelessWidget {
     return Image.asset(
       logoFileName,
       fit: BoxFit.fitHeight,
-      width: 320,
-      height: 320,
+      width: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.3,
       color: Colors.white,
     );
   }

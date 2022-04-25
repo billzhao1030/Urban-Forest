@@ -61,7 +61,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               child: Column(
                 children: <Widget>[
                   const SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   FormTextBox(
                     labelText: "Enter Email", 
