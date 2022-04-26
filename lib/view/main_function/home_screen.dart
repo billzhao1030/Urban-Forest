@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:urban_forest/provider/user.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/main_function/add_tree.dart';
-import 'package:urban_forest/view/main_function/profile.dart';
+import 'package:urban_forest/view/main_function/tree_form.dart/add_tree.dart';
+import 'package:urban_forest/view/main_function/profile/profile.dart';
 import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,12 +18,15 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   late UserAccount currentUser;
+
+  //late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    //_tabController = TabController(length: 3, vsync: this);
 
     getUser();
   }
@@ -37,11 +43,75 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     currentUser.profileToDebug();
   }
+  @override
+  void dispose() {
+    FirebaseAuth.instance.signOut();
+    super.dispose();
+  }
   
   @override
   Widget build(BuildContext context) {
+    return iOSTabBar();
+    // return Scaffold(
+    //   appBar: PreferredSize(
+    //     preferredSize: const Size.fromHeight(0),
+    //     child: AppBar(),
+    //   ),
+    //   body: Stack(
+    //     alignment: AlignmentDirectional.topCenter,
+    //     children: [
+    //       backgroundDecoration(context, null),
+    //       Padding(
+    //         padding: const EdgeInsets.all(8.0),
+    //         child: tabs(),
+    //       ),
+    //     ],
+    //   )
+    // );
+  }
+
+  Column tabs() {
+    return Column(
+      children: [
+        Container(
+          height: 45,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(25.0)
+          ),
+          child: TabBar(
+            //controller: _tabController,
+            indicator: BoxDecoration(
+              color: Colors.green[300],
+              borderRadius: BorderRadius.circular(25.0)
+            ),
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.black,
+            tabs: const [
+              Tab(text: 'Map',),
+              Tab(text: 'Add',),
+              Tab(text: 'Profile',)
+            ],
+          ),
+        ),
+        Expanded(
+          child: TabBarView(
+            //controller: _tabController,
+            children: const [
+              TreeMap(),
+              AddTree(),
+              UserProfile()
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  CupertinoTabScaffold iOSTabBar() {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
+        currentIndex: 0, // default tab
         backgroundColor: CupertinoColors.tertiarySystemBackground,
         activeColor: CupertinoColors.activeGreen,
         

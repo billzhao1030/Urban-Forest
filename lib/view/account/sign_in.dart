@@ -162,12 +162,13 @@ class _SignInViewState extends State<SignInView> {
       user.profileToDebug(); // DEBUG
 
       if (user.hasSignUpVerified) {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const HomeScreen(),
           )
         );
+        firebaseLoading(false);
       } else {
         showHint(context, "You have not verify this email yet!", verify: true);
 
