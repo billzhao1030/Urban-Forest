@@ -24,6 +24,7 @@ dependencies:
   animated_splash_screen: ^1.2.0
 
   geolocator: ^8.2.0 # get the geolocation
+  geocoding: ^2.0.4 # get the address from location
 
   shared_preferences: "2.0.13"
 

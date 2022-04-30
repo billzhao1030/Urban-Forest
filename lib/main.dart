@@ -119,7 +119,7 @@ class _StartAppState extends State<StartApp> {
 
     setState(() {
       //hasAcknowledged = acknowledge;
-      hasAcknowledged = true;
+      hasAcknowledged = false;
       // TODO: change this back after finish
     });
   }

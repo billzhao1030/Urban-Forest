@@ -25,7 +25,13 @@ Container backgroundDecoration(BuildContext context, Widget? child) {
         end: Alignment.bottomCenter
       )
     ),
-    child: SingleChildScrollView(child: child),
+    child: Scrollbar(
+      isAlwaysShown: false,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: child
+      ),
+    ),
   );
 }
 
