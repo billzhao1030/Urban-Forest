@@ -94,10 +94,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ],
           ),
         ),
-        Expanded(
+        const Expanded(
           child: TabBarView(
             //controller: _tabController,
-            children: const [
+            children: [
               TreeMap(),
               AddTree(),
               UserProfile()

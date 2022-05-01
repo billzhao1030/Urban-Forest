@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:urban_forest/view/main_function/profile/edit_account.dart';
 
 import '../../../utils/debug_format.dart';
+import '../../../utils/reference.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({ Key? key }) : super(key: key);
@@ -61,8 +63,14 @@ class _UserProfileState extends State<UserProfile> {
                 ),
                 ElevatedButton(
                   child: Text("log out"),
-                  onPressed: () {
+                  onPressed: () async {
                     FirebaseAuth.instance.signOut();
+
+                    // set preference
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setString(loggedInEmail, "");
+                    prefs.setString(loggedInPassword, "");
+
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

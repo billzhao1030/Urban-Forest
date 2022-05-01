@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,13 +8,34 @@ import 'package:urban_forest/view/account/acknowledge.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:urban_forest/view/main_function/home_screen.dart';
 import 'package:urban_forest/view_model/image_recognition.dart';
+
+bool needSignIn = true;
 
 void main() async {
   // run the splash animation then initialize environment
   runApp(const SplashScreen());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // final prefs = await SharedPreferences.getInstance();
+  // String email = prefs.getString(loggedInEmail) ?? "";
+  // String password = prefs.getString(loggedInPassword) ?? "";
+
+  // debugState(email);
+  // debugState(password);
+
+  // if (!email.isEmpty && !password.isEmpty) {
+  //   await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //     email: email, 
+  //     password: password
+  //   );
+  //   needSignIn = false;
+  //   debugState(needSignIn.toString());
+  // } else {
+  //   debugState(needSignIn.toString());
+  // }
 
   debugState("Initialization finished");
 }
@@ -107,9 +129,9 @@ class _StartAppState extends State<StartApp> {
       theme: ThemeData(
         primarySwatch: Colors.green, // primary color
       ),
-      home: hasAcknowledged ? const SignInView(
+      home: hasAcknowledged ? (needSignIn ? const SignInView(
         filledEmail: "",
-      ) : const Acknowledge(),
+      ) : const HomeScreen()) : const Acknowledge(),
     );
   }
 

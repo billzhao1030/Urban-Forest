@@ -10,3 +10,6 @@ const String ack = "Acknowledgement";
 
 const String apiAIKey = "2b100KCG6O3OeIMqokoAQCliz";
 const apiAIRecognition = "https://my-api.plantnet.org/v2/identify/all?api-key=$apiAIKey";
+
+const String loggedInEmail = "UserEmail";
+const String loggedInPassword = "UserPassword";

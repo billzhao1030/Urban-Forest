@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
@@ -142,7 +143,7 @@ class _SignInViewState extends State<SignInView> {
 
     // get the state of email verification and update if true
     bool isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    debugState(isEmailVerified.toString());
+    //debugState(isEmailVerified.toString());
 
     if (isEmailVerified) {
       await dbUser.doc(uid).update({
@@ -153,7 +154,7 @@ class _SignInViewState extends State<SignInView> {
     }
 
     // if the this account never verified
-    await dbUser.doc(uid).get().then((value) {
+    await dbUser.doc(uid).get().then((value) async {
       user = UserAccount.fromJson(
         value.data()! as Map<String, dynamic>, 
         value.id
@@ -162,6 +163,10 @@ class _SignInViewState extends State<SignInView> {
       user.profileToDebug(); // DEBUG
 
       if (user.hasSignUpVerified) {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString(loggedInEmail, _emailTextController.text.trim());
+        prefs.setString(loggedInPassword, _passwordTextController.text.trim());
+
         Navigator.push(
           context,
           MaterialPageRoute(
