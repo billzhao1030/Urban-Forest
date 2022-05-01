@@ -163,6 +163,7 @@ class _SignInViewState extends State<SignInView> {
       user.profileToDebug(); // DEBUG
 
       if (user.hasSignUpVerified) {
+        // set the shared preference
         final prefs = await SharedPreferences.getInstance();
         prefs.setString(loggedInEmail, _emailTextController.text.trim());
         prefs.setString(loggedInPassword, _passwordTextController.text.trim());
@@ -178,6 +179,9 @@ class _SignInViewState extends State<SignInView> {
         showHint(context, "You have not verify this email yet!", verify: true);
 
         firebaseLoading(false);
+
+        // maybe sign out first?
+        FirebaseAuth.instance.signOut();
       }
     });
   }

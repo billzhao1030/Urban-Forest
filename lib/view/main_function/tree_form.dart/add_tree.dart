@@ -15,6 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:urban_forest/view/main_function/take_picture.dart';
 import 'package:urban_forest/view/main_function/tree_form.dart/confirm_submission.dart';
+import 'package:urban_forest/view_model/form_validation.dart';
 
 import '../../../utils/color_utils.dart';
 import '../../../utils/reference.dart';
@@ -49,6 +50,12 @@ class _AddTreeState extends State<AddTree> {
   final TextEditingController _treeWidthTextController = TextEditingController();
   final TextEditingController _treeLengthTextController = TextEditingController();
   final TextEditingController _treeAreaTextController = TextEditingController();
+
+  // controller for tree speices
+  final TextEditingController _scentificController = TextEditingController();
+  final TextEditingController _longScentificController = TextEditingController();
+  final TextEditingController _shortScentificController = TextEditingController();
+  final TextEditingController _commonController = TextEditingController();
 
   @override
   void initState() {
@@ -110,6 +117,12 @@ class _AddTreeState extends State<AddTree> {
   getAddress(Position position) async {
     List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
     var place = placemarks[0];
+    //debugState(place.toString());
+
+    setState(() {
+      _surburbController.text = place.locality.toString();
+      _streetNameController.text = place.street.toString();
+    });
   }
 
   Column treeFormColumn() {
@@ -125,15 +138,6 @@ class _AddTreeState extends State<AddTree> {
         formText("Your location:", fontColor: Colors.orangeAccent),
 
         const SizedBox(height: 10,),
-        !locationLoading ? Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            formText("Latitude: ${latitude.toStringAsFixed(6)}    ", 
-              fontsize: 16, fontColor: Colors.orangeAccent, fontStyle: FontStyle.italic),
-            formText("Longtitude: ${longtitude.toStringAsFixed(6)}", 
-              fontsize: 16, fontColor: Colors.orangeAccent, fontStyle: FontStyle.italic)
-          ],
-        ) : const CircularProgressIndicator(color: Colors.orangeAccent,),
 
         // camera and gallery function
         const SizedBox(height: 10),
@@ -153,7 +157,7 @@ class _AddTreeState extends State<AddTree> {
                     });
                     await takePicture();
                   }, 
-                  child: const Text("Take a photo")
+                  child: formText("Take a photo", fontsize: 15)
                 ),
               ),
             ),
@@ -169,7 +173,7 @@ class _AddTreeState extends State<AddTree> {
                     });
                     await getFromGallery();
                   }, 
-                  child: const Text("Choose a photo")
+                  child: formText("Choose a photo", fontsize: 15)
                 ),
               ),
             ),
@@ -179,34 +183,45 @@ class _AddTreeState extends State<AddTree> {
         // the temp response (display somewhere else)
         !imageProcessing ? formText(bestMatchStr) : const CircularProgressIndicator(),
 
+        // tree species information
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree species", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              treeSpecies("Common Name", "common ", _commonController),
+            ],
+          ),
+        ),
+
         // tree basic information
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CupertinoFormSection(
-            header: const Text("Location of the tree"),
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree location", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
             margin: const EdgeInsets.all(4.0),
             children: [
-              CupertinoTextFormFieldRow(
-                controller: _latitudeController,
-                prefix: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  child: formText("Latitude", fontColor: CupertinoColors.black, fontsize: 16)
-                ),
-                obscureText: false,
-                autocorrect: true,
-                enableSuggestions: true,
-                cursorColor: Colors.black,
-                style: TextStyle(color: Colors.black.withOpacity(0.88)),
-                placeholder: "Latitude",
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                maxLength: 8,
-                readOnly: true,
-              ),
+              //latitude and longtitude
+              treeLocation("Latitude", "Latitude of tree", _latitudeController),
+              treeLocation("Longtitude", "Longtitude of tree", _longtitudeController),
+              treeAddress("Street", "Street name", _streetNameController),
+              treeAddress("Surburb", "Locality", _surburbController)
             ],
           ),
         ),
+
+        // get the location button
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
@@ -215,17 +230,22 @@ class _AddTreeState extends State<AddTree> {
                 locationLoading = true;
               });
 
+              // get the geolocation
               Position position = await _determinePosition();
               latitude = position.latitude;
               longtitude = position.longitude;
 
+              getAddress(position);
+
               setState(() {
                 locationLoading = false;
-              });
-
-              getAddress(position);
+                _latitudeController.text = position.latitude.toStringAsFixed(6);
+                _longtitudeController.text = position.longitude.toStringAsFixed(6);
+              }); 
             }, 
-            child: formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
+            child: !locationLoading 
+              ? formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
+              : const Center(child: CircularProgressIndicator(color:Colors.white, strokeWidth: 3.0,))
           ),
         ),
 
@@ -234,7 +254,11 @@ class _AddTreeState extends State<AddTree> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CupertinoFormSection(
-            header: const Text("Tree scale (Optional)"),
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree scale (Optional)", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
             footer: const Center(
               child: Padding(
                 padding: EdgeInsets.all(4.0),
@@ -256,12 +280,14 @@ class _AddTreeState extends State<AddTree> {
           
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ConfirmSubmit(),
-                )
-              );
+              if (_formKey.currentState!.validate()) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ConfirmSubmit(),
+                  )
+                );
+              }
             },
             child: formText("Submit", fontsize: 22, fontStyle: FontStyle.italic),
           ),
@@ -270,6 +296,74 @@ class _AddTreeState extends State<AddTree> {
     );
   }
 
+  // tree address row
+  CupertinoTextFormFieldRow treeSpecies(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.28,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      maxLines: 1,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical.center,
+      keyboardType: TextInputType.streetAddress,
+      maxLength: 40,
+      validator: null,
+    );
+  }
+
+  // tree address row
+  CupertinoTextFormFieldRow treeAddress(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.28,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      maxLines: 1,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical.center,
+      keyboardType: TextInputType.streetAddress,
+      maxLength: 40,
+      validator: null,
+    );
+  }
+
+  // latitude and longtitude
+  CupertinoTextFormFieldRow treeLocation(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.28,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      maxLength: 11,
+      validator: null,
+    );
+  }
+
+  // form row of tree scale: height, width, length, area(read only)
   CupertinoTextFormFieldRow treeScaleFormRow(String prefix, String placeHolder, TextEditingController _controller, {bool readOnly = false}) {
     return CupertinoTextFormFieldRow(
       controller: _controller,
@@ -287,7 +381,9 @@ class _AddTreeState extends State<AddTree> {
       keyboardType: TextInputType.number,
       maxLength: 4,
       readOnly: readOnly,
+      validator: null,
       // TODO: validator
+      // validator of number
     );
   }
 
