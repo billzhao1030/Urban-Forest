@@ -50,7 +50,7 @@ class _UserProfileState extends State<UserProfile> {
             Row(
               children: [
                 ElevatedButton(
-                  child: Text("My Account"),
+                  child: const Text("My Account"),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
                     Navigator.push(
@@ -62,7 +62,7 @@ class _UserProfileState extends State<UserProfile> {
                   },
                 ),
                 ElevatedButton(
-                  child: Text("log out"),
+                  child: const Text("log out"),
                   onPressed: () async {
                     FirebaseAuth.instance.signOut();
 

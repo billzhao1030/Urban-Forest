@@ -24,7 +24,7 @@ class AIResponse {
       for (var i = 0; i < 2; i++) {
         var result = json['results'][i];
 
-        scientificName.add(result['species']['scientificName']);
+        scientificName.add(result['species']['scientificNameWithoutAuthor']);
         accuracyList.add(result['score'] * 100);
 
         if (lowAccuracy || i == 0) {

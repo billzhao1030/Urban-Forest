@@ -165,7 +165,7 @@ SnackBar snackBarHint(String hint, {bool verify = false, BuildContext? context, 
     ),
     duration: verify ? 
       const Duration(days: 1) : 
-      const Duration(milliseconds: 3000),
+      const Duration(milliseconds: 4000),
     action: verify ? SnackBarAction(
       label: "Verify",
       textColor: const Color.fromARGB(221, 35, 5, 168),

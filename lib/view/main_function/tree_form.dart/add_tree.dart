@@ -64,17 +64,25 @@ class _AddTreeState extends State<AddTree> {
 
   @override
   Widget build(BuildContext context) {
-    return backgroundDecoration(
-      context, 
-      Center(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
-          child: Form(
-            key: _formKey,
-            child: treeFormColumn()
-          ),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
+      body: backgroundDecoration(
+        context, 
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
+            child: Form(
+              key: _formKey,
+              child: treeFormColumn()
+            ),
+          )
         )
-      )
+      ),
     );
   }
 
@@ -130,14 +138,11 @@ class _AddTreeState extends State<AddTree> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.04
+        ),
         // title
         formText("Add a tree", fontsize: 28),
-
-        // location area
-        const SizedBox(height: 10),
-        formText("Your location:", fontColor: Colors.orangeAccent),
-
-        const SizedBox(height: 10,),
 
         // camera and gallery function
         const SizedBox(height: 10),
@@ -181,7 +186,11 @@ class _AddTreeState extends State<AddTree> {
         ),
 
         // the temp response (display somewhere else)
-        !imageProcessing ? formText(bestMatchStr) : const CircularProgressIndicator(),
+        !imageProcessing 
+          ? (bestMatchStr.isEmpty 
+            ? Container() 
+            : formText(bestMatchStr, fontsize: 15, fontStyle: FontStyle.italic))
+          : const CircularProgressIndicator(),
 
         // tree species information
         const SizedBox(height: 10),
@@ -195,7 +204,10 @@ class _AddTreeState extends State<AddTree> {
             ),
             margin: const EdgeInsets.all(4.0),
             children: [
-              treeSpecies("Common Name", "common ", _commonController),
+              treeSpecies("Common Name", "Common name", _commonController),
+              treeSpecies("Scentific", "Sentific name", _scentificController),
+              treeSpecies("Long Sentific", "Long sentific name", _longScentificController),
+              treeSpecies("Short Sentific", "Short sentific name", _shortScentificController),
             ],
           ),
         ),
@@ -217,6 +229,8 @@ class _AddTreeState extends State<AddTree> {
               treeLocation("Longtitude", "Longtitude of tree", _longtitudeController),
               treeAddress("Street", "Street name", _streetNameController),
               treeAddress("Surburb", "Locality", _surburbController)
+
+              //TODO:radio button of road/not, urban/empty
             ],
           ),
         ),
@@ -359,6 +373,7 @@ class _AddTreeState extends State<AddTree> {
       textAlign: TextAlign.center,
       keyboardType: TextInputType.number,
       maxLength: 11,
+      readOnly: true,
       validator: null,
     );
   }
@@ -432,19 +447,39 @@ class _AddTreeState extends State<AddTree> {
     if (!badImage) {
       AIResponse predict = AIResponse.fromJson(json);
       predict.todebug();
-      setState(() {
-        bestMatchStr = predict.bestMatch;
-      });
+      if (predict.accuracyList[0] >= 25) {
+        setState(() {
+          // set the predict string
+          // var commonNames = "";
+          // var scientificNames = "";
+          // for (var cName in predict.commonName) {
+          //   commonNames += "$cName\n";
+          // }
+          // for (var sName in predict.scientificName) {
+          //   scientificNames += "$sName\n";
+          // }
+
+          bestMatchStr = "Best Match: ${predict.scientificName[0]}\n"
+          "With accuracy of: ${predict.bestAccuracy}%\n";
+          // "Possible Scientific name:\n$scientificNames"
+          // "Possible Common name\n$commonNames";
+
+          // auto fill text field
+          _commonController.text = predict.commonName[0];
+          _scentificController.text = predict.scientificName[0];
+          _longScentificController.text = predict.bestMatch;
+          _shortScentificController.text = predict.scientificName[0];
+        });
+      }
     } else {
       debugState("wrong image");
       setState(() {
-        bestMatchStr = "Bad image";
+        bestMatchStr = "Bad image, please take another one";
       });
     }
     
     setState(() {
       imageProcessing = false;
-      debugState(imageProcessing.toString());
     });
   }
 
