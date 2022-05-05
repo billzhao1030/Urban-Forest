@@ -13,3 +13,6 @@ const apiAIRecognition = "https://my-api.plantnet.org/v2/identify/all?api-key=$a
 
 const String loggedInEmail = "UserEmail";
 const String loggedInPassword = "UserPassword";
+const String loggedInUID = "UserUID";
+
+int globalLevel = 1;

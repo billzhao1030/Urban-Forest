@@ -58,6 +58,8 @@ class _AddTreeState extends State<AddTree> {
   @override
   void initState() {
     super.initState();
+
+    debugState("access level: $globalLevel");
   }
 
   @override
@@ -221,10 +223,10 @@ class _AddTreeState extends State<AddTree> {
             margin: const EdgeInsets.all(4.0),
             children: [
               //latitude and longtitude
-              treeLocation("Latitude", "Latitude of tree", _latitudeController),
-              treeLocation("Longtitude", "Longtitude of tree", _longtitudeController),
+              treeLocation("Latitude", "Latitude (read only))", _latitudeController),
+              treeLocation("Longtitude", "Longtitude of tree (read only)", _longtitudeController),
               treeAddress("Street", "Street name", _streetNameController),
-              treeAddress("Surburb", "Locality", _surburbController)
+              treeAddress("Suburb", "Locality", _surburbController)
 
               //TODO:radio button of road/not, urban/empty
             ],
@@ -303,6 +305,7 @@ class _AddTreeState extends State<AddTree> {
                 //   )
                 // );
                 debugState("okay");
+                
               }
             },
             child: formText("Submit", fontsize: 22, fontStyle: FontStyle.italic),

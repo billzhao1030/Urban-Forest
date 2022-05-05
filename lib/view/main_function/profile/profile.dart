@@ -24,6 +24,8 @@ class _UserProfileState extends State<UserProfile> {
   void initState() {
     super.initState();
 
+    debugState("access level: $globalLevel");
+
     setState(() {
       email = user.email!;
     });

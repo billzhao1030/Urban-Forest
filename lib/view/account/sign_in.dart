@@ -167,6 +167,7 @@ class _SignInViewState extends State<SignInView> {
         final prefs = await SharedPreferences.getInstance();
         prefs.setString(loggedInEmail, _emailTextController.text.trim());
         prefs.setString(loggedInPassword, _passwordTextController.text.trim());
+        prefs.setString(loggedInUID, uid);
 
         Navigator.push(
           context,

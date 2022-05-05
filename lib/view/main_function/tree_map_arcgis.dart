@@ -8,6 +8,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../utils/debug_format.dart';
+import '../../utils/reference.dart';
+
 class TreeMap extends StatefulWidget {
   const TreeMap({ Key? key }) : super(key: key);
 
@@ -23,6 +26,7 @@ class _TreeMapState extends State<TreeMap> {
 
   @override
   void initState() {
+    debugState("access level: $globalLevel");
     getToken();
     super.initState();
   }
@@ -43,14 +47,14 @@ class _TreeMapState extends State<TreeMap> {
   
     
     token = json['token'].toString();
-    //log("token:$token");
+    log("token:$token");
 
     final r2 = await http.get(Uri.parse(
-      "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/0/addFeatures?token=$token&f=json"
+      "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/0?token=$token&f=json"
     ));
 
     var j = jsonDecode(r2.body);
-    log(j.toString());
+    //log(j.toString());
 
     // Map<String, dynamic> body = {
     //   "geometry": {
