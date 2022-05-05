@@ -68,7 +68,6 @@ class _UserProfileState extends State<UserProfile> {
 
                     // set preference
                     final prefs = await SharedPreferences.getInstance();
-                    prefs.setString(loggedInEmail, "");
                     prefs.setString(loggedInPassword, "");
 
                     Navigator.pushReplacement(

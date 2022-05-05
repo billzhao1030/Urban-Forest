@@ -2,6 +2,7 @@
     package="au.edu.utas.urban_forest.urban_forest">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="urban_forest"
         android:name="${applicationName}"

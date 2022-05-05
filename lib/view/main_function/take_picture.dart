@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 
 class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
@@ -38,12 +39,12 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             return Center(child: CameraPreview(_controller));
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera_alt),
+        child: const Icon(Icons.camera_alt),
         onPressed: () async {
           try {
             await _initializeControllerFuture;
@@ -51,7 +52,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
             final image = await _controller.takePicture();
             Navigator.pop(context, image);
           } catch (e) {
-            print(e);
+            debugState(e.toString());
           }
         },
       ),

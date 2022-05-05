@@ -7,6 +7,7 @@ import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
+import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:urban_forest/view/main_function/tree_form.dart/add_tree.dart';
 import 'package:urban_forest/view/main_function/profile/profile.dart';
 import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
@@ -45,7 +46,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
   @override
   void dispose() {
+    var email = FirebaseAuth.instance.currentUser!.email!;
     FirebaseAuth.instance.signOut();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SignInView(
+          filledEmail: email,
+        )
+      )
+    );
+
     super.dispose();
   }
   

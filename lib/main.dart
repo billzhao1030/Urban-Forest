@@ -11,31 +11,32 @@ import 'package:page_transition/page_transition.dart';
 import 'package:urban_forest/view/main_function/home_screen.dart';
 import 'package:urban_forest/view_model/image_recognition.dart';
 
-bool needSignIn = true;
+bool needSignIn = true; // judge if user need to sign in
 
 void main() async {
   // run the splash animation then initialize environment
   runApp(const SplashScreen());
+
+  // initialize google firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // final prefs = await SharedPreferences.getInstance();
-  // String email = prefs.getString(loggedInEmail) ?? "";
-  // String password = prefs.getString(loggedInPassword) ?? "";
+  final prefs = await SharedPreferences.getInstance();
+  String email = prefs.getString(loggedInEmail) ?? "";
+  String password = prefs.getString(loggedInPassword) ?? "";
 
-  // debugState(email);
-  // debugState(password);
+  debugState(email);
+  debugState(password);
 
-  // if (!email.isEmpty && !password.isEmpty) {
-  //   await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //     email: email, 
-  //     password: password
-  //   );
-  //   needSignIn = false;
-  //   debugState(needSignIn.toString());
-  // } else {
-  //   debugState(needSignIn.toString());
-  // }
+  // if not log out, then sign in automatically
+  if (email.isNotEmpty && password.isNotEmpty) {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email, 
+      password: password
+    );
+    needSignIn = false;
+    debugState("Auto Sign-in");
+  }
 
   debugState("Initialization finished");
 }
@@ -58,7 +59,7 @@ class SplashScreen extends StatelessWidget {
           duration: splashDuration,
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
-          backgroundColor: const Color.fromARGB(255, 165, 229, 165),
+          backgroundColor: Color.fromARGB(255, 127, 238, 127),
           nextScreen: const StartApp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
@@ -68,7 +69,7 @@ class SplashScreen extends StatelessWidget {
                 Image.asset(
                   "assets/images/logo1.png",
                   width: 250,
-                  color: const Color.fromARGB(138, 14, 150, 32),
+                  color: Color.fromARGB(104, 5, 148, 24),
                 ),
                 const SizedBox(
                   height: 40,
@@ -116,6 +117,8 @@ class StartApp extends StatefulWidget {
 
 class _StartAppState extends State<StartApp> {
   bool hasAcknowledged = false;
+  String email = "";
+
   @override
   void initState() {
     super.initState();
@@ -129,19 +132,23 @@ class _StartAppState extends State<StartApp> {
       theme: ThemeData(
         primarySwatch: Colors.green, // primary color
       ),
-      home: hasAcknowledged ? (needSignIn ? const SignInView(
-        filledEmail: "",
+      home: hasAcknowledged ? (needSignIn ? SignInView(
+        filledEmail: email,
       ) : const HomeScreen()) : const Acknowledge(),
     );
   }
 
+  // get the agree status
   void getAcknowledge() async {
     final prefs = await SharedPreferences.getInstance();
     bool acknowledge = prefs.getBool(ack) ?? false;
 
+    debugState(acknowledge.toString());
+
     setState(() {
+      email = prefs.getString(loggedInEmail) ?? "";
       //hasAcknowledged = acknowledge;
-      hasAcknowledged = false;
+      hasAcknowledged = true;
       // TODO: change this back after finish
     });
   }

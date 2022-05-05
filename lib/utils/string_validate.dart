@@ -36,14 +36,34 @@ extension ValidateString on String {
   // rule: 
   //   for Australian phone number
   //   change to ^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$ for any country
-  bool get isValidPhone{
+  bool get isValidPhone {
     final phoneRegExp = RegExp(r"^0[0-9]{9}$");
     return phoneRegExp.hasMatch(this);
   }
 
   // judge if the string is a valid first or last name
-  bool get isValidName{
+  bool get isValidName {
     final nameRegExp = RegExp(r"^([A-Za-z- ])+$");
     return nameRegExp.hasMatch(this);
+  }
+
+  bool get isValidScale {
+    final scaleRegExp = RegExp(r"^[0-9]+(.[0-9]+)?$");
+    return scaleRegExp.hasMatch(this);
+  }
+
+  bool get isValidSpecies {
+    final speciesRegExp = RegExp(r"^([A-Za-z. ])+$");
+    return speciesRegExp.hasMatch(this);
+  }
+
+  bool get isValidAddress {
+    final addressRegExp = RegExp(r"^([A-Za-z. 0-9])+$");
+    return addressRegExp.hasMatch(this);
+  }
+
+  bool get isValidGPS {
+    final GPSRegExp = RegExp(r"^[-+]?([0-9]){1,3}.[0-9]+$");
+    return GPSRegExp.hasMatch(this);
   }
 }

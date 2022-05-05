@@ -36,6 +36,8 @@ dependencies:
   
   path_provider:
   path:
+
+  flutter_map: any
   
 
 dev_dependencies:

@@ -38,3 +38,43 @@ String? validateName(String? value) {
 
   return null;
 }
+
+String? validateScale(String? value) {
+  if (value == null || value.isEmpty) {
+    return null;
+  } else if (!value.trim().isValidScale) {
+    return "Invalid Number";
+  }
+
+  return null;
+}
+
+String? validateSpecies(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Please enter";
+  } else if (!value.trim().isValidSpecies) {
+    return "Invalid Species";
+  }
+
+  return null;
+}
+
+String? validateGPS(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Please enter";
+  } else if (!value.trim().isValidGPS) {
+    return "Invalid GPS location";
+  }
+
+  return null;
+}
+
+String? validateAddress(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Please enter";
+  } else if (!value.trim().isValidAddress) {
+    return "Invalid Address";
+  }
+
+  return null;
+}

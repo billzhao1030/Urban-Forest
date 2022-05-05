@@ -53,8 +53,6 @@ class _AddTreeState extends State<AddTree> {
 
   // controller for tree speices
   final TextEditingController _scentificController = TextEditingController();
-  final TextEditingController _longScentificController = TextEditingController();
-  final TextEditingController _shortScentificController = TextEditingController();
   final TextEditingController _commonController = TextEditingController();
 
   @override
@@ -205,9 +203,7 @@ class _AddTreeState extends State<AddTree> {
             margin: const EdgeInsets.all(4.0),
             children: [
               treeSpecies("Common Name", "Common name", _commonController),
-              treeSpecies("Scentific", "Sentific name", _scentificController),
-              treeSpecies("Long Sentific", "Long sentific name", _longScentificController),
-              treeSpecies("Short Sentific", "Short sentific name", _shortScentificController),
+              treeSpecies("Scentific Name", "Sentific name", _scentificController),
             ],
           ),
         ),
@@ -294,13 +290,19 @@ class _AddTreeState extends State<AddTree> {
           
           child: ElevatedButton(
             onPressed: () {
+              var width = _treeWidthTextController.text.trim();
+              var length = _treeLengthTextController.text.trim();
+              if (width.isNotEmpty && length.isNotEmpty) {
+                _treeAreaTextController.text = (double.parse(width) * double.parse(length)).toString();
+              }
               if (_formKey.currentState!.validate()) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ConfirmSubmit(),
-                  )
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const ConfirmSubmit(),
+                //   )
+                // );
+                debugState("okay");
               }
             },
             child: formText("Submit", fontsize: 22, fontStyle: FontStyle.italic),
@@ -329,7 +331,9 @@ class _AddTreeState extends State<AddTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
-      validator: null,
+      validator: (value) {
+        return validateSpecies(value);
+      },
     );
   }
 
@@ -352,7 +356,9 @@ class _AddTreeState extends State<AddTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
-      validator: null,
+      validator: (value) {
+        return validateAddress(value);
+      },
     );
   }
 
@@ -374,7 +380,9 @@ class _AddTreeState extends State<AddTree> {
       keyboardType: TextInputType.number,
       maxLength: 11,
       readOnly: true,
-      validator: null,
+      validator: (value) {
+        return validateGPS(value);
+      },
     );
   }
 
@@ -396,9 +404,9 @@ class _AddTreeState extends State<AddTree> {
       keyboardType: TextInputType.number,
       maxLength: 4,
       readOnly: readOnly,
-      validator: null,
-      // TODO: validator
-      // validator of number
+      validator: (value) {
+        return validateScale(value);
+      }
     );
   }
 
@@ -406,7 +414,12 @@ class _AddTreeState extends State<AddTree> {
   getFromGallery() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (image == null) return;
+    if (image == null){
+      setState(() {
+        imageProcessing = false;
+      });
+      return;
+    }
 
     await uploadImage(image);
   }
@@ -421,7 +434,12 @@ class _AddTreeState extends State<AddTree> {
         MaterialPageRoute(
             builder: (context) => TakePictureScreen(camera: firstCamera))
     );
-    if (image == null) return;
+    if (image == null) {
+      setState(() {
+        imageProcessing = false;
+      });
+      return;
+    }
 
     await uploadImage(image);
   }
@@ -465,10 +483,8 @@ class _AddTreeState extends State<AddTree> {
           // "Possible Common name\n$commonNames";
 
           // auto fill text field
-          _commonController.text = predict.commonName[0];
+          _commonController.text = predict.commonName[0].toUpperCase();
           _scentificController.text = predict.scientificName[0];
-          _longScentificController.text = predict.bestMatch;
-          _shortScentificController.text = predict.scientificName[0];
         });
       }
     } else {
