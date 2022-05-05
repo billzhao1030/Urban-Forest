@@ -101,7 +101,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                           showHint(context, "This email doesn't link to an account! Please sign up");
                         } else if (errText.contains("inv")) {
                           showHint(context, "This email address doen't exist!");
-                        } 
+                        } else if (errText.contains("netw")) {
+                          showHint(context, "There's network issue! Please try again later");
+                        }
 
                         firebaseLoading(false);
                       });

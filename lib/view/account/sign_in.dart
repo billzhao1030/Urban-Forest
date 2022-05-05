@@ -202,6 +202,8 @@ class _SignInViewState extends State<SignInView> {
         showHint(context, "The user account has been disabled by an administrator");
       } else if (errText.contains("user-n")) {
         showHint(context, "This email doesn't link to an account! Please sign up");
+      } else if (errText.contains("netw")) {
+        showHint(context, "There's network issue! Please try again later");
       }
       
       loading = false;

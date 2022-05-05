@@ -197,6 +197,8 @@ class _SignUpViewState extends State<SignUpView> {
       showHint(context, "Too many request in a short period! Try again later");
     } else if (errText.contains("inv")) {
       showHint(context, "This email address doen't exist!");
+    } else if (errText.contains("netw")) {
+      showHint(context, "There's network issue! Please try again later");
     }
 
     firebaseLoading(false);
