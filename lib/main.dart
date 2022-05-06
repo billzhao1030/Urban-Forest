@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:urban_forest/view/main_function/home_screen.dart';
 import 'package:urban_forest/view_model/image_recognition.dart';
+import 'package:http/http.dart' as http;
 
 bool needSignIn = true; // judge if user need to sign in
 
@@ -27,9 +30,9 @@ void main() async {
   String password = prefs.getString(loggedInPassword) ?? "";
   String userUID = prefs.getString(loggedInUID) ?? "";
 
-  debugState(email);
-  debugState(password);
-  debugState(userUID);
+  // debugState(email);
+  // debugState(password);
+  // debugState(userUID);
 
   // if not log out, then sign in automatically
   if (email.isNotEmpty && password.isNotEmpty) {
@@ -38,7 +41,7 @@ void main() async {
       password: password
     );
     needSignIn = false;
-    debugState("Auto Sign-in");
+    //debugState("Auto Sign-in");
   }
 
   // get access level
@@ -50,7 +53,7 @@ void main() async {
       );
 
       globalLevel = user.accessLevel;
-      debugState(globalLevel.toString());
+      //debugState(globalLevel.toString());
     });
   }
 

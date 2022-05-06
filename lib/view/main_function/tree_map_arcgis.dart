@@ -27,8 +27,9 @@ class _TreeMapState extends State<TreeMap> {
   @override
   void initState() {
     debugState("access level: $globalLevel");
-    getToken();
+    
     super.initState();
+    databaseConnection();
   }
 
   @override
@@ -37,24 +38,22 @@ class _TreeMapState extends State<TreeMap> {
     : treeMap(marker: marker);
   }
 
-  getToken() async {
+  databaseConnection() async {
     token = "";
     final response = await http.get(Uri.parse(
       "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=dayi87327285&referer=launceston.maps.arcgis.com&f=json"
     ));
-    //await Future.delayed(Duration(seconds: 2));
     var json = jsonDecode(response.body);
   
-    
     token = json['token'].toString();
     log("token:$token");
 
     final r2 = await http.get(Uri.parse(
-      "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/0?token=$token&f=json"
+      "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24?token=$token&f=json"
     ));
 
     var j = jsonDecode(r2.body);
-    //log(j.toString());
+    log(j.toString());
 
     // Map<String, dynamic> body = {
     //   "geometry": {
@@ -113,10 +112,6 @@ class treeMap extends StatelessWidget {
       layers: [
         TileLayerOptions(
           urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          subdomains: ['a', 'b', 'c'],
-          // attributionBuilder: (_) {
-          //   return Text("© OpenStreetMap contributors");
-          // },
         ),
         MarkerLayerOptions(
           markers: marker

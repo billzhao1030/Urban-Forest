@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   CupertinoTabScaffold iOSTabBar() {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
-        currentIndex: 0, // default tab
+        currentIndex: 1, // default tab
         backgroundColor: CupertinoColors.tertiarySystemBackground,
         activeColor: CupertinoColors.activeGreen,
         
