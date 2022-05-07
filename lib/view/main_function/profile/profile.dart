@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
@@ -41,49 +40,47 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  Container profile(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                  child: const Text("My Account"),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditAccount(userUID: user.uid,),
-                      )
-                    );
-                  },
-                ),
-                ElevatedButton(
-                  child: const Text("log out"),
-                  onPressed: () async {
-                    FirebaseAuth.instance.signOut();
+  Widget profile(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 50,
+          ),
+          Row(
+            children: [
+              ElevatedButton(
+                child: const Text("My Account"),
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccount(userUID: user.uid,),
+                    )
+                  );
+                },
+              ),
+              ElevatedButton(
+                child: const Text("log out"),
+                onPressed: () async {
+                  FirebaseAuth.instance.signOut();
 
-                    // set preference
-                    final prefs = await SharedPreferences.getInstance();
-                    prefs.setString(loggedInPassword, "");
+                  // set preference
+                  final prefs = await SharedPreferences.getInstance();
+                  prefs.setString(loggedInPassword, "");
 
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignInView(filledEmail: email),
-                      )
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SignInView(filledEmail: email),
+                    )
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

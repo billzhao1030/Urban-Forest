@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:urban_forest/provider/user.dart';
 
 class EditAccount extends StatefulWidget {
   const EditAccount({ Key? key, required this.userUID }) : super(key: key);
@@ -20,9 +19,7 @@ class _EditAccountState extends State<EditAccount> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        child: Text("asfhkahf"),
-      ),
+      body: const Text("asfhkahf"),
     );
   }
 }

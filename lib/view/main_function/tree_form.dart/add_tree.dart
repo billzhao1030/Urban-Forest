@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,17 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:urban_forest/provider/ai_response.dart';
-import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:urban_forest/view/main_function/take_picture.dart';
-import 'package:urban_forest/view/main_function/tree_form.dart/confirm_submission.dart';
 import 'package:urban_forest/view_model/form_validation.dart';
 
-import '../../../utils/color_utils.dart';
 import '../../../utils/reference.dart';
 
 class AddTree extends StatefulWidget {
@@ -391,6 +387,7 @@ class _AddTreeState extends State<AddTree> {
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 maxLength: 6,
+                autovalidateMode: AutovalidateMode.always,
                 validator: (value) {
                   return validateAssetID(value);
                 },
@@ -416,9 +413,9 @@ class _AddTreeState extends State<AddTree> {
               )),
             margin: const EdgeInsets.all(4.0),
             children: [
-              treeScaleFormRow("Height", "Tree height (e.g. 3.5)", _treeHeightTextController),
-              treeScaleFormRow("Width", "Tree width (e.g. 2.7)", _treeWidthTextController),
-              treeScaleFormRow("Length", "Tree length (e.g. 1.5)", _treeLengthTextController),
+              treeScale("Height", "Tree height (e.g. 3.5)", _treeHeightTextController),
+              treeScale("Width", "Tree width (e.g. 2.7)", _treeWidthTextController),
+              treeScale("Length", "Tree length (e.g. 1.5)", _treeLengthTextController),
             ],
           ),
         ),
@@ -435,8 +432,8 @@ class _AddTreeState extends State<AddTree> {
             ),
             margin: const EdgeInsets.all(4.0),
             children: [
-              treeCommentFormRow("Condition", "", _conditionController, maxLines: 2),
-              treeCommentFormRow("Comments", "", _commentController, maxLines: 5),
+              treeComment("Condition", "", _conditionController, maxLines: 2),
+              treeComment("Comments", "", _commentController, maxLines: 3),
             ],
           ),
         ),
@@ -448,7 +445,7 @@ class _AddTreeState extends State<AddTree> {
           child: ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                TreeRequest request = TreeRequest();
+                processForm();
                 
                 // Navigator.push(
                 //   context,
@@ -494,7 +491,7 @@ class _AddTreeState extends State<AddTree> {
     );
   }
 
-  // tree address row
+  // tree species row
   CupertinoTextFormFieldRow treeSpecies(String prefix, String placeHolder, TextEditingController _controller) {
     return CupertinoTextFormFieldRow(
       controller: _controller,
@@ -513,6 +510,7 @@ class _AddTreeState extends State<AddTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
+      autovalidateMode: AutovalidateMode.always,
       validator: (value) {
         return validateSpecies(value);
       },
@@ -538,6 +536,7 @@ class _AddTreeState extends State<AddTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
+      autovalidateMode: AutovalidateMode.always,
       validator: (value) {
         return validateAddress(value);
       },
@@ -562,6 +561,7 @@ class _AddTreeState extends State<AddTree> {
       keyboardType: TextInputType.number,
       maxLength: 11,
       readOnly: true,
+      autovalidateMode: AutovalidateMode.always,
       validator: (value) {
         return validateGPS(value);
       },
@@ -569,7 +569,7 @@ class _AddTreeState extends State<AddTree> {
   }
 
   // form row of tree comments
-  CupertinoTextFormFieldRow treeCommentFormRow(String prefix, String placeHolder, TextEditingController _controller, {int maxLines = 4}) {
+  CupertinoTextFormFieldRow treeComment(String prefix, String placeHolder, TextEditingController _controller, {int maxLines = 3}) {
     return CupertinoTextFormFieldRow(
       controller: _controller,
       prefix: SizedBox(
@@ -590,7 +590,7 @@ class _AddTreeState extends State<AddTree> {
   }
 
   // form row of tree scale: height, width, length, area(read only)
-  CupertinoTextFormFieldRow treeScaleFormRow(String prefix, String placeHolder, TextEditingController _controller, {bool readOnly = false}) {
+  CupertinoTextFormFieldRow treeScale(String prefix, String placeHolder, TextEditingController _controller, {bool readOnly = false}) {
     return CupertinoTextFormFieldRow(
       controller: _controller,
       prefix: SizedBox(
@@ -607,10 +607,19 @@ class _AddTreeState extends State<AddTree> {
       keyboardType: TextInputType.number,
       maxLength: 4,
       readOnly: readOnly,
+      autovalidateMode: AutovalidateMode.always,
       validator: (value) {
         return validateScale(value);
       }
     );
+  }
+
+
+  // process the form data
+  processForm() {
+    //TreeRequest request = TreeRequest();
+
+    
   }
 
   // get image from gallery
@@ -661,6 +670,7 @@ class _AddTreeState extends State<AddTree> {
     processResponse(await http.Response.fromStream(response));
   }
 
+  // process image recognition
   processResponse(http.Response response) {
     var json = jsonDecode(response.body);
 
@@ -668,7 +678,7 @@ class _AddTreeState extends State<AddTree> {
     if (!badImage) {
       AIResponse predict = AIResponse.fromJson(json);
       predict.todebug();
-      if (predict.accuracyList[0] >= 25) {
+      if (predict.accuracyList[0] >= 20) {
         setState(() {
           // set the predict string
           // var commonNames = "";
@@ -702,21 +712,4 @@ class _AddTreeState extends State<AddTree> {
     });
   }
 
-  // the form text in cupertino
-  DefaultTextStyle formText(String text, {
-    double fontsize = 20, 
-    FontStyle fontStyle = FontStyle.normal,
-    Color fontColor = Colors.white
-    }) {
-    return DefaultTextStyle(
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: fontColor,
-        fontSize: fontsize,
-        fontWeight: FontWeight.bold,
-        fontStyle: fontStyle,
-      ),
-      child: Text(text),
-    );
-  }
 }

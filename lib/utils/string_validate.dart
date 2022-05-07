@@ -1,4 +1,6 @@
 
+// ignore_for_file: non_constant_identifier_names
+
 // extension of regex expression match
 extension ValidateString on String {
   // judge if the string is a valid email

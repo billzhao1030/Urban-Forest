@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,8 +11,7 @@ import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:urban_forest/view/main_function/home_screen.dart';
-import 'package:urban_forest/view_model/image_recognition.dart';
-import 'package:http/http.dart' as http;
+
 
 bool needSignIn = true; // judge if user need to sign in
 
@@ -78,7 +76,7 @@ class SplashScreen extends StatelessWidget {
           duration: splashDuration,
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
-          backgroundColor: Color.fromARGB(255, 127, 238, 127),
+          backgroundColor: const Color.fromARGB(255, 127, 238, 127),
           nextScreen: const StartApp(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
@@ -88,7 +86,7 @@ class SplashScreen extends StatelessWidget {
                 Image.asset(
                   "assets/images/logo1.png",
                   width: 250,
-                  color: Color.fromARGB(104, 5, 148, 24),
+                  color: const Color.fromARGB(104, 5, 148, 24),
                 ),
                 const SizedBox(
                   height: 40,

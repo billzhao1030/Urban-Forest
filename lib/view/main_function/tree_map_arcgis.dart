@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
+
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import '../../utils/debug_format.dart';
-import '../../utils/reference.dart';
 
 class TreeMap extends StatefulWidget {
   const TreeMap({ Key? key }) : super(key: key);
@@ -33,8 +29,8 @@ class _TreeMapState extends State<TreeMap> {
 
   @override
   Widget build(BuildContext context) {
-    return mapLoading ? Center(child: CircularProgressIndicator(),)
-    : treeMap(marker: marker);
+    return mapLoading ? const Center(child: CircularProgressIndicator(),)
+    : TreePointMap(marker: marker);
   }
 
   databaseConnection() async {
@@ -47,11 +43,11 @@ class _TreeMapState extends State<TreeMap> {
     token = json['token'].toString();
     log("token:$token");
 
-    final r2 = await http.get(Uri.parse(
-      "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24?token=$token&f=json"
-    ));
+    // final r2 = await http.get(Uri.parse(
+    //   "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24?token=$token&f=json"
+    // ));
 
-    var j = jsonDecode(r2.body);
+    //var j = jsonDecode(r2.body);
     //log(j.toString());
 
     // Map<String, dynamic> body = {
@@ -81,10 +77,10 @@ class _TreeMapState extends State<TreeMap> {
     
     //-41.4005, 147.1378
     marker.add(
-      Marker(point: LatLng(-41.4005, 147.1378), builder: (ctx) => Icon(Icons.pin_drop))
+      Marker(point: LatLng(-41.4005, 147.1378), builder: (ctx) => const Icon(Icons.pin_drop))
     );
     marker.add(
-      Marker(point: LatLng(-41.43, 147.1), builder: (ctx) => Icon(Icons.pin_drop)),
+      Marker(point: LatLng(-41.43, 147.1), builder: (ctx) => const Icon(Icons.pin_drop)),
     );
 
     setState(() {
@@ -93,8 +89,8 @@ class _TreeMapState extends State<TreeMap> {
   }
 }
 
-class treeMap extends StatelessWidget {
-  const treeMap({
+class TreePointMap extends StatelessWidget {
+  const TreePointMap({
     Key? key,
     required this.marker,
   }) : super(key: key);

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:urban_forest/reusable_widgets/reusable_wiget.dart';
 
@@ -39,7 +41,24 @@ void showError(BuildContext context, String message, double paddingBottom) {
   try {
     ScaffoldMessenger.of(context).showSnackBar(snackBarHint(message, b: paddingBottom));
   } catch(e) {
-    print(e.toString());
+    log(e.toString());
   }
-  
+}
+
+// the form text in cupertino
+DefaultTextStyle formText(String text, {
+  double fontsize = 20, 
+  FontStyle fontStyle = FontStyle.normal,
+  Color fontColor = Colors.white
+  }) {
+  return DefaultTextStyle(
+    textAlign: TextAlign.center,
+    style: TextStyle(
+      color: fontColor,
+      fontSize: fontsize,
+      fontWeight: FontWeight.bold,
+      fontStyle: fontStyle,
+    ),
+    child: Text(text),
+  );
 }
