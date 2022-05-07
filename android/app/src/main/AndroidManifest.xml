@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
    <application
         android:label="urban_forest"
         android:name="${applicationName}"
@@ -34,5 +35,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCcmjnu17bpuR7755RmUnxv-eDWFDQYtOA"/>
     </application>
 </manifest>

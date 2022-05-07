@@ -479,7 +479,7 @@ class _AddTreeState extends State<AddTree> {
           ),
         ),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.45,
+          width: MediaQuery.of(context).size.width * 0.4,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

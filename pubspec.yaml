@@ -38,6 +38,7 @@ dependencies:
   path:
 
   flutter_map: any
+  google_maps_flutter: ^2.1.4
   
 
 dev_dependencies:
