@@ -78,3 +78,13 @@ String? validateAddress(String? value) {
 
   return null;
 }
+
+String? validateAssetID(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Please enter";
+  } else if (!value.trim().isValidAssetID) {
+    return "Invalid Asset ID";
+  }
+
+  return null;
+}

@@ -65,7 +65,7 @@ void main() async {
 class SplashScreen extends StatelessWidget {
   const SplashScreen({ Key? key }) : super(key: key);
 
-  final splashDuration = 2500; // the time duration of this screen
+  final splashDuration = 1500; // the time duration of this screen
 
   static const String copyRightInfo = "\u00A9 City of Launceston & University of Tasmania";
 

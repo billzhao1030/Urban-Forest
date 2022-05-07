@@ -26,10 +26,9 @@ class _TreeMapState extends State<TreeMap> {
 
   @override
   void initState() {
-    debugState("access level: $globalLevel");
-    
-    super.initState();
+    //debugState("access level: $globalLevel");
     databaseConnection();
+    super.initState();
   }
 
   @override
@@ -53,7 +52,7 @@ class _TreeMapState extends State<TreeMap> {
     ));
 
     var j = jsonDecode(r2.body);
-    log(j.toString());
+    //log(j.toString());
 
     // Map<String, dynamic> body = {
     //   "geometry": {
@@ -112,6 +111,7 @@ class treeMap extends StatelessWidget {
       layers: [
         TileLayerOptions(
           urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          subdomains: ['a', 'b', 'c'],
         ),
         MarkerLayerOptions(
           markers: marker

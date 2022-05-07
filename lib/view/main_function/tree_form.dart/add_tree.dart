@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:urban_forest/provider/ai_response.dart';
+import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
@@ -49,17 +50,53 @@ class _AddTreeState extends State<AddTree> {
   final TextEditingController _treeHeightTextController = TextEditingController();
   final TextEditingController _treeWidthTextController = TextEditingController();
   final TextEditingController _treeLengthTextController = TextEditingController();
-  final TextEditingController _treeAreaTextController = TextEditingController();
 
   // controller for tree speices
   final TextEditingController _scentificController = TextEditingController();
   final TextEditingController _commonController = TextEditingController();
 
+  // controller for comments
+  final TextEditingController _conditionController = TextEditingController();
+  final TextEditingController _commentController = TextEditingController();
+
+  // dropdown menu
+  List<DropdownMenuItem<String>> _locClassDropDown = [];
+  List<DropdownMenuItem<String>> _locCategoryDropDown = [];
+  List<DropdownMenuItem<String>> _treeLocDropDown = [];
+
+  // access level 2 part
+  final TextEditingController _assetIDController = TextEditingController();
+
+  var locClass = "Roads";
+  var locCategory = "Urban"; 
+  var treeLoc = "Street";
+
   @override
   void initState() {
     super.initState();
+    _locClassDropDown = setDropDown(locClassItems);
+    _locCategoryDropDown = setDropDown(locCategoryItems);
+    _treeLocDropDown = setDropDown(treeLocItems);
 
     debugState("access level: $globalLevel");
+  }
+
+  List<DropdownMenuItem<String>> setDropDown(List<String> list) {
+    List<DropdownMenuItem<String>> items = [];
+
+    for (String str in list) {
+      items.add(DropdownMenuItem(
+        value: str,
+        child: formText(
+          str, 
+          fontsize: 16, 
+          fontColor: Colors.black,
+          fontStyle: FontStyle.italic  
+        ),
+      ));
+    }
+
+    return items;
   }
 
   @override
@@ -162,7 +199,7 @@ class _AddTreeState extends State<AddTree> {
                     });
                     await takePicture();
                   }, 
-                  child: formText("Take a photo", fontsize: 15)
+                  child: formText("Take a photo", fontsize: 15, fontStyle: FontStyle.italic)
                 ),
               ),
             ),
@@ -178,14 +215,14 @@ class _AddTreeState extends State<AddTree> {
                     });
                     await getFromGallery();
                   }, 
-                  child: formText("Choose a photo", fontsize: 15)
+                  child: formText("Choose a photo", fontsize: 15, fontStyle: FontStyle.italic)
                 ),
               ),
             ),
           ],
         ),
 
-        // the temp response (display somewhere else)
+        // the simple response (display somewhere else)
         !imageProcessing 
           ? (bestMatchStr.isEmpty 
             ? Container() 
@@ -210,30 +247,8 @@ class _AddTreeState extends State<AddTree> {
           ),
         ),
 
-        // tree basic information
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CupertinoFormSection(
-            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
-            header: const Text(
-              "Tree location", 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
-            ),
-            margin: const EdgeInsets.all(4.0),
-            children: [
-              //latitude and longtitude
-              treeLocation("Latitude", "Latitude (read only))", _latitudeController),
-              treeLocation("Longtitude", "Longtitude of tree (read only)", _longtitudeController),
-              treeAddress("Street", "Street name", _streetNameController),
-              treeAddress("Suburb", "Locality", _surburbController)
-
-              //TODO:radio button of road/not, urban/empty
-            ],
-          ),
-        ),
-
         // get the location button
+        const SizedBox(height: 5),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
@@ -261,6 +276,129 @@ class _AddTreeState extends State<AddTree> {
           ),
         ),
 
+        // tree basic information
+        const SizedBox(height: 5),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree location", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              //latitude and longtitude
+              treeLocation("Latitude", "Latitude (read only))", _latitudeController),
+              treeLocation("Longtitude", "Longtitude (read only)", _longtitudeController),
+              treeAddress("Street", "Street name", _streetNameController),
+              treeAddress("Suburb", "Locality", _surburbController)
+            ],
+          ),
+        ),
+
+        // tree location details
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree location classes", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              // location class: roads or not
+              dropDownMenus(
+                "Location Class",
+                DropdownButton<String> (
+                  items: _locClassDropDown,
+                  value: locClass,
+                  itemHeight: 60,
+                  enableFeedback: true,
+                  alignment: AlignmentDirectional.center,
+                  onChanged: (selected){
+                    setState(() {
+                      locClass = selected.toString();
+                      //log(locClass.toString());
+                    });
+                  },
+                ) 
+              ),
+              // location category: urban or not
+              dropDownMenus(
+                "Location Category",
+                DropdownButton<String> (
+                  items: _locCategoryDropDown,
+                  value: locCategory,
+                  itemHeight: 60,
+                  enableFeedback: true,
+                  alignment: AlignmentDirectional.center,
+                  onChanged: (selected){
+                    setState(() {
+                      locCategory = selected.toString();
+                      //log(locCategory.toString());
+                    });
+                  },
+                ) 
+              ),
+              // tree location: street or park
+              dropDownMenus(
+                "Location Type",
+                DropdownButton<String> (
+                  items: _treeLocDropDown,
+                  value: treeLoc,
+                  itemHeight: 60,
+                  enableFeedback: true,
+                  alignment: AlignmentDirectional.center,
+                  onChanged: (selected){
+                    setState(() {
+                      treeLoc = selected.toString();
+                      //log(treeLoc.toString());
+                    });
+                  },
+                ) 
+              ),
+            ],
+          ),
+        ),
+
+        // asset id
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree Identifier", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              CupertinoTextFormFieldRow(
+                controller: _assetIDController,
+                prefix: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.37,
+                  child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
+                ),
+                obscureText: false,
+                autocorrect: true,
+                enableSuggestions: true,
+                cursorColor: Colors.black,
+                style: TextStyle(color: Colors.black.withOpacity(0.88)),
+                placeholder: "6 digits ID",
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                validator: (value) {
+                  return validateAssetID(value);
+                },
+              )
+            ]
+          ),
+        ),
+
         // tree scale
         const SizedBox(height: 10),
         Padding(
@@ -281,7 +419,24 @@ class _AddTreeState extends State<AddTree> {
               treeScaleFormRow("Height", "Tree height (e.g. 3.5)", _treeHeightTextController),
               treeScaleFormRow("Width", "Tree width (e.g. 2.7)", _treeWidthTextController),
               treeScaleFormRow("Length", "Tree length (e.g. 1.5)", _treeLengthTextController),
-              treeScaleFormRow("Area", "Tree area (read only)", _treeAreaTextController, readOnly: true)
+            ],
+          ),
+        ),
+
+        // condition and comment
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Condition and comments (Optional)", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              treeCommentFormRow("Condition", "", _conditionController, maxLines: 2),
+              treeCommentFormRow("Comments", "", _commentController, maxLines: 5),
             ],
           ),
         ),
@@ -292,12 +447,9 @@ class _AddTreeState extends State<AddTree> {
           
           child: ElevatedButton(
             onPressed: () {
-              var width = _treeWidthTextController.text.trim();
-              var length = _treeLengthTextController.text.trim();
-              if (width.isNotEmpty && length.isNotEmpty) {
-                _treeAreaTextController.text = (double.parse(width) * double.parse(length)).toString();
-              }
               if (_formKey.currentState!.validate()) {
+                TreeRequest request = TreeRequest();
+                
                 // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(
@@ -305,12 +457,39 @@ class _AddTreeState extends State<AddTree> {
                 //   )
                 // );
                 debugState("okay");
-                
               }
             },
             child: formText("Submit", fontsize: 22, fontStyle: FontStyle.italic),
           ),
         ),
+      ],
+    );
+  }
+
+  // Three dropdown menus
+  Row dropDownMenus(String prefix, Widget dropdown) {
+    return Row(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.05,
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: formText(
+            prefix, 
+            fontColor: CupertinoColors.black, 
+            fontsize: 16
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.45,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dropdown,
+            ],
+          )
+        )
       ],
     );
   }
@@ -386,6 +565,27 @@ class _AddTreeState extends State<AddTree> {
       validator: (value) {
         return validateGPS(value);
       },
+    );
+  }
+
+  // form row of tree comments
+  CupertinoTextFormFieldRow treeCommentFormRow(String prefix, String placeHolder, TextEditingController _controller, {int maxLines = 4}) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.25,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      maxLength: 256,
+      maxLines: maxLines
     );
   }
 

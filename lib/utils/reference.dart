@@ -16,3 +16,7 @@ const String loggedInPassword = "UserPassword";
 const String loggedInUID = "UserUID";
 
 int globalLevel = 1;
+
+List<String> locClassItems = ["Roads", "Not Applicable"];
+List<String> locCategoryItems = ["Urban", "Rural"];
+List<String> treeLocItems = ["Street", "Park"];

@@ -66,4 +66,9 @@ extension ValidateString on String {
     final GPSRegExp = RegExp(r"^[-+]?([0-9]){1,3}.[0-9]+$");
     return GPSRegExp.hasMatch(this);
   }
+
+  bool get isValidAssetID {
+    final assetIDRegExp = RegExp(r"^[0-9]{6}$");
+    return assetIDRegExp.hasMatch(this);
+  }
 }
