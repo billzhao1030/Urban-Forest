@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:urban_forest/reusable_widgets/reusable_wiget.dart';
 
 import '../utils/color_utils.dart';
@@ -62,3 +63,31 @@ DefaultTextStyle formText(String text, {
     child: Text(text),
   );
 }
+
+Future _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // check if the GPS service is enabled 
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    // then check if allow the geolocator 
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+    
+    // if the permission is permanently denied
+    if (permission == LocationPermission.deniedForever) { 
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+    } 
+
+    return await Geolocator.getCurrentPosition();
+  }

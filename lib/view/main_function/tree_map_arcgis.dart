@@ -44,11 +44,15 @@ class _TreeMapState extends State<TreeMap> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){log("hey");},
-        // label: const Text('Refresh'),
-        // icon: const Icon(Icons.refresh),
+        child: const Icon(Icons.refresh),
+        onPressed: (){
+          setState(() {
+            mapLoading = true;
+          });
+          dataLoading();
+        },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
 
   }
@@ -102,7 +106,7 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=100&geometry=$currLongtitude,$currLatitude&outFields=VERS&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=VERS&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
@@ -155,16 +159,14 @@ class TreePointMap extends StatefulWidget {
 class _TreePointMapState extends State<TreePointMap> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        rotateGesturesEnabled: false,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(widget.latitude, widget.longtitude),
-          zoom: 14.4746,
-        ),
-        markers: widget.marker,
+    return GoogleMap(
+      mapType: MapType.normal,
+      rotateGesturesEnabled: false,
+      initialCameraPosition: CameraPosition(
+        target: LatLng(widget.latitude, widget.longtitude),
+        zoom: 17,
       ),
+      markers: widget.marker,
     );
   }
 }
