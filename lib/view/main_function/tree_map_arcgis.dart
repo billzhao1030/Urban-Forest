@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
@@ -106,11 +107,11 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=VERS&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
-    //log(json.toString());
+    log(json.toString());
   
     //render the marker
     renderMarker(json);
@@ -120,13 +121,16 @@ class _TreeMapState extends State<TreeMap> {
     });
   }
 
-  renderMarker(dynamic json) {
+  void renderMarker(dynamic json) {
     marker.clear();
     var i = 0;
     for (var point in json["features"]) {
       var x = point["geometry"]["x"];
       var y = point["geometry"]["y"];
       var version = point["attributes"]["VERS"];
+
+      Tree tree = Tree();
+
       marker.add(
         Marker(
           markerId: MarkerId(i.toString()),
@@ -134,10 +138,45 @@ class _TreeMapState extends State<TreeMap> {
           onTap: (){
             log("Location: x=>$x, y:$y");
             log("Version: $version");
+            _displayPopup(context, tree);
           }
         )
       );
     }
+  }
+
+  // display the popup menu after click the tree point
+  void _displayPopup(BuildContext context, Tree tree) {
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("11"),
+          children: [
+            Column(
+              children: [
+                SimpleDialogOption(
+                  onPressed: () {},
+                  child: ElevatedButton(
+                    child: const Text(
+                      "Edit"
+                    ),
+                    onPressed: () {
+                      log("edit");
+                      updateTree();
+                    },
+                  ),
+                )
+              ],
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  void updateTree() {
+
   }
 }
 
@@ -151,7 +190,7 @@ class TreePointMap extends StatefulWidget {
 
   final Set<Marker> marker;
   final double longtitude;  // x
-  final double latitude; 
+  final double latitude; // y
   @override
   State<TreePointMap> createState() => _TreePointMapState();
 }
@@ -165,6 +204,7 @@ class _TreePointMapState extends State<TreePointMap> {
       initialCameraPosition: CameraPosition(
         target: LatLng(widget.latitude, widget.longtitude),
         zoom: 17,
+        tilt: 0
       ),
       markers: widget.marker,
     );

@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:urban_forest/provider/ai_response.dart';
+import 'package:urban_forest/provider/form_request.dart';
+import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
@@ -50,7 +53,7 @@ class _AddTreeState extends State<AddTree> {
   // controller for tree speices
   final TextEditingController _scentificController = TextEditingController();
   final TextEditingController _commonController = TextEditingController();
-
+  String shortScientificName = "";
   // controller for comments
   final TextEditingController _conditionController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -375,7 +378,7 @@ class _AddTreeState extends State<AddTree> {
               CupertinoTextFormFieldRow(
                 controller: _assetIDController,
                 prefix: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.37,
+                  width: MediaQuery.of(context).size.width * 0.32,
                   child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
                 ),
                 obscureText: false,
@@ -496,7 +499,7 @@ class _AddTreeState extends State<AddTree> {
     return CupertinoTextFormFieldRow(
       controller: _controller,
       prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.28,
+        width: MediaQuery.of(context).size.width * 0.35,
         child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
       ),
       obscureText: false,
@@ -583,7 +586,7 @@ class _AddTreeState extends State<AddTree> {
       style: TextStyle(color: Colors.black.withOpacity(0.88)),
       placeholder: placeHolder,
       textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       maxLength: 256,
       maxLines: maxLines
     );
@@ -617,9 +620,49 @@ class _AddTreeState extends State<AddTree> {
 
   // process the form data
   processForm() {
-    //TreeRequest request = TreeRequest();
+    TreeRequest request = TreeRequest();
 
+    // get the tree and set the version to 1
+    Tree addTree = request.tree;
+    addTree.version = 1;
+
+    // set the species fields
+    addTree.scientificName = _scentificController.text.trim();
+    addTree.shortScientificName = shortScientificName.trim();
+    addTree.commonName = _commonController.text.toUpperCase().trim();
     
+    // set location 
+    addTree.latitude = double.parse(_latitudeController.text.trim());
+    addTree.longtitude = double.parse(_longtitudeController.text.trim());
+
+    addTree.suburb = _surburbController.text.trim();
+    addTree.streetName = _streetNameController.text.trim();
+
+    // set location class
+    addTree.locClass = locClass;
+    addTree.locCategory = locCategory;
+    addTree.locType = treeLoc; 
+
+    // set scale
+    addTree.height = double.parse(_treeHeightTextController.text.trim());
+    addTree.width = double.parse(_treeWidthTextController.text.trim());
+    addTree.length = double.parse(_treeLengthTextController.text.trim());
+
+    // condition and comment
+    addTree.comment = _commentController.text.trim();
+    addTree.condition = _conditionController.text.trim();
+
+    addTree.ASSNBRI = _assetIDController.text.trim();
+
+    request.requestEmail = FirebaseAuth.instance.currentUser!.email.toString();
+    request.requestLevel = globalLevel;
+    request.isAdd = true;
+
+    // date related
+    // TODO: format date related field
+    request.requestTime = "";
+
+    request.toTable();
   }
 
   // get image from gallery
@@ -697,7 +740,8 @@ class _AddTreeState extends State<AddTree> {
 
           // auto fill text field
           _commonController.text = predict.commonName[0].toUpperCase();
-          _scentificController.text = predict.scientificName[0];
+          _scentificController.text = predict.bestMatch;
+          shortScientificName = predict.scientificName[0];
         });
       }
     } else {
