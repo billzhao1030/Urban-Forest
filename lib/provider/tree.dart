@@ -1,8 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:urban_forest/utils/debug_format.dart';
+
 class Tree {
   // version
   int version = 1; // VERS
+  String objectID = "";
 
   // species
   String scientificName = ""; // DESCR
@@ -41,7 +44,7 @@ class Tree {
   String created_da = ""; // DATE
   String last_edite = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
   String last_edi_1 = ""; // DATE
-  
+
 
   // default attributes
   String BARCODE = "";
@@ -100,4 +103,32 @@ class Tree {
   String MaintCycle = "Not Applicable";
 
   String GlobalID = "";
+
+  Tree();
+
+  Tree.fromJson(Map<String, dynamic> json) 
+  :
+    latitude = json["geometry"]["y"],
+    longtitude = json["geometry"]["x"]
+    {
+      var attributes = json["attributes"];
+      
+      objectID = attributes["OBJECTID"].toString();
+      streetName = attributes["LocGrp"].toString();
+      suburb = attributes["Suburb"].toString();
+
+      commonName = attributes["SEARCH_DES"].toString().toLowerCase();
+      scientificName = attributes["DESCR"].toString();
+    }
+
+
+  void toMapPoint() {
+    var str = "Object ID: $objectID\n"
+    "x: $longtitude, y: $latitude\n"
+    "Common: $commonName, Scientific: $scientificName\n"
+    "Street: $streetName, Suburb: $suburb\n";
+
+    debugState(str);
+  }
+    
 }

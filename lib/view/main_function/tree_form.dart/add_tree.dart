@@ -72,6 +72,7 @@ class _AddTreeState extends State<AddTree> {
 
   @override
   void initState() {
+    processLocation();
     super.initState();
     _locClassDropDown = setDropDown(locClassItems);
     _locCategoryDropDown = setDropDown(locCategoryItems);
@@ -80,6 +81,7 @@ class _AddTreeState extends State<AddTree> {
     debugState("access level: $globalLevel");
   }
 
+  // set the three drop down menu
   List<DropdownMenuItem<String>> setDropDown(List<String> list) {
     List<DropdownMenuItem<String>> items = [];
 
@@ -252,22 +254,7 @@ class _AddTreeState extends State<AddTree> {
           width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
             onPressed: () async {
-              setState(() {
-                locationLoading = true;
-              });
-
-              // get the geolocation
-              Position position = await _determinePosition();
-              latitude = position.latitude;
-              longtitude = position.longitude;
-
-              getAddress(position);
-
-              setState(() {
-                locationLoading = false;
-                _latitudeController.text = position.latitude.toStringAsFixed(6);
-                _longtitudeController.text = position.longitude.toStringAsFixed(6);
-              }); 
+              processLocation();
             }, 
             child: !locationLoading 
               ? formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
@@ -644,13 +631,23 @@ class _AddTreeState extends State<AddTree> {
     addTree.locType = treeLoc; 
 
     // set scale
-    addTree.height = double.parse(_treeHeightTextController.text.trim());
-    addTree.width = double.parse(_treeWidthTextController.text.trim());
-    addTree.length = double.parse(_treeLengthTextController.text.trim());
+    if (_treeHeightTextController.text.isNotEmpty) {
+      addTree.height = double.parse(_treeHeightTextController.text.trim());
+    }
+    if (_treeLengthTextController.text.isNotEmpty) {
+      addTree.length = double.parse(_treeLengthTextController.text.trim());
+    }
+    if (_treeWidthTextController.text.isNotEmpty) {
+      addTree.width = double.parse(_treeWidthTextController.text.trim());
+    }
 
     // condition and comment
-    addTree.comment = _commentController.text.trim();
-    addTree.condition = _conditionController.text.trim();
+    if (_commentController.text.isNotEmpty) {
+      addTree.comment = _commentController.text.trim();
+    }
+    if (_conditionController.text.isNotEmpty) {
+      addTree.condition = _conditionController.text.trim();
+    }
 
     addTree.ASSNBRI = _assetIDController.text.trim();
 
@@ -723,20 +720,8 @@ class _AddTreeState extends State<AddTree> {
       predict.todebug();
       if (predict.accuracyList[0] >= 20) {
         setState(() {
-          // set the predict string
-          // var commonNames = "";
-          // var scientificNames = "";
-          // for (var cName in predict.commonName) {
-          //   commonNames += "$cName\n";
-          // }
-          // for (var sName in predict.scientificName) {
-          //   scientificNames += "$sName\n";
-          // }
-
           bestMatchStr = "Best Match: ${predict.scientificName[0]}\n"
           "With accuracy of: ${predict.bestAccuracy}%\n";
-          // "Possible Scientific name:\n$scientificNames"
-          // "Possible Common name\n$commonNames";
 
           // auto fill text field
           _commonController.text = predict.commonName[0].toUpperCase();
@@ -756,4 +741,23 @@ class _AddTreeState extends State<AddTree> {
     });
   }
 
+  // set the location from GPS
+  processLocation() async {
+    setState(() {
+      locationLoading = true;
+    });
+
+    // get the geolocation
+    Position position = await _determinePosition();
+    latitude = position.latitude;
+    longtitude = position.longitude;
+
+    getAddress(position);
+
+    setState(() {
+      locationLoading = false;
+      _latitudeController.text = position.latitude.toStringAsFixed(6);
+      _longtitudeController.text = position.longitude.toStringAsFixed(6);
+    }); 
+  }
 }

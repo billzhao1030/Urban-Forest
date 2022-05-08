@@ -17,7 +17,7 @@ class TreeMap extends StatefulWidget {
 }
 
 class _TreeMapState extends State<TreeMap> {
-  var marker = Set<Marker>();
+  var marker = <Marker>{};
   var token = ""; // for map access
 
   var mapLoading = true;
@@ -107,11 +107,11 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=100&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
-    log(json.toString());
+    //log(json.toString());
   
     //render the marker
     renderMarker(json);
@@ -125,36 +125,37 @@ class _TreeMapState extends State<TreeMap> {
     marker.clear();
     var i = 0;
     for (var point in json["features"]) {
-      var x = point["geometry"]["x"];
-      var y = point["geometry"]["y"];
-      var version = point["attributes"]["VERS"];
-
-      Tree tree = Tree();
+      Tree tree = Tree.fromJson(point);
 
       marker.add(
         Marker(
           markerId: MarkerId(i.toString()),
-          position: LatLng(y,x),
+          position: LatLng(tree.latitude, tree.longtitude),
           onTap: (){
-            log("Location: x=>$x, y:$y");
-            log("Version: $version");
             _displayPopup(context, tree);
           }
         )
       );
+      tree.toMapPoint();
+      i++;
     }
   }
 
-  // display the popup menu after click the tree point
   void _displayPopup(BuildContext context, Tree tree) {
     showDialog(
       context: context, 
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text("11"),
+          title: Text("ObjectID: ${tree.objectID}"),
           children: [
             Column(
               children: [
+                Text("Longtitude: ${tree.longtitude}"),
+                Text("Latitude: ${tree.latitude}"),
+                Text("Common Name: ${tree.commonName}"),
+                Text("Scientific Name: ${tree.scientificName}"),
+                Text("Street: ${tree.streetName}"),
+                Text("Suburb: ${tree.suburb}"),
                 SimpleDialogOption(
                   onPressed: () {},
                   child: ElevatedButton(
