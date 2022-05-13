@@ -177,7 +177,7 @@ class _SignInViewState extends State<SignInView> {
         );
         firebaseLoading(false);
       } else {
-        showHint(context, "You have not verify this email yet!", verify: true);
+        showHint(context, "You have not verified this email yet!", verify: true);
 
         firebaseLoading(false);
 
@@ -198,7 +198,7 @@ class _SignInViewState extends State<SignInView> {
       if (errText.contains("wro")) {
         showHint(context, "Wrong email or password! Please try again");
       } else if (errText.contains("too")) {
-        showHint(context, "Too many request in a short period! Try again later");
+        showHint(context, "Too many requests in a short period! Try again later");
       } else if (errText.contains("user-d")) {
         showHint(context, "The user account has been disabled by an administrator");
       } else if (errText.contains("user-n")) {

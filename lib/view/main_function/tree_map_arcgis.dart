@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +28,12 @@ class _TreeMapState extends State<TreeMap> {
   double currLatitude = 0;
   double currLongtitude = 0;
 
+  late BitmapDescriptor mapMarker;
+
   @override
   void initState() {
     //debugState("access level: $globalLevel");
+    setMarker();
     dataLoading();
     super.initState();
   }
@@ -86,6 +92,11 @@ class _TreeMapState extends State<TreeMap> {
     return await Geolocator.getCurrentPosition();
   }
 
+  void setMarker() async {
+    Uint8List? markerIcon = await getBytesFromAsset('assets/images/tree.png', 90);
+    mapMarker = await BitmapDescriptor.fromBytes(markerIcon!);
+  }
+
   dataLoading() async {
     // get location
     Position position = await _determinePosition();
@@ -107,7 +118,7 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=100&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
@@ -121,6 +132,13 @@ class _TreeMapState extends State<TreeMap> {
     });
   }
 
+  Future<Uint8List?> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))?.buffer.asUint8List();
+  }
+
   void renderMarker(dynamic json) {
     marker.clear();
     var i = 0;
@@ -130,7 +148,9 @@ class _TreeMapState extends State<TreeMap> {
       marker.add(
         Marker(
           markerId: MarkerId(i.toString()),
+          icon: mapMarker,
           position: LatLng(tree.latitude, tree.longtitude),
+          
           onTap: (){
             _displayPopup(context, tree);
           }
