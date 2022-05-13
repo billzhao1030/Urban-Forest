@@ -78,6 +78,23 @@ class _UserProfileState extends State<UserProfile> {
                   );
                 },
               ),
+              ElevatedButton(
+                child: const Text("clear"),
+                onPressed: () async {
+                  FirebaseAuth.instance.signOut();
+                  
+                  // set preference
+                  final prefs = await SharedPreferences.getInstance();
+                  prefs.clear();
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SignInView(filledEmail: email),
+                    )
+                  );
+                },
+              ),
             ],
           ),
         ],

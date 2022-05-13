@@ -164,9 +164,7 @@ class _StartAppState extends State<StartApp> {
 
     setState(() {
       email = prefs.getString(loggedInEmail) ?? "";
-      //hasAcknowledged = acknowledge;
-      hasAcknowledged = true;
-      // TODO: change this back after finish
+      hasAcknowledged = acknowledge;
     });
   }
 }
