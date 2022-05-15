@@ -8,8 +8,8 @@ import '../utils/color_utils.dart';
 import '../utils/reference.dart';
 
 // show the snack bar message
-void showHint(BuildContext context, String message, {bool verify = false}) {
-  ScaffoldMessenger.of(context).showSnackBar(snackBarHint(message, verify: verify, context: context));
+void showHint(BuildContext context, String message, {bool verify = false, double b = 12}) {
+  ScaffoldMessenger.of(context).showSnackBar(snackBarHint(message, verify: verify, context: context, b: b));
 }
 
 // background for most of screen

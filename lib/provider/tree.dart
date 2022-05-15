@@ -41,9 +41,9 @@ class Tree {
   // inner attributes
   String ASSNBRI = ""; // GIS ID
   String creat_us = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
-  String created_da = ""; // DATE
+  int created_da = 0; // DATE
   String last_edite = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
-  String last_edi_1 = ""; // DATE
+  int last_edi_1 = 0; // DATE
 
 
   // default attributes
@@ -51,10 +51,10 @@ class Tree {
   String ASSET_STAT = "N";
   String DEPR_ASSET = "N";
 
-  String ACQN_DATEI = ""; // DATE
-  String EXP_COMM_D = ""; // DATE
-  String COMM_DATEI = ""; // DATE
-  String DISPOSAL_D = ""; // DATE
+  int ACQN_DATEI = 0; // DATE
+  int EXP_COMM_D = 0; // DATE
+  int COMM_DATEI = 0; // DATE
+  int DISPOSAL_D = 0; // DATE
 
   String SUPP_METH = "NA";
   String SUPP_NAME = "";
@@ -66,13 +66,13 @@ class Tree {
   String OTHER_NBR = "";
 
   String CRUSER = "ORDERSR";
-  String CRDATEI = ""; // DATE
+  int CRDATEI = 0; // DATE
   String CRTIMEI = "140944";
   String CRTERM = "PC380306";
   String CRWINDOW = "F1ASR090";
 
   String LAST_MOD_U = "ORDERSR";
-  String LAST_MOD_D = ""; // DATE
+  int LAST_MOD_D = 0; // DATE
   String LAST_MOD_T = "";
   String LAST_MOD_1 = "PC380306";
   String LAST_MOD_W = "F1ASR090";
@@ -82,7 +82,7 @@ class Tree {
   int PRIMARY_AT = 0;
   String get GIS_ID { return ASSNBRI; }
 
-  String LAST_RPT_U = ""; // DATE
+  int LAST_RPT_U = 0; // DATE
   String LAST_RPT_1 = "220340";
   String ConstructM = "NA";
   String AssetSourc = "NA";

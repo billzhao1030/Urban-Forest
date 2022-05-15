@@ -25,6 +25,12 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   bool loading = false;
 
   @override
+  void dispose() {
+    FocusScope.of(context).unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,

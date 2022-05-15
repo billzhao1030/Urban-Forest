@@ -122,7 +122,7 @@ class _TreeMapState extends State<TreeMap> {
     ));
 
     json = jsonDecode(findTree.body);
-    //log(json.toString());
+    log(json.toString());
   
     //render the marker
     renderMarker(json);

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/provider/tree.dart';
@@ -32,6 +33,7 @@ class _AddTreeState extends State<AddTree> {
 
   bool locationLoading = false;
   bool imageProcessing = false;
+  bool firebaseUploading = false;
   double latitude = 0.0;
   double longtitude = 0.0;
 
@@ -435,18 +437,20 @@ class _AddTreeState extends State<AddTree> {
           child: ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                processForm();
-                
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const ConfirmSubmit(),
-                //   )
-                // );
-                debugState("okay");
+                setState(() {
+                  firebaseUploading = true;
+                });
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alertDialog(context);
+                  },
+                );
               }
             },
-            child: formText("Submit", fontsize: 22, fontStyle: FontStyle.italic),
+            child: !firebaseUploading 
+              ? formText("Submit", fontsize: 22, fontStyle: FontStyle.italic)
+              : const CircularProgressIndicator(color: Colors.white,),
           ),
         ),
       ],
@@ -606,7 +610,7 @@ class _AddTreeState extends State<AddTree> {
 
 
   // process the form data
-  processForm() {
+  processForm() async {
     TreeRequest request = TreeRequest();
 
     // get the tree and set the version to 1
@@ -656,10 +660,64 @@ class _AddTreeState extends State<AddTree> {
     request.isAdd = true;
 
     // date related
-    // TODO: format date related field
-    request.requestTime = "";
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    debugState(timestamp.toString());
+    request.requestTime = timestamp;
 
     request.toTable();
+
+    // add the tree to the firebase
+    await request.uploadFirebase();
+    await Future.delayed(const Duration(seconds: 1));
+
+    setState(() {
+      firebaseUploading = false;
+    });
+    showHint(context, "Request Uploaded!");
+
+    resetForm();
+  }
+
+  void resetForm() {
+    //TODO: reset 
+    debugState("reset controller");
+  }
+
+  // add tree confirm
+  AlertDialog alertDialog(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Upload a new tree'),
+      content: const Text('Confirm this request?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            setState(() {
+              firebaseUploading = false;
+            });
+
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'No',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            processForm();
+          },
+          child: const Text(
+            'Yes',
+            style: TextStyle(
+                fontSize: 22
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   // get image from gallery

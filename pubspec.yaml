@@ -39,6 +39,8 @@ dependencies:
 
   flutter_map: any
   google_maps_flutter: ^2.1.4
+
+  intl: ^0.17.0 # date format
   
 
 dev_dependencies:
