@@ -44,16 +44,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void dispose() {
     //var email = FirebaseAuth.instance.currentUser!.email!;
-    FirebaseAuth.instance.signOut();
+    //FirebaseAuth.instance.signOut();
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SignInView(
-          filledEmail: "",
-        )
-      )
-    );
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => SignInView(
+    //       filledEmail: "",
+    //     )
+    //   )
+    // );
 
     super.dispose();
   }
