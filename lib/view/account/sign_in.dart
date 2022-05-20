@@ -45,11 +45,19 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: backgroundDecoration(
-        context, 
-        signInPageView(context)
-      )
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        body: backgroundDecoration(
+          context, 
+          signInPageView(context)
+        )
+      ),
     );
   }
 

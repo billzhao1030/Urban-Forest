@@ -28,29 +28,36 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   void dispose() {
-    FocusScope.of(context).unfocus();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          "Sign Up",
-          style: TextStyle(
-            fontSize: 24, 
-            fontWeight: FontWeight.bold
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            "Sign Up",
+            style: TextStyle(
+              fontSize: 24, 
+              fontWeight: FontWeight.bold
+            ),
           ),
         ),
+        body: backgroundDecoration(
+          context, 
+          signUpPageView(context)
+        )
       ),
-      body: backgroundDecoration(
-        context, 
-        signUpPageView(context)
-      )
     );
   }
 

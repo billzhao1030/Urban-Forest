@@ -31,6 +31,7 @@ Container backgroundDecoration(BuildContext context, Widget? child) {
     child: Scrollbar(
       isAlwaysShown: false,
       child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         scrollDirection: Axis.vertical,
         child: child
       ),

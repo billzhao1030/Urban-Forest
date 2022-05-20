@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
-import 'package:urban_forest/view_model/form_validation.dart';
+import 'package:urban_forest/utils/form_validation.dart';
 
 
 // get the logo image form the image file name
@@ -100,6 +100,7 @@ class _FormTextBoxState extends State<FormTextBox> {
               return validateName(value);
             }
           },
+          //autovalidateMode: AutovalidateMode.always,
         ),
       ],
     );

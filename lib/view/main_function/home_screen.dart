@@ -23,10 +23,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   void initState() {
-    super.initState();
-    //_tabController = TabController(length: 3, vsync: this);
-
     getUser();
+    super.initState();
   }
 
   // get the signed in user

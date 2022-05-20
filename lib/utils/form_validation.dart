@@ -1,4 +1,4 @@
-import '../utils/string_validate.dart';
+import 'string_validate.dart';
 
 // function that assign to the validator
 String? validateAccount(String? value, bool isPasswordType, bool isUserName) {

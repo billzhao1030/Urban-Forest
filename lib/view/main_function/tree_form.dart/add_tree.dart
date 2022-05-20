@@ -17,7 +17,7 @@ import 'package:urban_forest/utils/debug_format.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:urban_forest/view/main_function/take_picture.dart';
-import 'package:urban_forest/view_model/form_validation.dart';
+import 'package:urban_forest/utils/form_validation.dart';
 
 import '../../../utils/reference.dart';
 
