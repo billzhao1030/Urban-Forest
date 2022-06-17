@@ -28,9 +28,9 @@ void main() async {
   String password = prefs.getString(loggedInPassword) ?? "";
   String userUID = prefs.getString(loggedInUID) ?? "";
 
-  // debugState(email);
-  // debugState(password);
-  // debugState(userUID);
+  debugState("Start up email (pref): $email");
+  debugState("Start up password (pref): $password");
+  debugState("Start up uid (pref): $userUID");
 
   // if not log out, then sign in automatically
   if (email.isNotEmpty && password.isNotEmpty) {
@@ -39,7 +39,7 @@ void main() async {
       password: password
     );
     needSignIn = false;
-    //debugState("Auto Sign-in");
+    debugState("Auto Sign-in using credential (pref)");
   }
 
   // get access level
@@ -51,19 +51,20 @@ void main() async {
       );
 
       globalLevel = user.accessLevel;
-      //debugState(globalLevel.toString());
+      debugState("Start up user level (db) ${globalLevel.toString()}");
     });
   }
 
-  debugState("Initialization finished");
+  debugState("Initialization finished\n=============================");
 }
+
 
 // splash screen of the mobile app
 // the cloud initialization will be perform during this
 class SplashScreen extends StatelessWidget {
   const SplashScreen({ Key? key }) : super(key: key);
 
-  final splashDuration = 1500; // the time duration of this screen
+  final splashDuration = 2000; // the time duration of this screen
 
   static const String copyRightInfo = "\u00A9 City of Launceston & University of Tasmania";
 
@@ -125,6 +126,7 @@ class SplashScreen extends StatelessWidget {
 }
 
 
+// main entry point of the app
 class StartApp extends StatefulWidget {
   const StartApp({ Key? key }) : super(key: key);
 
@@ -143,15 +145,22 @@ class _StartAppState extends State<StartApp> {
     getAcknowledge();
   }
 
+  // determine where to go on start
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.green, // primary color
       ),
-      home: hasAcknowledged ? (needSignIn ? SignInView(
-        filledEmail: email,
-      ) : const HomeScreen()) : const Acknowledge(),
+      home: hasAcknowledged 
+      ? (
+        needSignIn 
+        ? SignInView(
+            filledEmail: email,
+          )
+        : const HomeScreen() // go to home screen directly if signed in
+      ) 
+      : const Acknowledge(), // go to terms of service is not acknowleged
     );
   }
 
@@ -160,7 +169,7 @@ class _StartAppState extends State<StartApp> {
     final prefs = await SharedPreferences.getInstance();
     bool acknowledge = prefs.getBool(ack) ?? false;
 
-    debugState(acknowledge.toString());
+    debugState("Start up acknowledged (pref): ${acknowledge.toString()}");
 
     setState(() {
       email = prefs.getString(loggedInEmail) ?? "";

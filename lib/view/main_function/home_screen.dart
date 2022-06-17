@@ -1,11 +1,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/account/sign_in.dart';
-import 'package:urban_forest/view/main_function/tree_form.dart/add_tree.dart';
+import 'package:urban_forest/view/main_function/add_tree.dart';
 import 'package:urban_forest/view/main_function/profile/profile.dart';
 import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
 
@@ -18,8 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   late UserAccount currentUser;
-
-  //late TabController _tabController;
+  final CupertinoTabController _tabController = CupertinoTabController(initialIndex: 1);
 
   @override
   void initState() {
@@ -39,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     });
     currentUser.profileToDebug();
   }
+
   @override
   void dispose() {
     //var email = FirebaseAuth.instance.currentUser!.email!;
@@ -59,64 +57,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return iOSTabBar();
-    // return Scaffold(
-    //   appBar: PreferredSize(
-    //     preferredSize: const Size.fromHeight(0),
-    //     child: AppBar(),
-    //   ),
-    //   body: Stack(
-    //     alignment: AlignmentDirectional.topCenter,
-    //     children: [
-    //       backgroundDecoration(context, null),
-    //       Padding(
-    //         padding: const EdgeInsets.all(8.0),
-    //         child: tabs(),
-    //       ),
-    //     ],
-    //   )
-    // );
-  }
-
-  Column tabs() {
-    return Column(
-      children: [
-        Container(
-          height: 45,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(25.0)
-          ),
-          child: TabBar(
-            //controller: _tabController,
-            indicator: BoxDecoration(
-              color: Colors.green[300],
-              borderRadius: BorderRadius.circular(25.0)
-            ),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.black,
-            tabs: const [
-              Tab(text: 'Map',),
-              Tab(text: 'Add',),
-              Tab(text: 'Profile',)
-            ],
-          ),
-        ),
-        const Expanded(
-          child: TabBarView(
-            //controller: _tabController,
-            children: [
-              TreeMap(),
-              AddTree(),
-              UserProfile()
-            ],
-          ),
-        ),
-      ],
-    );
   }
 
   CupertinoTabScaffold iOSTabBar() {
     return CupertinoTabScaffold(
+      controller: _tabController,
       tabBar: CupertinoTabBar(
         currentIndex: 1, // default tab
         backgroundColor: CupertinoColors.tertiarySystemBackground,
@@ -124,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         
         items: const [
           BottomNavigationBarItem(
-            label: 'Home',
+            label: 'Map',
             icon: Icon(CupertinoIcons.map)
           ),
           BottomNavigationBarItem(
@@ -140,12 +85,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       tabBuilder: (context, index) {
         switch (index) {
           case 0: 
-            return const TreeMap();
+            return TreeMap(controller: _tabController);
           case 1:
-            return const AddTree();
+            return const UploadTree();
           case 2:
-          default:
             return const UserProfile();
+          default:
+            return TreeMap(controller: _tabController);
         }
       },
     );

@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
@@ -18,7 +17,7 @@ class TreeRequest {
   void toTable() {
     var str = "\nAdd request: ${isAdd.toString()}, By: $requestEmail\n"
     "Level:$requestLevel, Version: ${tree.version}, Request Time: $requestTime\n"
-    "Location: x:${tree.longtitude}, y: ${tree.latitude}\n"
+    "Location: x:${tree.longitude}, y: ${tree.latitude}\n"
     "Scientific: ${tree.scientificName}, Common: ${tree.commonName}, Short: ${tree.shortScientificName}\n"
     "Long: ${tree.longScientificName}\n"
     "Street: ${tree.streetName}, Suburb: ${tree.suburb}\n"
@@ -46,7 +45,7 @@ class TreeRequest {
       'commonName': tree.commonName,
       'longScientificName': tree.longScientificName,
       'latitude': tree.latitude,
-      'longtitude': tree.longtitude,
+      'longtitude': tree.longitude,
       'suburb': tree.suburb,
       'streetName': tree.streetName,
       'locClass': tree.locClass,

@@ -25,7 +25,7 @@ class FormTextBox extends StatefulWidget {
     required this.isUserName, 
     required this.isPasswordType,
     required this.controller,  
-    this.nameField
+    this.nameField,
   }) : super(key: key);
 
   final TextEditingController controller;
@@ -52,6 +52,9 @@ class _FormTextBoxState extends State<FormTextBox> {
     return Column(
       children: [
         TextFormField(
+          onTap: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
           controller: widget.controller,
           obscureText: widget.isPasswordType && !_canViewPassword,
           enableSuggestions: !widget.isPasswordType,
@@ -100,7 +103,7 @@ class _FormTextBoxState extends State<FormTextBox> {
               return validateName(value);
             }
           },
-          //autovalidateMode: AutovalidateMode.always,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
         ),
       ],
     );

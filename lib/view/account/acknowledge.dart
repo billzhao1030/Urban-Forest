@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
 
@@ -181,6 +181,8 @@ class _AcknowledgeState extends State<Acknowledge> {
               onPressed: confirm ? () async {
                 final prefs = await SharedPreferences.getInstance();
                 prefs.setBool(ack, true);
+
+                debugState("Acknowledgement page: set ack to true");
     
                 Navigator.pushReplacement(
                   context,

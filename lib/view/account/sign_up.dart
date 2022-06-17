@@ -202,7 +202,7 @@ class _SignUpViewState extends State<SignUpView> {
     debugState(error.toString());
 
     var errText = error.toString().substring(15, 18);
-    debugState(errText);
+    debugState("Firebase error: $errText");
 
     if (errText.contains("ema")) {
       showHint(context, "The email address is already in use by another account!");

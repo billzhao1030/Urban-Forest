@@ -19,23 +19,27 @@ import 'package:geocoding/geocoding.dart';
 import 'package:urban_forest/view/main_function/take_picture.dart';
 import 'package:urban_forest/utils/form_validation.dart';
 
-import '../../../utils/reference.dart';
+import '../../utils/reference.dart';
 
-class AddTree extends StatefulWidget {
-  const AddTree({ Key? key }) : super(key: key);
+class UploadTree extends StatefulWidget {
+  const UploadTree({ Key? key, this.tree }) : super(key: key);
+
+  final Tree? tree;
 
   @override
-  State<AddTree> createState() => _AddTreeState();
+  State<UploadTree> createState() => _UploadTreeState();
 }
 
-class _AddTreeState extends State<AddTree> {
+class _UploadTreeState extends State<UploadTree> {
+  bool isAddTree = true;
+
   bool enableGPS = false;
 
   bool locationLoading = false;
   bool imageProcessing = false;
   bool firebaseUploading = false;
   double latitude = 0.0;
-  double longtitude = 0.0;
+  double longitude = 0.0;
 
   String bestMatchStr = "";
 
@@ -624,7 +628,7 @@ class _AddTreeState extends State<AddTree> {
     
     // set location 
     addTree.latitude = double.parse(_latitudeController.text.trim());
-    addTree.longtitude = double.parse(_longtitudeController.text.trim());
+    addTree.longitude = double.parse(_longtitudeController.text.trim());
 
     addTree.suburb = _surburbController.text.trim();
     addTree.streetName = _streetNameController.text.trim();
@@ -786,11 +790,21 @@ class _AddTreeState extends State<AddTree> {
           _scentificController.text = predict.bestMatch;
           shortScientificName = predict.scientificName[0];
         });
+      } else {
+        setState(() {
+          bestMatchStr = "Bad image, please take another one";
+          _commonController.text = "";
+          _scentificController.text = "";
+          shortScientificName = "";
+        });
       }
     } else {
       debugState("wrong image");
       setState(() {
-        bestMatchStr = "Bad image, please take another one";
+        bestMatchStr = "Not a tree! Please take another one";
+        _commonController.text = "";
+        _scentificController.text = "";
+        shortScientificName = "";
       });
     }
     
@@ -808,9 +822,12 @@ class _AddTreeState extends State<AddTree> {
     // get the geolocation
     Position position = await _determinePosition();
     latitude = position.latitude;
-    longtitude = position.longitude;
+    longitude = position.longitude;
 
     getAddress(position);
+
+    debugState("latitude: $latitude");
+    debugState("longitude: $longitude");
 
     setState(() {
       locationLoading = false;

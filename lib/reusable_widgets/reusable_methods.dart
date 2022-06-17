@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:urban_forest/reusable_widgets/reusable_wiget.dart';
 
 import '../utils/color_utils.dart';

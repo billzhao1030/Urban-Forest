@@ -11,8 +11,8 @@ import '../../reusable_widgets/reusable_wiget.dart';
 import '../main_function/home_screen.dart';
 import 'sign_up.dart';
 
-const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 
+const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 
 // sign in view -- root widget for sign in
 class SignInView extends StatefulWidget {
@@ -83,7 +83,6 @@ class _SignInViewState extends State<SignInView> {
               isPasswordType: false, 
               controller: _emailTextController
             ),
-            
             const SizedBox(
               height: 20,
             ),
@@ -201,7 +200,7 @@ class _SignInViewState extends State<SignInView> {
       debugState(error.toString());
 
       var errText = error.toString().substring(15, 21);
-      debugState(errText);
+      debugState("Firebase error: $errText");
       
       if (errText.contains("wro")) {
         showHint(context, "Wrong email or password! Please try again");

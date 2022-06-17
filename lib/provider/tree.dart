@@ -17,7 +17,7 @@ class Tree {
 
   // location
   double latitude = 0;
-  double longtitude = 0;
+  double longitude = 0;
 
   String suburb = ""; // Suburb
   String streetName = ""; // LocGrp
@@ -109,7 +109,7 @@ class Tree {
   Tree.fromJson(Map<String, dynamic> json) 
   :
     latitude = json["geometry"]["y"],
-    longtitude = json["geometry"]["x"]
+    longitude = json["geometry"]["x"]
     {
       var attributes = json["attributes"];
       
@@ -124,7 +124,7 @@ class Tree {
 
   void toMapPoint() {
     var str = "Object ID: $objectID\n"
-    "x: $longtitude, y: $latitude\n"
+    "x: $longitude, y: $latitude\n"
     "Common: $commonName, Scientific: $scientificName\n"
     "Street: $streetName, Suburb: $suburb\n";
 

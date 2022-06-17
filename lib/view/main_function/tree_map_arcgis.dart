@@ -3,17 +3,20 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:urban_forest/provider/tree.dart';
-import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
+
 class TreeMap extends StatefulWidget {
-  const TreeMap({ Key? key }) : super(key: key);
+  const TreeMap({ Key? key, required this.controller }) : super(key: key);
+
+  final CupertinoTabController controller;
 
   @override
   State<TreeMap> createState() => _TreeMapState();
@@ -46,7 +49,7 @@ class _TreeMapState extends State<TreeMap> {
           Expanded(
             child: mapLoading 
               ? const Center(child: CircularProgressIndicator(),)
-              : TreePointMap(marker: marker, longtitude: currLongtitude, latitude: currLatitude,),
+              : TreePointMap(marker: marker, longitude: currLongtitude, latitude: currLatitude,),
           ),
         ],
       ),
@@ -149,14 +152,14 @@ class _TreeMapState extends State<TreeMap> {
         Marker(
           markerId: MarkerId(i.toString()),
           icon: mapMarker,
-          position: LatLng(tree.latitude, tree.longtitude),
+          position: LatLng(tree.latitude, tree.longitude),
           
           onTap: (){
             _displayPopup(context, tree);
           }
         )
       );
-      tree.toMapPoint();
+      //tree.toMapPoint(); // show the tree list
       i++;
     }
   }
@@ -170,7 +173,7 @@ class _TreeMapState extends State<TreeMap> {
           children: [
             Column(
               children: [
-                Text("Longtitude: ${tree.longtitude}"),
+                Text("Longitude: ${tree.longitude}"),
                 Text("Latitude: ${tree.latitude}"),
                 Text("Common Name: ${tree.commonName}"),
                 Text("Scientific Name: ${tree.scientificName}"),
@@ -183,7 +186,7 @@ class _TreeMapState extends State<TreeMap> {
                       "Edit"
                     ),
                     onPressed: () {
-                      log("edit");
+                      Navigator.pop(context);
                       updateTree();
                     },
                   ),
@@ -197,7 +200,9 @@ class _TreeMapState extends State<TreeMap> {
   }
 
   void updateTree() {
-
+    log("edit");
+    
+    //widget.controller.index = 1;
   }
 }
 
@@ -205,12 +210,12 @@ class TreePointMap extends StatefulWidget {
   const TreePointMap({
     Key? key,
     required this.marker,
-    required this.longtitude, 
+    required this.longitude, 
     required this.latitude
   }) : super(key: key);
 
   final Set<Marker> marker;
-  final double longtitude;  // x
+  final double longitude;  // x
   final double latitude; // y
   @override
   State<TreePointMap> createState() => _TreePointMapState();
@@ -223,8 +228,8 @@ class _TreePointMapState extends State<TreePointMap> {
       mapType: MapType.normal,
       rotateGesturesEnabled: false,
       initialCameraPosition: CameraPosition(
-        target: LatLng(widget.latitude, widget.longtitude),
-        zoom: 17,
+        target: LatLng(widget.latitude, widget.longitude),
+        zoom: 17.5,
         tilt: 0
       ),
       markers: widget.marker,

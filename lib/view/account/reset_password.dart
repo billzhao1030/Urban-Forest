@@ -103,7 +103,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                           debugState("Error: ${error.toString()}");
     
                           var errText = error.toString().substring(15, 21);
-                          debugState(errText);
+                          debugState("Firebase error: $errText");
                             
                           if (errText.contains("too")) {
                             showHint(context, "Too many request in a short period! Try again later");

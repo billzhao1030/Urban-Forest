@@ -68,7 +68,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
       await user.sendEmailVerification();
 
       setState(() => canResendEmail = false);
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 6));
       setState(() => canResendEmail = true);
     } catch (e) {
       debugState(e.toString());
