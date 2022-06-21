@@ -56,7 +56,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   
   @override
   Widget build(BuildContext context) {
-    return iOSTabBar();
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: iOSTabBar()
+    );
   }
 
   CupertinoTabScaffold iOSTabBar() {

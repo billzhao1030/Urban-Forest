@@ -12,7 +12,7 @@ void showHint(BuildContext context, String message, {bool verify = false, double
 }
 
 // background for most of screen
-Container backgroundDecoration(BuildContext context, Widget? child) {
+Container backgroundDecoration(BuildContext context, Widget? child, {bool? dismiss = true}) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: MediaQuery.of(context).size.height,
@@ -30,7 +30,8 @@ Container backgroundDecoration(BuildContext context, Widget? child) {
     child: Scrollbar(
       isAlwaysShown: false,
       child: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        keyboardDismissBehavior: 
+          dismiss == true ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
         scrollDirection: Axis.vertical,
         child: child
       ),

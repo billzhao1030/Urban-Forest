@@ -57,7 +57,7 @@ class _UploadTreeState extends State<UploadTree> {
   final TextEditingController _treeLengthTextController = TextEditingController();
 
   // controller for tree speices
-  final TextEditingController _scentificController = TextEditingController();
+  final TextEditingController _scientificController = TextEditingController();
   final TextEditingController _commonController = TextEditingController();
   String shortScientificName = "";
   // controller for comments
@@ -125,7 +125,8 @@ class _UploadTreeState extends State<UploadTree> {
               child: treeFormColumn()
             ),
           )
-        )
+        ),
+        dismiss: false // let dismiss manual
       ),
     );
   }
@@ -183,7 +184,7 @@ class _UploadTreeState extends State<UploadTree> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.04
+          height: MediaQuery.of(context).size.height * 0.05
         ),
         // title
         formText("Add a tree", fontsize: 28),
@@ -197,7 +198,7 @@ class _UploadTreeState extends State<UploadTree> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.36,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
                   onPressed: () async {
                     setState(() {
@@ -206,14 +207,14 @@ class _UploadTreeState extends State<UploadTree> {
                     });
                     await takePicture();
                   }, 
-                  child: formText("Take a photo", fontsize: 15, fontStyle: FontStyle.italic)
+                  child: formText("Take a photo", fontsize: 18, fontStyle: FontStyle.italic)
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.36,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
                   onPressed: () async {
                     setState(() {
@@ -222,7 +223,7 @@ class _UploadTreeState extends State<UploadTree> {
                     });
                     await getFromGallery();
                   }, 
-                  child: formText("Choose a photo", fontsize: 15, fontStyle: FontStyle.italic)
+                  child: formText("Choose a photo", fontsize: 18, fontStyle: FontStyle.italic)
                 ),
               ),
             ),
@@ -249,23 +250,44 @@ class _UploadTreeState extends State<UploadTree> {
             margin: const EdgeInsets.all(4.0),
             children: [
               treeSpecies("Common Name", "Common name", _commonController),
-              treeSpecies("Scentific Name", "Sentific name", _scentificController),
+              treeSpecies("Scientific Name", "Scientific name", _scientificController),
             ],
           ),
         ),
 
         // get the location button
         const SizedBox(height: 5),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.35,
-          child: ElevatedButton(
-            onPressed: () async {
-              processLocation();
-            }, 
-            child: !locationLoading 
-              ? formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
-              : const Center(child: CircularProgressIndicator(color:Colors.white, strokeWidth: 3.0,))
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.35,
+              child: ElevatedButton(
+                onPressed: () async {
+                  processLocation();
+                }, 
+                child: !locationLoading 
+                  ? formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
+                  : const Center(child: CircularProgressIndicator(color:Colors.white, strokeWidth: 3.0,))
+              ),
+            ),
+
+            // The location advice and instruction
+            ElevatedButton(
+              onPressed: () {
+                debugState("how to get location");
+                //TODO: implement hint
+              }, 
+              child: const Icon(
+                Icons.question_mark_outlined,
+                color: Colors.white,
+              ),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                primary: const Color.fromARGB(1, 1, 1, 1),
+              ),
+            )
+          ],
         ),
 
         // tree basic information
@@ -447,7 +469,7 @@ class _UploadTreeState extends State<UploadTree> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return alertDialog(context);
+                    return addUploadAlert(context);
                   },
                 );
               }
@@ -622,7 +644,7 @@ class _UploadTreeState extends State<UploadTree> {
     addTree.version = 1;
 
     // set the species fields
-    addTree.scientificName = _scentificController.text.trim();
+    addTree.scientificName = _scientificController.text.trim();
     addTree.shortScientificName = shortScientificName.trim();
     addTree.commonName = _commonController.text.toUpperCase().trim();
     
@@ -674,21 +696,39 @@ class _UploadTreeState extends State<UploadTree> {
     await request.uploadFirebase();
     await Future.delayed(const Duration(seconds: 1));
 
-    setState(() {
-      firebaseUploading = false;
-    });
     showHint(context, "Request Uploaded!");
 
     resetForm();
   }
 
   void resetForm() {
-    //TODO: reset 
     debugState("reset controller");
+
+    _latitudeController.clear();
+    _longtitudeController.clear();
+    _streetNameController.clear();
+    _surburbController.clear();
+
+    _scientificController.clear();
+    _commonController.clear();
+
+    _treeWidthTextController.clear();
+    _treeLengthTextController.clear();
+    _treeHeightTextController.clear();
+
+    _commentController.clear();
+    _conditionController.clear();
+
+    _assetIDController.clear();
+
+
+    setState(() {
+      firebaseUploading = false;
+    });
   }
 
   // add tree confirm
-  AlertDialog alertDialog(BuildContext context) {
+  AlertDialog addUploadAlert(BuildContext context) {
     return AlertDialog(
       title: const Text('Upload a new tree'),
       content: const Text('Confirm this request?'),
@@ -787,14 +827,14 @@ class _UploadTreeState extends State<UploadTree> {
 
           // auto fill text field
           _commonController.text = predict.commonName[0].toUpperCase();
-          _scentificController.text = predict.bestMatch;
+          _scientificController.text = predict.bestMatch;
           shortScientificName = predict.scientificName[0];
         });
       } else {
         setState(() {
           bestMatchStr = "Bad image, please take another one";
           _commonController.text = "";
-          _scentificController.text = "";
+          _scientificController.text = "";
           shortScientificName = "";
         });
       }
@@ -803,7 +843,7 @@ class _UploadTreeState extends State<UploadTree> {
       setState(() {
         bestMatchStr = "Not a tree! Please take another one";
         _commonController.text = "";
-        _scentificController.text = "";
+        _scientificController.text = "";
         shortScientificName = "";
       });
     }

@@ -176,6 +176,10 @@ class _SignInViewState extends State<SignInView> {
         prefs.setString(loggedInPassword, _passwordTextController.text.trim());
         prefs.setString(loggedInUID, uid);
 
+        // update the gloabl level
+        globalLevel = user.accessLevel;
+        debugState("Now global level change to $globalLevel");
+
         Navigator.push(
           context,
           MaterialPageRoute(
