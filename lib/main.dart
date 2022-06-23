@@ -2,8 +2,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/provider/user.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/account/acknowledge.dart';
@@ -14,8 +17,11 @@ import 'package:urban_forest/view/main_function/home_screen.dart';
 
 
 bool needSignIn = true; // judge if user need to sign in
+bool hasInternet = true; // judge if has connection
 
 void main() async {
+  hasInternet = await InternetConnectionChecker().hasConnection;
+  
   // run the splash animation then initialize environment
   runApp(const SplashScreen());
 
@@ -56,6 +62,7 @@ void main() async {
   }
 
   debugState("Initialization finished\n=============================");
+  
 }
 
 
@@ -78,7 +85,7 @@ class SplashScreen extends StatelessWidget {
           splashTransition: SplashTransition.scaleTransition,
           pageTransitionType: PageTransitionType.bottomToTop,
           backgroundColor: const Color.fromARGB(255, 127, 238, 127),
-          nextScreen: const StartApp(), // the next screen
+          nextScreen: hasInternet ? const StartApp() : const CheckInternet(), // the next screen
           splashIconSize: 500,
           splash: SingleChildScrollView(
             child: Column(
@@ -175,5 +182,69 @@ class _StartAppState extends State<StartApp> {
       email = prefs.getString(loggedInEmail) ?? "";
       hasAcknowledged = acknowledge;
     });
+  }
+}
+
+
+// If no internet connection then show dialog
+class CheckInternet extends StatefulWidget {
+  const CheckInternet({ Key? key }) : super(key: key);
+
+  @override
+  State<CheckInternet> createState() => _CheckInternetState();
+}
+
+class _CheckInternetState extends State<CheckInternet> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          backgroundDecoration(
+            context, 
+            null
+          ),
+          warningDialog()
+        ],
+      ),
+    );
+  }
+
+  Center warningDialog() {
+    return Center(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: AlertDialog(
+          title: const Text(
+            "No Internet found!",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic
+            ),
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: const Color.fromARGB(255, 247, 244, 199),
+          content: const Text("Please make sure your mobile device is using WIFI or mobile data"),
+          actions: [
+            MaterialButton(
+              elevation: 5.0,
+              textColor: const Color.fromARGB(255, 9, 133, 13),
+              child: const Text(
+                "OK",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              onPressed: () {
+                SystemNavigator.pop();
+              }
+            )
+          ],
+        ),
+      )
+    );
   }
 }

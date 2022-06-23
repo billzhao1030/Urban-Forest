@@ -85,6 +85,14 @@ class _UploadTreeState extends State<UploadTree> {
     _treeLocDropDown = setDropDown(treeLocItems);
 
     debugState("access level: $globalLevel");
+
+    if (widget.tree == null) {
+      debugState("Is add");
+      isAddTree = true;
+    } else {
+      debugState("Is edit");
+      isAddTree = false;
+    }
   }
 
   // set the three drop down menu
@@ -113,7 +121,7 @@ class _UploadTreeState extends State<UploadTree> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: !isAddTree, // if edit then add back button
       ),
       body: backgroundDecoration(
         context, 
@@ -187,7 +195,7 @@ class _UploadTreeState extends State<UploadTree> {
           height: MediaQuery.of(context).size.height * 0.05
         ),
         // title
-        formText("Add a tree", fontsize: 28),
+        isAddTree ? formText("Add a tree", fontsize: 28) : formText("Edit the tree", fontsize: 28),
 
         // camera and gallery function
         const SizedBox(height: 10),
@@ -247,6 +255,12 @@ class _UploadTreeState extends State<UploadTree> {
               "Tree species", 
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
             ),
+            footer: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text("Notice that the AI image recognition may not 100% accurate, please perform human check if possible", textAlign: TextAlign.center,),
+              ),
+            ),
             margin: const EdgeInsets.all(4.0),
             children: [
               treeSpecies("Common Name", "Common name", _commonController),
@@ -299,6 +313,13 @@ class _UploadTreeState extends State<UploadTree> {
             header: const Text(
               "Tree location", 
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            footer: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text("Notice that the geolocation of the tree is automatically get (and is read-only)\n"
+                "Please hold your mobile device as close to the tree as possible to ensure the high accuracy", textAlign: TextAlign.center,),
+              ),
             ),
             margin: const EdgeInsets.all(4.0),
             children: [
@@ -388,6 +409,12 @@ class _UploadTreeState extends State<UploadTree> {
               "Tree Identifier", 
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
             ),
+            footer: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text("Tree Asset ID (ASSNBRI), please make sure this is the unique ID in the database"),
+              ),
+            ),
             margin: const EdgeInsets.all(4.0),
             children: [
               CupertinoTextFormFieldRow(
@@ -427,8 +454,9 @@ class _UploadTreeState extends State<UploadTree> {
             footer: const Center(
               child: Padding(
                 padding: EdgeInsets.all(4.0),
-                child: Text("All fields in this section are measured in meter(s)"),
-              )),
+                child: Text("All fields in this section are measured in meter(s)", textAlign: TextAlign.center,),
+              )
+            ),
             margin: const EdgeInsets.all(4.0),
             children: [
               treeScale("Height", "Tree height (e.g. 3.5)", _treeHeightTextController),
@@ -700,8 +728,8 @@ class _UploadTreeState extends State<UploadTree> {
     request.toTable();
 
     // add the tree to the firebase
-    //await request.uploadFirebase();
-    //await Future.delayed(const Duration(seconds: 1));
+    await request.uploadFirebase();
+    await Future.delayed(const Duration(seconds: 1));
 
     setState(() {
       firebaseUploading = false;
@@ -709,7 +737,7 @@ class _UploadTreeState extends State<UploadTree> {
 
     showHint(context, "Request Uploaded!");
 
-    //resetForm();
+    resetForm();
   }
 
 

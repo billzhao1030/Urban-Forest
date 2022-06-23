@@ -1,9 +1,11 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/provider/user.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/main_function/add_tree.dart';
+import 'package:urban_forest/view/main_function/upload_tree.dart';
 import 'package:urban_forest/view/main_function/profile/profile.dart';
 import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
 
@@ -17,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   late UserAccount currentUser;
   final CupertinoTabController _tabController = CupertinoTabController(initialIndex: 1);
+  Tree? edittree;
 
   @override
   void initState() {
@@ -39,18 +42,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   void dispose() {
-    //var email = FirebaseAuth.instance.currentUser!.email!;
-    //FirebaseAuth.instance.signOut();
-
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => SignInView(
-    //       filledEmail: "",
-    //     )
-    //   )
-    // );
-
     super.dispose();
   }
   

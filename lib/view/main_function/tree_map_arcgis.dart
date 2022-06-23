@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
+import 'package:urban_forest/view/main_function/upload_tree.dart';
 
 
 class TreeMap extends StatefulWidget {
@@ -29,7 +30,7 @@ class _TreeMapState extends State<TreeMap> {
   var mapLoading = true;
 
   double currLatitude = 0;
-  double currLongtitude = 0;
+  double currLongitude = 0;
 
   late BitmapDescriptor mapMarker;
 
@@ -49,7 +50,7 @@ class _TreeMapState extends State<TreeMap> {
           Expanded(
             child: mapLoading 
               ? const Center(child: CircularProgressIndicator(),)
-              : TreePointMap(marker: marker, longitude: currLongtitude, latitude: currLatitude,),
+              : TreePointMap(marker: marker, longitude: currLongitude, latitude: currLatitude,),
           ),
         ],
       ),
@@ -104,9 +105,9 @@ class _TreeMapState extends State<TreeMap> {
     // get location
     Position position = await _determinePosition();
     currLatitude = position.latitude;
-    currLongtitude = position.longitude;
+    currLongitude = position.longitude;
     debugState("latitude: ${currLatitude.toStringAsFixed(6)}");
-    debugState("longtitude: ${currLongtitude.toStringAsFixed(6)}");
+    debugState("longtitude: ${currLongitude.toStringAsFixed(6)}");
 
     // get token for oAuth
     token = "";
@@ -121,7 +122,7 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongtitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
@@ -159,9 +160,19 @@ class _TreeMapState extends State<TreeMap> {
           }
         )
       );
+
       //tree.toMapPoint(); // show the tree list
       i++;
     }
+    marker.add(
+      Marker(
+          markerId: MarkerId(i.toString()),
+          icon: BitmapDescriptor.defaultMarker,
+          position: LatLng(currLatitude, currLongitude),
+          
+          onTap: null
+        )
+    );
   }
 
   void _displayPopup(BuildContext context, Tree tree) {
@@ -201,8 +212,15 @@ class _TreeMapState extends State<TreeMap> {
 
   void updateTree() {
     log("edit");
+    Tree thisTree = Tree();
+    thisTree.ASSNBRI = "113131";
     
-    //widget.controller.index = 1;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UploadTree(tree: thisTree,),
+      )
+    );
   }
 }
 
