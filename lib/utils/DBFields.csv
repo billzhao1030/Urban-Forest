@@ -1,0 +1,74 @@
+Field," type"," nullable"," editable"," description"," length",
+FID,"int","false","false","auto id","0",Y
+VERS,"int","true","true","version number","0",Y
+ASSNBRI,"string","true","true","GIS id","32",Y
+DESCR,"string","true","true","scientific name","40",T
+SEARCH_DES,"string","true","true","search name (common)","40",T
+LONG_DESC,"string","true","true","long scientific name","254",T
+SHORT_DECS,"string ","true","true","short scientific name","20",T
+BARCODE,"string","true","true","empty","32",
+ASSET_STAT,"string","true","true","N","2",
+DEPR_ASSET,"string","true","true","N","1",
+ACQN_DATEI,"date","true","true","useless date","8",
+EXP_COMM_D,"date","true","true","useless date","8",
+COMM_DATEI,"date","true","true","comment date?","8",
+DISPOSAL_D,"date","true","true","disposal date","8",
+SUPP_METH,"string","true","true","NA","8",
+SUPP_NAME,"string","true","true","empty","40",
+SUPP_REF,"string","true","true","empty","20",
+COMMENT1,"string","true","true","empty","40",
+COMMENT2,"string","true","true","empty","40",
+COMMENT3,"string","true","true","empty","40",
+MANUF_NAME,"string","true","true","empty","40",
+OTHER_NBR,"string","true","true","empty","40",
+CRUSER,"sring","true","true","ORDERSR","14",Y
+CRDATEI,"date","true","true","some date?","8",
+CRTIMEI,"int","true","true","140***","0",Y
+CRTERM,"string","true","true","PC380306","10",Y
+CRWINDOW,"string","true","true","F1ASR090","8",Y
+LAST_MOD_U,"string","true","true","ORDERSR","14",Y
+LAST_MOD_D,"date","true","true","modify date","8",Y
+LAST_MOD_T,"int","true","true","?","0",
+LAST_MOD_1,"string","true","true","PC38****","10",Y
+LAST_MOD_W,"string","true","true","F1ASR090","8",Y
+ASSET_RID,"int","true","true","asset id?","0",T
+OPERATING_,"string","true","true","O / I","2",
+PRIMARY_AT,"int","true","true","0","0",
+GIS_ID,"string","true","true","same as ASSNBRI","254",
+LAST_RPT_U,"date","true","true","last report date",,
+LAST_RPT_1,"int","true","true","?",,
+ConstructM,"string","true","true","NA","8",
+AssetSourc,"string","true","true","NA","8",
+TreeLocati,"string","true","true","STREET / PARK","8",T
+WateringMe,"string","true","true","NOTRECOR","8",
+LenthDime,"float","true","true","length","0",T
+WidthDimen,"float","true","true","width","0",T
+HeightDime,"float","true","true","height","0",T
+AreaDimens,"float","true","true","area","0",T
+CapitalPro,"string","true","true","empty","40",
+Class,"string","true","true","Facilities","60",
+Category,"string","true","true","Trees","60",
+Grp,"string","true","true","Tree","60",
+Facility,"string","true","true","Oranization facility","60",
+LocClass,"string","true","true","NApplicable / Roads","60",T
+LocCat,"string","true","true","Urban / empty","60",T
+LocGrp,"string","true","true","Street name","60",T
+Suburb,"string","true","true","district","60",T
+Network,"string","true","true","Infrastructure & Assets","60",
+Team,"string","true","true","IAN Parks & Sustainability","60",
+CostCentre,"string","true","true","IAN Recreation & Parks","60",
+LCCLeases,"string","true","true","Not Subject to a Lease","60",
+MaintZoneC,"string","true","true","Not Applicable","60",
+MaintZon_1,"string","true","true","Not Applicable","60",
+Condition,"string","true","true","Not Applicable","60",
+MaintCycle,"string","true","true","Not Applicable","60",
+GlobalID,"string","true","true","global id copy","38",
+create_us,"string","true","true","andrew's email","254",
+create da,"date","true","true","create date","8",
+last_edite,"string","true","true","edit email","254",Y
+last_edi_1,"date","true","true","last edit date","8",Y
+GlobalID_2,"other","false","false","real global id","38",
+CreationDate,"other","true","false","system auto generate","8",
+Creator,"other","true","false","system auto generate","128",
+EditDate,"other","true","false","system auto generate","8",
+Editor,"other","true","false","system auto generate","128",

@@ -685,22 +685,35 @@ class _UploadTreeState extends State<UploadTree> {
     request.requestLevel = globalLevel;
     request.isAdd = true;
 
+    addTree.last_edite = request.requestEmail; // write the last edit email in db
+
     // date related
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    debugState(timestamp.toString());
+    debugState("The time upload: ${timestamp.toString()}");
     request.requestTime = timestamp;
+
+    addTree.COMM_DATEI = timestamp;
+    addTree.CRDATEI = timestamp;
+    addTree.LAST_MOD_D = timestamp;
+    addTree.LAST_RPT_U = timestamp;
 
     request.toTable();
 
     // add the tree to the firebase
-    await request.uploadFirebase();
-    await Future.delayed(const Duration(seconds: 1));
+    //await request.uploadFirebase();
+    //await Future.delayed(const Duration(seconds: 1));
+
+    setState(() {
+      firebaseUploading = false;
+    });
 
     showHint(context, "Request Uploaded!");
 
-    resetForm();
+    //resetForm();
   }
 
+
+  // reset the whole tree form after comfirming upload
   void resetForm() {
     debugState("reset controller");
 
@@ -720,11 +733,6 @@ class _UploadTreeState extends State<UploadTree> {
     _conditionController.clear();
 
     _assetIDController.clear();
-
-
-    setState(() {
-      firebaseUploading = false;
-    });
   }
 
   // add tree confirm

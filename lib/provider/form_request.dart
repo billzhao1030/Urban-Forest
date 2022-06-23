@@ -16,8 +16,8 @@ class TreeRequest {
 
   void toTable() {
     var str = "\nAdd request: ${isAdd.toString()}, By: $requestEmail\n"
-    "Level:$requestLevel, Version: ${tree.version}, Request Time: $requestTime\n"
-    "Location: x:${tree.longitude}, y: ${tree.latitude}\n"
+    "Level: $requestLevel, Version: ${tree.version}, Request Time: $requestTime\n"
+    "Location: x: ${tree.longitude}, y: ${tree.latitude}\n"
     "Scientific: ${tree.scientificName}, Common: ${tree.commonName}, Short: ${tree.shortScientificName}\n"
     "Long: ${tree.longScientificName}\n"
     "Street: ${tree.streetName}, Suburb: ${tree.suburb}\n"
@@ -25,7 +25,9 @@ class TreeRequest {
     "Height: ${tree.height}, Length: ${tree.length}, Width: ${tree.width}, Area: ${tree.area}\n"
     "Condition: ${tree.condition}\n"
     "Comment: ${tree.comment}\n"
-    "Asset ID: ${tree.ASSNBRI}";
+    "Asset ID: ${tree.ASSNBRI}\n"
+    "Relavant date: ${tree.COMM_DATEI}, ${tree.CRDATEI}, ${tree.LAST_MOD_D}, ${tree.LAST_RPT_U}\n"
+    "Last_edite: ${tree.last_edite}";
 
     debugState(str);
   }
