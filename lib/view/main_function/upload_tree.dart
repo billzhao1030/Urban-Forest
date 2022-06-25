@@ -47,7 +47,7 @@ class _UploadTreeState extends State<UploadTree> {
 
   // tree location related attribute controller
   final TextEditingController _latitudeController = TextEditingController();
-  final TextEditingController _longtitudeController = TextEditingController();
+  final TextEditingController _longitudeController = TextEditingController();
   final TextEditingController _surburbController = TextEditingController();
   final TextEditingController _streetNameController = TextEditingController();
 
@@ -76,23 +76,30 @@ class _UploadTreeState extends State<UploadTree> {
   var locCategory = "Urban"; 
   var treeLoc = "Street";
 
+  // variable for storing edit tree
+  var version = 1;
+  var objectID = "";
+
   @override
   void initState() {
-    processLocation();
+    if (widget.tree == null) {
+      debugState("Is add");
+      isAddTree = true;
+
+      processLocation();
+    } else {
+      debugState("Is edit");
+      isAddTree = false;
+
+      editControllerPreset();
+    }
+
     super.initState();
     _locClassDropDown = setDropDown(locClassItems);
     _locCategoryDropDown = setDropDown(locCategoryItems);
     _treeLocDropDown = setDropDown(treeLocItems);
 
     debugState("access level: $globalLevel");
-
-    if (widget.tree == null) {
-      debugState("Is add");
-      isAddTree = true;
-    } else {
-      debugState("Is edit");
-      isAddTree = false;
-    }
   }
 
   // set the three drop down menu
@@ -281,7 +288,7 @@ class _UploadTreeState extends State<UploadTree> {
                   processLocation();
                 }, 
                 child: !locationLoading 
-                  ? formText("Get location", fontsize: 18, fontStyle: FontStyle.italic)
+                  ? formText((isAddTree ? "Get location" : "Correct Location"), fontsize: 18, fontStyle: FontStyle.italic)
                   : const Center(child: CircularProgressIndicator(color:Colors.white, strokeWidth: 3.0,))
               ),
             ),
@@ -325,7 +332,7 @@ class _UploadTreeState extends State<UploadTree> {
             children: [
               //latitude and longtitude
               treeLocation("Latitude", "Latitude (read only))", _latitudeController),
-              treeLocation("Longtitude", "Longtitude (read only)", _longtitudeController),
+              treeLocation("Longtitude", "Longtitude (read only)", _longitudeController),
               treeAddress("Street", "Street name", _streetNameController),
               treeAddress("Suburb", "Locality", _surburbController)
             ],
@@ -668,74 +675,83 @@ class _UploadTreeState extends State<UploadTree> {
     TreeRequest request = TreeRequest();
 
     // get the tree and set the version to 1
-    Tree addTree = request.tree;
-    addTree.version = 1;
+    request.tree = isAddTree ? Tree() : widget.tree!;
+    Tree requestTree = request.tree;
+    requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
 
     // set the species fields
-    addTree.scientificName = _scientificController.text.trim();
-    addTree.shortScientificName = shortScientificName.trim();
-    addTree.commonName = _commonController.text.toUpperCase().trim();
+    requestTree.scientificName = _scientificController.text.trim();
+    requestTree.shortScientificName = shortScientificName.trim();
+    requestTree.commonName = _commonController.text.toUpperCase().trim();
     
     // set location 
-    addTree.latitude = double.parse(_latitudeController.text.trim());
-    addTree.longitude = double.parse(_longtitudeController.text.trim());
+    requestTree.latitude = double.parse(_latitudeController.text.trim());
+    requestTree.longitude = double.parse(_longitudeController.text.trim());
 
-    addTree.suburb = _surburbController.text.trim();
-    addTree.streetName = _streetNameController.text.trim();
+    requestTree.suburb = _surburbController.text.trim();
+    requestTree.streetName = _streetNameController.text.trim();
 
     // set location class
-    addTree.locClass = locClass;
-    addTree.locCategory = locCategory;
-    addTree.locType = treeLoc; 
+    requestTree.locClass = locClass;
+    requestTree.locCategory = locCategory;
+    requestTree.locType = treeLoc; 
 
     // set scale
     if (_treeHeightTextController.text.isNotEmpty) {
-      addTree.height = double.parse(_treeHeightTextController.text.trim());
+      requestTree.height = double.parse(_treeHeightTextController.text.trim());
     }
     if (_treeLengthTextController.text.isNotEmpty) {
-      addTree.length = double.parse(_treeLengthTextController.text.trim());
+      requestTree.length = double.parse(_treeLengthTextController.text.trim());
     }
     if (_treeWidthTextController.text.isNotEmpty) {
-      addTree.width = double.parse(_treeWidthTextController.text.trim());
+      requestTree.width = double.parse(_treeWidthTextController.text.trim());
     }
 
     // condition and comment
     if (_commentController.text.isNotEmpty) {
-      addTree.comment = _commentController.text.trim();
+      requestTree.comment = _commentController.text.trim();
     }
     if (_conditionController.text.isNotEmpty) {
-      addTree.condition = _conditionController.text.trim();
+      requestTree.condition = _conditionController.text.trim();
     }
 
-    addTree.ASSNBRI = _assetIDController.text.trim();
+    requestTree.ASSNBRI = _assetIDController.text.trim();
 
     request.requestEmail = FirebaseAuth.instance.currentUser!.email.toString();
     request.requestLevel = globalLevel;
-    request.isAdd = true;
+    request.isAdd = isAddTree;
 
-    addTree.last_edite = request.requestEmail; // write the last edit email in db
+    requestTree.last_edite = request.requestEmail; // write the last edit email in db
 
     // date related
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     debugState("The time upload: ${timestamp.toString()}");
     request.requestTime = timestamp;
 
-    addTree.COMM_DATEI = timestamp;
-    addTree.CRDATEI = timestamp;
-    addTree.LAST_MOD_D = timestamp;
-    addTree.LAST_RPT_U = timestamp;
+    requestTree.COMM_DATEI = timestamp;
+    requestTree.CRDATEI = timestamp;
+    requestTree.LAST_MOD_D = timestamp;
+    requestTree.LAST_RPT_U = timestamp;
 
     request.toTable();
 
     // add the tree to the firebase
     await request.uploadFirebase();
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     setState(() {
       firebaseUploading = false;
     });
 
     showHint(context, "Request Uploaded!");
+
+    if (!isAddTree) {
+      await Future.delayed(const Duration(milliseconds: 1500));
+      // hide the current snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      Navigator.pop(context);
+    }
 
     resetForm();
   }
@@ -746,7 +762,7 @@ class _UploadTreeState extends State<UploadTree> {
     debugState("reset controller");
 
     _latitudeController.clear();
-    _longtitudeController.clear();
+    _longitudeController.clear();
     _streetNameController.clear();
     _surburbController.clear();
 
@@ -908,7 +924,55 @@ class _UploadTreeState extends State<UploadTree> {
     setState(() {
       locationLoading = false;
       _latitudeController.text = position.latitude.toStringAsFixed(6);
-      _longtitudeController.text = position.longitude.toStringAsFixed(6);
+      _longitudeController.text = position.longitude.toStringAsFixed(6);
     }); 
+  }
+
+
+  // read and fill the relavant controller when editing
+  editControllerPreset() {
+    Tree editTree = widget.tree!;
+
+    setState(() {
+      _commonController.text = editTree.commonName;
+      _scientificController.text = editTree.scientificName;
+
+      _latitudeController.text = editTree.latitude.toStringAsFixed(6);
+      _longitudeController.text = editTree.longitude.toStringAsFixed(6);
+      _streetNameController.text = editTree.streetName;
+      _surburbController.text = editTree.suburb;
+
+      if (editTree.height != 0) {
+        _treeHeightTextController.text = editTree.height.toString();
+      }
+
+      if (editTree.length != 0) {
+        _treeLengthTextController.text = editTree.length.toString();
+      }
+
+      if (editTree.width != 0) {
+        _treeWidthTextController.text = editTree.width.toString();
+      }
+
+      _assetIDController.text = editTree.ASSNBRI;
+
+      if (editTree.locCategory == null) {
+        locCategory = "Rural";
+      } else {
+        locCategory = "Urban";
+      }
+
+      if (editTree.locClass == null || !editTree.locClass!.contains("Roads")) {
+        locClass = "Not Applicable";
+      } else {
+        locClass = "Roads";
+      }
+
+      if (editTree.locType.contains("STREET")) {
+        treeLoc = "Street";
+      } else {
+        treeLoc = "Park";
+      }
+    });
   }
 }

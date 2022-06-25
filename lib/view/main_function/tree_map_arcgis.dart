@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:urban_forest/provider/tree.dart';
+import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
 
@@ -44,26 +45,32 @@ class _TreeMapState extends State<TreeMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: mapLoading 
-              ? const Center(child: CircularProgressIndicator(),)
-              : TreePointMap(marker: marker, longitude: currLongitude, latitude: currLatitude,),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        // hide the current snackbar
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: mapLoading 
+                ? const Center(child: CircularProgressIndicator(),)
+                : TreePointMap(marker: marker, longitude: currLongitude, latitude: currLatitude,),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.refresh),
+          onPressed: (){
+            setState(() {
+              mapLoading = true;
+            });
+            dataLoading();
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.refresh),
-        onPressed: (){
-          setState(() {
-            mapLoading = true;
-          });
-          dataLoading();
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
 
   }
@@ -122,7 +129,7 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=200&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=150&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
@@ -156,6 +163,7 @@ class _TreeMapState extends State<TreeMap> {
           position: LatLng(tree.latitude, tree.longitude),
           
           onTap: (){
+            tree.editModeDebug();
             _displayPopup(context, tree);
           }
         )
@@ -164,14 +172,19 @@ class _TreeMapState extends State<TreeMap> {
       //tree.toMapPoint(); // show the tree list
       i++;
     }
+
+    // the current place marker
     marker.add(
       Marker(
-          markerId: MarkerId(i.toString()),
-          icon: BitmapDescriptor.defaultMarker,
-          position: LatLng(currLatitude, currLongitude),
-          
-          onTap: null
-        )
+        markerId: const MarkerId("curr"),
+        icon: BitmapDescriptor.defaultMarker,
+        position: LatLng(currLatitude, currLongitude),
+        
+        onTap: () {
+          //showHint(context, "You are here!");
+          debugState("here");
+        }
+      )
     );
   }
 
@@ -198,7 +211,7 @@ class _TreeMapState extends State<TreeMap> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
-                      updateTree();
+                      updateTree(tree);
                     },
                   ),
                 )
@@ -210,15 +223,13 @@ class _TreeMapState extends State<TreeMap> {
     );
   }
 
-  void updateTree() {
+  void updateTree(Tree tree) {
     log("edit");
-    Tree thisTree = Tree();
-    thisTree.ASSNBRI = "113131";
     
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UploadTree(tree: thisTree,),
+        builder: (context) => UploadTree(tree: tree,),
       )
     );
   }
@@ -247,7 +258,7 @@ class _TreePointMapState extends State<TreePointMap> {
       rotateGesturesEnabled: false,
       initialCameraPosition: CameraPosition(
         target: LatLng(widget.latitude, widget.longitude),
-        zoom: 17.5,
+        zoom: 18,
         tilt: 0
       ),
       markers: widget.marker,

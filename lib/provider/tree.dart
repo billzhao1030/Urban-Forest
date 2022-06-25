@@ -22,8 +22,8 @@ class Tree {
   String suburb = ""; // Suburb
   String streetName = ""; // LocGrp
 
-  String locClass = ""; // LocClass
-  String locCategory = ""; // LocCat
+  String? locClass = ""; // LocClass
+  String? locCategory = ""; // LocCat
   String locType = ""; // TreeLocati: STREET/PARK
 
   // condition
@@ -119,8 +119,31 @@ class Tree {
 
       commonName = attributes["SEARCH_DES"].toString().toLowerCase();
       scientificName = attributes["DESCR"].toString();
+
+      version = attributes["VERS"];
+      ASSNBRI = attributes["ASSNBRI"];
+
+      locType = attributes["TreeLocati"].toString();
+      locClass = attributes["LocClass"].toString();
+      locCategory = attributes["LocCat"].toString();
+
+      length = attributes["LengthDime"].toDouble();
+      width = attributes["WidthDimen"].toDouble();
+      height = attributes["HeightDime"].toDouble();
     }
 
+
+  
+  void editModeDebug() {
+    var str = "Object ID: $objectID, ASSNBRI: $ASSNBRI, Version: $version\n"
+    "x: $longitude, y: $latitude\n"
+    "Common: $commonName, Scientific: $scientificName\n"
+    "Street: $streetName, Suburb: $suburb\n"
+    "Width: $width, Length: $length, Height: $height\n"
+    "LocClass: $locClass, LocCategory: $locCategory, LocType: $locType";
+
+    debugState(str);
+  }
 
   void toMapPoint() {
     var str = "Object ID: $objectID\n"
