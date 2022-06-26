@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/provider/tree.dart';

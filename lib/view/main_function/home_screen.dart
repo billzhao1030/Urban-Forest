@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/provider/user.dart';
-import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
 import 'package:urban_forest/view/main_function/profile/profile.dart';
