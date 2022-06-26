@@ -164,7 +164,7 @@ class _TreeMapState extends State<TreeMap> {
           
           onTap: (){
             tree.editModeDebug();
-            _displayPopup(context, tree);
+            _displayPopup(context, tree, point);
           }
         )
       );
@@ -188,7 +188,7 @@ class _TreeMapState extends State<TreeMap> {
     );
   }
 
-  void _displayPopup(BuildContext context, Tree tree) {
+  void _displayPopup(BuildContext context, Tree tree, dynamic json) {
     showDialog(
       context: context, 
       builder: (BuildContext context) {
@@ -203,16 +203,35 @@ class _TreeMapState extends State<TreeMap> {
                 Text("Scientific Name: ${tree.scientificName}"),
                 Text("Street: ${tree.streetName}"),
                 Text("Suburb: ${tree.suburb}"),
-                SimpleDialogOption(
-                  onPressed: () {},
-                  child: ElevatedButton(
-                    child: const Text(
-                      "Edit"
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: SimpleDialogOption(
+                    onPressed: () {},
+                    child: ElevatedButton(
+                      child: const Text(
+                        "Edit"
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        updateTree(tree);
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      updateTree(tree);
-                    },
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: SimpleDialogOption(
+                    onPressed: () {},
+                    child: ElevatedButton(
+                      child: const Text(
+                        "View Detail"
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        //TODO: detail info from raw
+                        debugState("detail");
+                      },
+                    ),
                   ),
                 )
               ],

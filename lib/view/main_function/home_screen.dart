@@ -68,15 +68,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         
         items: const [
           BottomNavigationBarItem(
-            label: 'Map',
+            label: 'Tree Map',
             icon: Icon(CupertinoIcons.map)
           ),
           BottomNavigationBarItem(
-            label: 'Add',
+            label: 'Add Tree',
             icon: Icon(CupertinoIcons.add_circled)
           ),
           BottomNavigationBarItem(
-            label: 'Profile',
+            label: 'Profile/Setting',
             icon: Icon(CupertinoIcons.profile_circled)
           )
         ],

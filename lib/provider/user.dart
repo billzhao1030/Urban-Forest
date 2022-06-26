@@ -15,12 +15,17 @@ class UserAccount {
 
   String? phoneNumber;
 
+  int requestAdd = 0;
+  int requestUpdate = 0;
+  int requestAccepted = 0;
+
   UserAccount();
 
   void profileToDebug() {
     var debugStr = "\nUser profile:\n"
     "$firstName $lastName, username: $userName, email: $emailAddress\n"
-    "uid: $uid, access level: $accessLevel, verified: $hasSignUpVerified";
+    "uid: $uid, access level: $accessLevel, verified: $hasSignUpVerified\n"
+    "requestAdd: $requestAdd, requestUpdate: $requestUpdate, requestAccepted: $requestAccepted";
     debugState(debugStr);
   }
 
@@ -32,7 +37,10 @@ class UserAccount {
       userName = json['userName'],
       emailAddress = json['email'],
       accessLevel = json['accessLevel'],
-      hasSignUpVerified = json['hasSignUpVerified'];
+      hasSignUpVerified = json['hasSignUpVerified'],
+      requestAdd = json['requestAdd'],
+      requestUpdate = json['requestUpdate'],
+      requestAccepted = json['requestAccepted'];
       
 
   Map<String, dynamic> toJson() =>

@@ -11,6 +11,8 @@ class TreeRequest {
   int requestTime = 0;
   int requestLevel = 1;
   String requestEmail = "";
+  String requestUID = "";
+  bool confirmed = false;
 
   Tree tree = Tree();
 
@@ -34,13 +36,15 @@ class TreeRequest {
 
   uploadFirebase() async {
     DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
-    var addID = dateFormatID.format(DateTime.now());
+    var addID = dateFormatID.format(DateTime.now()) + "%$requestUID";
 
     var data = {
       'isAdd': isAdd,
       'requestTime': requestTime,
       'requestLevel': requestLevel,
       'requestEmail': requestEmail,
+      'requestUID': requestUID,
+      'confirmed': confirmed,
       'version': tree.version,
       'scientificName': tree.scientificName,
       'shortScientificName': tree.shortScientificName,

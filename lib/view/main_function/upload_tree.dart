@@ -37,7 +37,7 @@ class _UploadTreeState extends State<UploadTree> {
 
   bool locationLoading = false;
   bool imageProcessing = false;
-  bool firebaseUploading = false;
+  bool databaseUploading = false;
   double latitude = 0.0;
   double longitude = 0.0;
 
@@ -407,46 +407,8 @@ class _UploadTreeState extends State<UploadTree> {
         ),
 
         // asset id
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CupertinoFormSection(
-            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
-            header: const Text(
-              "Tree Identifier", 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
-            ),
-            footer: const Center(
-              child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Text("Tree Asset ID (ASSNBRI), please make sure this is the unique ID in the database"),
-              ),
-            ),
-            margin: const EdgeInsets.all(4.0),
-            children: [
-              CupertinoTextFormFieldRow(
-                controller: _assetIDController,
-                prefix: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.32,
-                  child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
-                ),
-                obscureText: false,
-                autocorrect: true,
-                enableSuggestions: true,
-                cursorColor: Colors.black,
-                style: TextStyle(color: Colors.black.withOpacity(0.88)),
-                placeholder: "6 digits ID",
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                autovalidateMode: AutovalidateMode.always,
-                validator: (value) {
-                  return validateAssetID(value);
-                },
-              )
-            ]
-          ),
-        ),
+        (globalLevel > 1) ? const SizedBox(height: 10) : Container(),
+        (globalLevel > 1) ? assetIDsection() : Container(),
 
         // tree scale
         const SizedBox(height: 10),
@@ -499,23 +461,67 @@ class _UploadTreeState extends State<UploadTree> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 setState(() {
-                  firebaseUploading = true;
+                  databaseUploading = true;
                 });
+
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return addUploadAlert(context);
+                    return requestUploadAlert(context);
                   },
+                  barrierDismissible: false
                 );
               }
             },
-            child: !firebaseUploading 
+            child: !databaseUploading 
               ? formText("Submit", fontsize: 22, fontStyle: FontStyle.italic)
               : const CircularProgressIndicator(color: Colors.white,),
           ),
         ),
       ],
     );
+  }
+
+  Padding assetIDsection() {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CupertinoFormSection(
+          backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+          header: const Text(
+            "Tree Identifier", 
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+          ),
+          footer: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Text("Tree Asset ID (ASSNBRI), please make sure this is the unique ID in the database"),
+            ),
+          ),
+          margin: const EdgeInsets.all(4.0),
+          children: [
+            CupertinoTextFormFieldRow(
+              controller: _assetIDController,
+              prefix: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.32,
+                child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
+              ),
+              obscureText: false,
+              autocorrect: true,
+              enableSuggestions: true,
+              cursorColor: Colors.black,
+              style: TextStyle(color: Colors.black.withOpacity(0.88)),
+              placeholder: "6 digits ID",
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              autovalidateMode: AutovalidateMode.always,
+              validator: (value) {
+                return validateAssetID(value);
+              },
+            )
+          ]
+        ),
+      );
   }
 
   // Three dropdown menus
@@ -670,81 +676,90 @@ class _UploadTreeState extends State<UploadTree> {
   }
 
 
-  // process the form data
+  // process the form data and upload to the database (firebase/ArcGIS)
   processForm() async {
-    TreeRequest request = TreeRequest();
+    if (globalLevel > 1 && !twoStepUpload) {
+      //TODO: ArcGIS upload
+      
 
-    // get the tree and set the version to 1
-    request.tree = isAddTree ? Tree() : widget.tree!;
-    Tree requestTree = request.tree;
-    requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
+      showHint(context, "Request uploaded to Firebase!");
+    } else {
+      TreeRequest request = TreeRequest();
 
-    // set the species fields
-    requestTree.scientificName = _scientificController.text.trim();
-    requestTree.shortScientificName = shortScientificName.trim();
-    requestTree.commonName = _commonController.text.toUpperCase().trim();
+      // get the tree and set the version to 1
+      request.tree = isAddTree ? Tree() : widget.tree!;
+      Tree requestTree = request.tree;
+      requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
+
+      // set the species fields
+      requestTree.scientificName = _scientificController.text.trim();
+      requestTree.shortScientificName = shortScientificName.trim();
+      requestTree.commonName = _commonController.text.toUpperCase().trim();
+      
+      // set location 
+      requestTree.latitude = double.parse(_latitudeController.text.trim());
+      requestTree.longitude = double.parse(_longitudeController.text.trim());
+
+      requestTree.suburb = _surburbController.text.trim();
+      requestTree.streetName = _streetNameController.text.trim();
+
+      // set location class
+      requestTree.locClass = locClass;
+      requestTree.locCategory = locCategory;
+      requestTree.locType = treeLoc; 
+
+      // set scale
+      if (_treeHeightTextController.text.isNotEmpty) {
+        requestTree.height = double.parse(_treeHeightTextController.text.trim());
+      }
+      if (_treeLengthTextController.text.isNotEmpty) {
+        requestTree.length = double.parse(_treeLengthTextController.text.trim());
+      }
+      if (_treeWidthTextController.text.isNotEmpty) {
+        requestTree.width = double.parse(_treeWidthTextController.text.trim());
+      }
+
+      // condition and comment
+      if (_commentController.text.isNotEmpty) {
+        requestTree.comment = _commentController.text.trim();
+      }
+      if (_conditionController.text.isNotEmpty) {
+        requestTree.condition = _conditionController.text.trim();
+      }
+
+      requestTree.ASSNBRI = (globalLevel > 1) ? _assetIDController.text.trim() : "";
+
+      request.requestEmail = FirebaseAuth.instance.currentUser!.email.toString();
+      request.requestUID = FirebaseAuth.instance.currentUser!.uid.toString();
+      request.requestLevel = globalLevel;
+      request.isAdd = isAddTree;
+
+      requestTree.last_edite = request.requestEmail; // write the last edit email in db
+
+      // date related
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      debugState("The time upload: ${timestamp.toString()}");
+      request.requestTime = timestamp;
+
+      requestTree.COMM_DATEI = timestamp;
+      requestTree.CRDATEI = timestamp;
+      requestTree.LAST_MOD_D = timestamp;
+      requestTree.LAST_RPT_U = timestamp;
+
+      request.toTable();
+
+      // add the tree to the firebase
+      await request.uploadFirebase();
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      setState(() {
+        databaseUploading = false;
+      });
+
+      showHint(context, "Request uploaded to Firebase!");
+    }
+
     
-    // set location 
-    requestTree.latitude = double.parse(_latitudeController.text.trim());
-    requestTree.longitude = double.parse(_longitudeController.text.trim());
-
-    requestTree.suburb = _surburbController.text.trim();
-    requestTree.streetName = _streetNameController.text.trim();
-
-    // set location class
-    requestTree.locClass = locClass;
-    requestTree.locCategory = locCategory;
-    requestTree.locType = treeLoc; 
-
-    // set scale
-    if (_treeHeightTextController.text.isNotEmpty) {
-      requestTree.height = double.parse(_treeHeightTextController.text.trim());
-    }
-    if (_treeLengthTextController.text.isNotEmpty) {
-      requestTree.length = double.parse(_treeLengthTextController.text.trim());
-    }
-    if (_treeWidthTextController.text.isNotEmpty) {
-      requestTree.width = double.parse(_treeWidthTextController.text.trim());
-    }
-
-    // condition and comment
-    if (_commentController.text.isNotEmpty) {
-      requestTree.comment = _commentController.text.trim();
-    }
-    if (_conditionController.text.isNotEmpty) {
-      requestTree.condition = _conditionController.text.trim();
-    }
-
-    requestTree.ASSNBRI = _assetIDController.text.trim();
-
-    request.requestEmail = FirebaseAuth.instance.currentUser!.email.toString();
-    request.requestLevel = globalLevel;
-    request.isAdd = isAddTree;
-
-    requestTree.last_edite = request.requestEmail; // write the last edit email in db
-
-    // date related
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
-    debugState("The time upload: ${timestamp.toString()}");
-    request.requestTime = timestamp;
-
-    requestTree.COMM_DATEI = timestamp;
-    requestTree.CRDATEI = timestamp;
-    requestTree.LAST_MOD_D = timestamp;
-    requestTree.LAST_RPT_U = timestamp;
-
-    request.toTable();
-
-    // add the tree to the firebase
-    await request.uploadFirebase();
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    setState(() {
-      firebaseUploading = false;
-    });
-
-    showHint(context, "Request Uploaded!");
-
     if (!isAddTree) {
       await Future.delayed(const Duration(milliseconds: 1500));
       // hide the current snackbar
@@ -777,18 +792,20 @@ class _UploadTreeState extends State<UploadTree> {
     _conditionController.clear();
 
     _assetIDController.clear();
+
+    bestMatchStr = "";
   }
 
   // add tree confirm
-  AlertDialog addUploadAlert(BuildContext context) {
+  AlertDialog requestUploadAlert(BuildContext context) {
     return AlertDialog(
-      title: const Text('Upload a new tree'),
+      title: isAddTree ? const Text('Upload a new tree') : const Text('Edit an existing tree'),
       content: const Text('Confirm this request?'),
       actions: <Widget>[
         TextButton(
           onPressed: () {
             setState(() {
-              firebaseUploading = false;
+              databaseUploading = false;
             });
 
             Navigator.pop(context);
@@ -803,6 +820,7 @@ class _UploadTreeState extends State<UploadTree> {
         TextButton(
           onPressed: () async {
             Navigator.pop(context);
+            
             processForm();
           },
           child: const Text(

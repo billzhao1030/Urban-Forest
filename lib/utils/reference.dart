@@ -18,6 +18,7 @@ const String loggedInPassword = "UserPassword";
 const String loggedInUID = "UserUID";
 
 int globalLevel = 1;
+bool twoStepUpload = true; 
 
 List<String> locClassItems = ["Roads", "Not Applicable"];
 List<String> locCategoryItems = ["Urban", "Rural"];
