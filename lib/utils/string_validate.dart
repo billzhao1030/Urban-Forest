@@ -55,7 +55,7 @@ extension ValidateString on String {
   }
 
   bool get isValidSpecies {
-    final speciesRegExp = RegExp(r"^([A-Za-z. ])+$");
+    final speciesRegExp = RegExp(r"^([A-Za-z. '])+$");
     return speciesRegExp.hasMatch(this);
   }
 

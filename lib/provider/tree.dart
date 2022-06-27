@@ -40,7 +40,7 @@ class Tree {
 
   // inner attributes
   String ASSNBRI = ""; // GIS ID
-  String creat_us = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
+  String create_us = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
   int created_da = 0; // DATE
   String last_edite = "Andrew.Ritchie@launceston.tas.gov.au_launceston";
   int last_edi_1 = 0; // DATE
@@ -130,6 +130,55 @@ class Tree {
       length = attributes["LengthDime"].toDouble();
       width = attributes["WidthDimen"].toDouble();
       height = attributes["HeightDime"].toDouble();
+
+      shortScientificName = attributes["SHORT_DESC"];
+      BARCODE = attributes["BARCODE"];
+      ASSET_STAT = attributes["ASSET_STAT"];
+      DEPR_ASSET = attributes["DEPR_ASSET"];
+      ACQN_DATEI = attributes["ACQN_DATEI"] as int;
+      EXP_COMM_D = attributes["EXP_COMM_D"] as int;
+      COMM_DATEI = attributes["COMM_DATEI"] as int;
+      DISPOSAL_D = attributes["DISPOSAL_D"] as int;
+      SUPP_METH = attributes["SUPP_METH_"];
+      SUPP_NAME = attributes["SUPP_NAME"];
+      SUPP_REF = attributes["SUPP_REF"];
+      MANUF_NAME = attributes["MANUF_NAME"];
+      OTHER_NBR = attributes["OTHER_NBR"];
+      CRUSER = attributes["CRUSER"];
+      CRDATEI = attributes["CRDATEI"] as int;
+      CRTIMEI = attributes["CRTIMEI"].toString();
+      CRTERM = attributes["CRTERM"];
+      CRWINDOW = attributes["CRWINDOW"];
+      LAST_MOD_U = attributes["LAST_MOD_U"];
+      LAST_MOD_D = attributes["LAST_MOD_D"];
+      LAST_MOD_T = attributes["LAST_MOD_T"].toString();
+      LAST_MOD_1 = attributes["LAST_MOD_1"];
+      LAST_MOD_W = attributes["LAST_MOD_W"];
+      ASSET_RID = attributes["ASSET_RID"].toString();
+      OPERATING_ = attributes["OPERATING_"];
+      PRIMARY_AT = attributes["PRIMARY_AT"];
+      LAST_RPT_U = attributes["LAST_RPT_U"];
+      LAST_RPT_1 = attributes["LAST_RPT_1"].toString();
+      ConstructM = attributes["ConstructM"];
+      AssetSourc = attributes["AssetSourc"];
+      WateringMe = attributes["WateringMe"];
+      CapitalPro = attributes["CapitalPro"];
+      Class_ = attributes["Class"];
+      Category = attributes["Category"];
+      Grp = attributes["Grp"];
+      Facility = attributes["Facility"];
+      Network = attributes["Network"];
+      Team = attributes["Team"];
+      CostCentre = attributes["CostCentre"];
+      LCCLeases = attributes["LCCLeases"];
+      MaintZoneC = attributes["MaintZoneC"];
+      MaintZon_1 = attributes["MaintZon_1"];
+      condition = attributes["Condition"];
+      MaintCycle = attributes["MaintCycle"];
+      create_us = attributes["created_us"];
+      created_da = attributes["created_da"];
+      last_edite = attributes["last_edite"];
+      last_edi_1 = attributes["last_edi_1"];
     }
 
 
@@ -137,11 +186,14 @@ class Tree {
   void treeInfoDebug() {
     var str = "Object ID: $objectID, ASSNBRI: $ASSNBRI, Version: $version\n"
     "x: $longitude, y: $latitude\n"
-    "Common: $commonName, Scientific: $scientificName\n"
+    "Common: $commonName, Scientific: $scientificName, Short Scientific\n"
     "Street: $streetName, Suburb: $suburb\n"
     "Width: $width, Length: $length, Height: $height\n"
-    "LocClass: $locClass, LocCategory: $locCategory, LocType: $locType";
+    "LocClass: $locClass, LocCategory: $locCategory, LocType: $locType\n"
+    "barcode: $BARCODE, ";
 
     debugState(str);
   }  
+
+  
 }

@@ -158,8 +158,7 @@ class _TreeMapState extends State<TreeMap> {
     for (var point in json["features"]) {
       Tree tree = Tree.fromJson(point);
 
-      debugState(point.runtimeType.toString());
-
+      
       marker.add(
         Marker(
           markerId: MarkerId(i.toString()),
@@ -169,8 +168,8 @@ class _TreeMapState extends State<TreeMap> {
           onTap: (){
             tree.treeInfoDebug();
             debugState(point.toString());
-            debugState(point.runtimeType.toString());
-            _displayPopup(context, tree, point);
+
+            _displayPopup(context, tree);
           }
         )
       );
@@ -194,7 +193,7 @@ class _TreeMapState extends State<TreeMap> {
     );
   }
 
-  void _displayPopup(BuildContext context, Tree tree, dynamic json) {
+  void _displayPopup(BuildContext context, Tree tree) {
     showDialog(
       context: context, 
       builder: (BuildContext context) {
@@ -289,15 +288,12 @@ class _TreeMapState extends State<TreeMap> {
                         ),
                       ),
                       onPressed: () {
-
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => TreeDetail(json: json),
+                            builder: (context) => TreeDetail(tree: tree),
                           )
                         );
-
-                        debugState("detail");
                       },
                     ),
                   ),

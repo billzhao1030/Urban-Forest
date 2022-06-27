@@ -64,7 +64,7 @@ class TreeRequest {
       'width': tree.width,
       'area': tree.area,
       'ASSNBRI': tree.ASSNBRI,
-      'creat_us': tree.creat_us,
+      'creat_us': tree.create_us,
       'created_da': tree.created_da,
       'last_edite': tree.last_edite,
       'last_edi_1': tree.last_edi_1,
