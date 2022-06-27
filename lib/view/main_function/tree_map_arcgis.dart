@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
+import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/main_function/tree_details.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
 
@@ -102,7 +103,7 @@ class _TreeMapState extends State<TreeMap> {
         'Location permissions are permanently denied, we cannot request permissions.');
     } 
 
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   }
 
   void setMarker() async {
@@ -276,7 +277,7 @@ class _TreeMapState extends State<TreeMap> {
                     ),
                   ),
                 ),
-                SizedBox(
+                (globalLevel > 1) ? SizedBox(
                   width: MediaQuery.of(context).size.width * 0.6,
                   child: SimpleDialogOption(
                     onPressed: () {},
@@ -297,7 +298,7 @@ class _TreeMapState extends State<TreeMap> {
                       },
                     ),
                   ),
-                )
+                ) : Container()
               ],
             ),
           ],

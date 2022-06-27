@@ -177,7 +177,7 @@ class _UploadTreeState extends State<UploadTree> {
         'Location permissions are permanently denied, we cannot request permissions.');
     } 
 
-    return await Geolocator.getCurrentPosition();
+    return await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   }
 
   // get address from position
