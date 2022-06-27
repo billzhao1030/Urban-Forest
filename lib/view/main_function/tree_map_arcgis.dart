@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
+import 'package:urban_forest/view/main_function/tree_details.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
 
 
@@ -130,7 +131,7 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=150&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=100&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
@@ -157,6 +158,8 @@ class _TreeMapState extends State<TreeMap> {
     for (var point in json["features"]) {
       Tree tree = Tree.fromJson(point);
 
+      debugState(point.runtimeType.toString());
+
       marker.add(
         Marker(
           markerId: MarkerId(i.toString()),
@@ -164,13 +167,15 @@ class _TreeMapState extends State<TreeMap> {
           position: LatLng(tree.latitude, tree.longitude),
           
           onTap: (){
-            tree.editModeDebug();
+            tree.treeInfoDebug();
+            debugState(point.toString());
+            debugState(point.runtimeType.toString());
             _displayPopup(context, tree, point);
           }
         )
       );
 
-      //tree.toMapPoint(); // show the tree list
+      //tree.treeInfoDebug(); // show the tree list
       i++;
     }
 
@@ -198,19 +203,72 @@ class _TreeMapState extends State<TreeMap> {
           children: [
             Column(
               children: [
-                Text("Longitude: ${tree.longitude}"),
-                Text("Latitude: ${tree.latitude}"),
-                Text("Common Name: ${tree.commonName}"),
-                Text("Scientific Name: ${tree.scientificName}"),
-                Text("Street: ${tree.streetName}"),
-                Text("Suburb: ${tree.suburb}"),
+                DataTable(
+                  columns: const <DataColumn>[
+                    DataColumn(
+                      label: Text(
+                        'Attributes',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Value',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  ],
+                  rows: <DataRow>[
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Latitude')),
+                        DataCell(Text(tree.latitude.toStringAsFixed(6))),
+                      ],
+                    ),
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Longitude')),
+                        DataCell(Text(tree.longitude.toStringAsFixed(6))),
+                      ],
+                    ),
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Common Name')),
+                        DataCell(Text(tree.commonName)),
+                      ],
+                    ),
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Scientific Name')),
+                        DataCell(Text(tree.scientificName)),
+                      ],
+                    ),
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Street Name')),
+                        DataCell(Text(tree.streetName)),
+                      ],
+                    ),
+                    DataRow(
+                      cells: <DataCell>[
+                        const DataCell(Text('Suburb')),
+                        DataCell(Text(tree.suburb)),
+                      ],
+                    ),
+                  ],
+                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.6,
                   child: SimpleDialogOption(
                     onPressed: () {},
                     child: ElevatedButton(
                       child: const Text(
-                        "Edit"
+                        "Edit",
+                        style: TextStyle(
+                          fontSize: 20
+                        ),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
@@ -225,11 +283,20 @@ class _TreeMapState extends State<TreeMap> {
                     onPressed: () {},
                     child: ElevatedButton(
                       child: const Text(
-                        "View Detail"
+                        "View Detail",
+                        style: TextStyle(
+                          fontSize: 20
+                        ),
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
-                        //TODO: detail info from raw
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TreeDetail(json: json),
+                          )
+                        );
+
                         debugState("detail");
                       },
                     ),

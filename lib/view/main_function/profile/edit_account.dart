@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class EditAccount extends StatefulWidget {
   const EditAccount({ Key? key, required this.userUID }) : super(key: key);
-  final userUID;
+  final String userUID;
 
   @override
   State<EditAccount> createState() => _EditAccountState();
@@ -19,7 +19,7 @@ class _EditAccountState extends State<EditAccount> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: const Text("asfhkahf"),
+      body: Text("asfhkahf ${widget.userUID.toString()}"),
     );
   }
 }

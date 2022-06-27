@@ -134,7 +134,7 @@ class Tree {
 
 
   
-  void editModeDebug() {
+  void treeInfoDebug() {
     var str = "Object ID: $objectID, ASSNBRI: $ASSNBRI, Version: $version\n"
     "x: $longitude, y: $latitude\n"
     "Common: $commonName, Scientific: $scientificName\n"
@@ -143,15 +143,5 @@ class Tree {
     "LocClass: $locClass, LocCategory: $locCategory, LocType: $locType";
 
     debugState(str);
-  }
-
-  void toMapPoint() {
-    var str = "Object ID: $objectID\n"
-    "x: $longitude, y: $latitude\n"
-    "Common: $commonName, Scientific: $scientificName\n"
-    "Street: $streetName, Suburb: $suburb\n";
-
-    debugState(str);
-  }
-    
+  }  
 }
