@@ -164,18 +164,30 @@ class _UserProfileState extends State<UserProfile> {
     subtitle: '',
     leading: settingIcon(Icons.logout, Colors.blueAccent),
     onTap: () async {
-      debugState("Logout");
-      FirebaseAuth.instance.signOut();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return settingAlert(
+            context,
+            "Logout your account",
+            "Confirm to sign out?",
+            () async {
+              debugState("Logout");
+              FirebaseAuth.instance.signOut();
 
-      // set preference
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString(loggedInPassword, "");
+              // set preference
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString(loggedInPassword, "");
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SignInView(filledEmail: email),
-        )
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SignInView(filledEmail: email),
+                )
+              );
+            }
+          );
+        }
       );
     },
   );
@@ -184,9 +196,21 @@ class _UserProfileState extends State<UserProfile> {
     title: 'Delete Account',
     subtitle: '',
     leading: settingIcon(Icons.delete, Colors.redAccent),
-    onTap: () {
-      debugState("Delete Account");
-      
+    onTap: () async {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return settingAlert(
+            context,
+            "Delete this account",
+            "Confirm to delete this account, "
+            "notice that all your account data would be deleted and can't be recoverd!",
+            () async {
+              debugState("Delete Account");
+            }
+          );
+        }
+      );
     },
   );
 
@@ -195,19 +219,31 @@ class _UserProfileState extends State<UserProfile> {
     subtitle: '',
     leading: settingIcon(Icons.clear_all, Colors.yellow),
     onTap: () async {
-      debugState("Clear Data");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return settingAlert(
+            context,
+            "Clear data",
+            "Confirm to clear all cache and shared perference for this device?",
+            () async {
+              debugState("Clear Data");
 
-      FirebaseAuth.instance.signOut();
-                  
-      // set preference
-      final prefs = await SharedPreferences.getInstance();
-      prefs.clear();
+              FirebaseAuth.instance.signOut();
+                          
+              // set preference
+              final prefs = await SharedPreferences.getInstance();
+              prefs.clear();
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SignInView(filledEmail: email),
-        )
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SignInView(filledEmail: email),
+                )
+              );
+            }
+          );
+        }
       );
     },
   );
@@ -217,9 +253,21 @@ class _UserProfileState extends State<UserProfile> {
     subtitle: '',
     leading: settingIcon(Icons.bug_report, Colors.teal),
     child: SettingsScreen(
-      title: "Send feedback",
+      title: "Report a bug",
       children: [
-        Text("SAFA")
+        const Text("SAFA"),
+        ElevatedButton(
+          onPressed: () async {
+            debugState("Send a bug");
+            showHint(context, "You have uploaded the bug report!");
+            await Future.delayed(const Duration(milliseconds: 1500));
+            // hide the current snackbar
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            
+            Navigator.pop(context);
+          },  
+          child: const Text("upload")
+        )
       ]
     ),
   );
@@ -231,10 +279,54 @@ class _UserProfileState extends State<UserProfile> {
     child: SettingsScreen(
       title: "Send feedback",
       children: [
-        Text("SAFA")
+        const Text("SAFA"),
+        ElevatedButton(
+          onPressed: () async {
+            debugState("Send a feedback");
+
+            showHint(context, "You have uploaded the feedback!");
+            await Future.delayed(const Duration(milliseconds: 1500));
+            // hide the current snackbar
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            
+            Navigator.pop(context);
+          },  
+          child: const Text("upload")
+        )
       ]
     ),
   );
 
-  
+   // add tree confirm
+  AlertDialog settingAlert(BuildContext context, String title, String content, Function onTap) {
+    return AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'No',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            onTap();
+          },
+          child: const Text(
+            'Yes',
+            style: TextStyle(
+                fontSize: 22
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

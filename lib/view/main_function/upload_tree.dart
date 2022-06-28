@@ -704,8 +704,8 @@ class _UploadTreeState extends State<UploadTree> {
 
       // set location class
       requestTree.locClass = locClass;
-      requestTree.locCategory = locCategory;
-      requestTree.locType = treeLoc; 
+      requestTree.locCategory = locCategory.contains("Urban") ? locCategory : "";
+      requestTree.locType = treeLoc.toUpperCase(); 
 
       // set scale
       if (_treeHeightTextController.text.isNotEmpty) {
