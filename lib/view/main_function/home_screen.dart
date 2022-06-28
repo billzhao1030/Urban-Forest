@@ -18,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin{
   late UserAccount currentUser;
   final CupertinoTabController _tabController = CupertinoTabController(initialIndex: 1);
-  Tree? edittree;
 
   @override
   void initState() {
@@ -87,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           case 1:
             return const UploadTree();
           case 2:
-            return const UserProfile();
+            return UserProfile(user: currentUser,);
           default:
             return TreeMap(controller: _tabController);
         }

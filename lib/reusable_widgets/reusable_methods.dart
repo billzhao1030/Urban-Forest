@@ -39,6 +39,19 @@ Container backgroundDecoration(BuildContext context, Widget? child, {bool? dismi
   );
 }
 
+Container settingIcon(IconData icon, Color color) {
+  return Container(
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: color,
+    ),
+    child: Icon(
+      icon, color: Colors.white,
+    ),
+  );
+}
+
 void showError(BuildContext context, String message, double paddingBottom) {
   try {
     ScaffoldMessenger.of(context).showSnackBar(snackBarHint(message, b: paddingBottom));

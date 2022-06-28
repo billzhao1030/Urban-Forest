@@ -688,7 +688,7 @@ class _UploadTreeState extends State<UploadTree> {
       // get the tree and set the version to 1
       request.tree = isAddTree ? Tree() : widget.tree!;
       Tree requestTree = request.tree;
-      requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
+      requestTree.version = isAddTree ? 1 : (requestTree.version);
 
       // set the species fields
       requestTree.scientificName = _scientificController.text.trim();
