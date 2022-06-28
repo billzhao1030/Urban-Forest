@@ -6,9 +6,7 @@ import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:urban_forest/view/main_function/profile/account_setting.dart';
-import 'package:urban_forest/view/main_function/profile/edit_account.dart';
 
-import '../../../utils/color_utils.dart';
 import '../../../utils/debug_format.dart';
 import '../../../utils/reference.dart';
 
@@ -119,6 +117,30 @@ class _UserProfileState extends State<UserProfile> {
                   onPressed: () {
                     debugState("what is level?");
                     //TODO: implement hint
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: AlertDialog(
+                            title: const Text("What is level?"),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Text("data"),
+                                  ElevatedButton(
+                                    onPressed: (){
+                                      Navigator.pop(context);
+                                    }, 
+                                    child: const Text("OK")
+                                  )
+                                ]
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    );
                   }, 
                   child: const Icon(
                     Icons.question_mark_outlined,
@@ -136,7 +158,7 @@ class _UserProfileState extends State<UserProfile> {
           const SizedBox(height: 12,),
           
           SettingsGroup(
-            title: "GNERAL", 
+            title: "General", 
             children: <Widget>[
               const AccountPage(),
               buildLogout(),

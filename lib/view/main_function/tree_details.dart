@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:urban_forest/utils/debug_format.dart';
 
 import '../../provider/tree.dart';
 import '../../reusable_widgets/reusable_methods.dart';

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -473,7 +474,7 @@ class _UploadTreeState extends State<UploadTree> {
               }
             },
             child: !databaseUploading 
-              ? formText("Submit", fontsize: 22, fontStyle: FontStyle.italic)
+              ? formText(Settings.getValue("key-advanced-upload-firebase", defaultValue: false).toString(), fontsize: 22, fontStyle: FontStyle.italic)
               : const CircularProgressIndicator(color: Colors.white,),
           ),
         ),

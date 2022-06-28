@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/provider/user.dart';
@@ -21,6 +22,7 @@ bool hasInternet = true; // judge if has connection
 
 void main() async {
   hasInternet = await InternetConnectionChecker().hasConnection;
+  await Settings.init(cacheProvider: SharePreferenceCache());
   
   // run the splash animation then initialize environment
   runApp(const SplashScreen());

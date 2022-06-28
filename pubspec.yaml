@@ -44,7 +44,7 @@ dependencies:
 
   internet_connection_checker: 
   flutter_settings_screens: ^0.3.3-null-safety+1
-  
+
 
 dev_dependencies:
   flutter_test:
