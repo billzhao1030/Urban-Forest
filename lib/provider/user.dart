@@ -38,6 +38,38 @@ class UserAccount {
     }
   }
 
+  double get levelProgress {
+    return thisLevelProgress / thisLevelTotal;
+  } 
+
+  int get thisLevelTotal {
+    if (levelPoints < 10) {
+      return 10;
+    } else if (levelPoints < 30) {
+      return 20;
+    } else if (levelPoints < 70) {
+      return 40;
+    } else if (levelPoints < 150) {
+      return 80;
+    } else {
+      return 9999;
+    }
+  }
+
+  int get thisLevelProgress {
+    if (levelPoints < 10) {
+      return levelPoints;
+    } else if (levelPoints < 30) {
+      return levelPoints - 10;
+    } else if (levelPoints < 70) {
+      return levelPoints - 30;
+    } else if (levelPoints < 150) {
+      return levelPoints - 70;
+    } else {
+      return levelPoints - 150;
+    }
+  }
+
   UserAccount();
 
   void profileToDebug() {

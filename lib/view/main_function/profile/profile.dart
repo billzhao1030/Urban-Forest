@@ -62,7 +62,11 @@ class _UserProfileState extends State<UserProfile> {
           Text(
             widget.user.userName,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)
+            style: const TextStyle(
+              fontWeight: FontWeight.bold, 
+              fontSize: 26,
+              fontStyle: FontStyle.italic
+            )
           ),
           const SizedBox(height: 4,),
           Text(
@@ -73,13 +77,64 @@ class _UserProfileState extends State<UserProfile> {
             ),
           ),
 
-          Card(
-            child: Column(
-              children: [
-                Text("UID: ${widget.user.uid}")
-              ]
-            )
+          const SizedBox(height: 24,),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "${widget.user.levelName} (${widget.user.levelPoints}):",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: Transform.scale(
+                  scale: 0.9,
+                  child: LinearProgressIndicator(
+                    value: widget.user.levelProgress,
+                    minHeight: 10,
+                  ),
+                ),
+              ),
+              Text(
+                "${widget.user.thisLevelProgress}/${widget.user.thisLevelTotal}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ],
           ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("What is level?", style: TextStyle(color: Colors.grey),),
+              Transform.scale(
+                scale: 0.75,
+                child: ElevatedButton(
+                  onPressed: () {
+                    debugState("what is level?");
+                    //TODO: implement hint
+                  }, 
+                  child: const Icon(
+                    Icons.question_mark_outlined,
+                    color: Colors.white,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    primary: const Color.fromARGB(1, 1, 1, 1),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 12,),
+          
           SettingsGroup(
             title: "GNERAL", 
             children: <Widget>[
@@ -90,7 +145,7 @@ class _UserProfileState extends State<UserProfile> {
             ]
           ),
 
-          const SizedBox(height: 15,),
+          const SizedBox(height: 16,),
 
           SettingsGroup(
             title: "Feedback", 
@@ -131,6 +186,7 @@ class _UserProfileState extends State<UserProfile> {
     leading: settingIcon(Icons.delete, Colors.redAccent),
     onTap: () {
       debugState("Delete Account");
+      
     },
   );
 
