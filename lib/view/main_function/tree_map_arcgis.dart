@@ -21,10 +21,9 @@ import 'package:urban_forest/view/main_function/upload_tree.dart';
 
 
 class TreeMap extends StatefulWidget {
-  const TreeMap({ Key? key, required this.controller, required this.model }) : super(key: key);
+  const TreeMap({ Key? key, required this.controller}) : super(key: key);
 
   final CupertinoTabController controller;
-  final AccountModel model;
 
   @override
   State<TreeMap> createState() => _TreeMapState();
@@ -322,7 +321,7 @@ class _TreeMapState extends State<TreeMap> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UploadTree(tree: tree, model: widget.model,),
+        builder: (context) => UploadTree(tree: tree),
       )
     );
   }

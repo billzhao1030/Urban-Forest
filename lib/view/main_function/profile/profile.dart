@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
@@ -24,6 +25,9 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   final user = FirebaseAuth.instance.currentUser!;
   var email = "";
+
+  final TextEditingController _bugController = TextEditingController();
+  final TextEditingController _feedbackController = TextEditingController();
 
   @override
   void initState() {
@@ -295,18 +299,56 @@ class _UserProfileState extends State<UserProfile> {
     child: SettingsScreen(
       title: "Report a bug",
       children: [
-        const Text("SAFA"),
-        ElevatedButton(
-          onPressed: () async {
-            debugState("Send a bug");
-            showHint(context, "You have uploaded the bug report!");
-            await Future.delayed(const Duration(milliseconds: 1500));
-            // hide the current snackbar
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            
-            Navigator.pop(context);
-          },  
-          child: const Text("upload")
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _bugController,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                minLines: 3,
+                maxLines: 7,
+                autofocus: true
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.35,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_bugController.text.isEmpty) {
+                      showHint(context, "The content is empty!");
+                    } else if (_bugController.text.trim().length < 8) {
+                      showHint(context, "The bug detail is too short\nPlease give more description");
+                    } else {
+                      DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
+                      String uid = FirebaseAuth.instance.currentUser!.uid;
+                      var bugID = dateFormatID.format(DateTime.now()) + "!$uid";
+                      dbBug.doc(bugID)
+                        .set({
+                          "bug_content": _bugController.text
+                        })
+                        .then((value) async {
+                          debugState("Send a bug");
+                          showHint(context, "You have uploaded the bug report!");
+                          await Future.delayed(const Duration(milliseconds: 1500));
+                          // hide the current snackbar
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          
+                          _bugController.clear();
+
+                          Navigator.pop(context);
+                        })
+                        .catchError((error) {
+                          debugState(error.toString());
+                        });
+                    }
+                  },  
+                  child: const Text("Upload")
+                ),
+              )
+            ],
+          ),
         )
       ]
     ),
@@ -319,19 +361,54 @@ class _UserProfileState extends State<UserProfile> {
     child: SettingsScreen(
       title: "Send feedback",
       children: [
-        const Text("SAFA"),
-        ElevatedButton(
-          onPressed: () async {
-            debugState("Send a feedback");
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _feedbackController,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                minLines: 3,
+                maxLines: 7,
+                autofocus: true
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.35,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_bugController.text.isEmpty) {
+                      showHint(context, "The content is empty!");
+                    } else {
+                      DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
+                      String uid = FirebaseAuth.instance.currentUser!.uid;
+                      var feedbackID = dateFormatID.format(DateTime.now()) + "#$uid";
+                      dbFeedback.doc(feedbackID)
+                        .set({
+                          "feedback_content": _feedbackController.text
+                        })
+                        .then((value) async {
+                          debugState("Send a feedback");
+                          showHint(context, "You have uploaded the feedback!");
+                          await Future.delayed(const Duration(milliseconds: 1500));
+                          // hide the current snackbar
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          
+                          _feedbackController.clear();
 
-            showHint(context, "You have uploaded the feedback!");
-            await Future.delayed(const Duration(milliseconds: 1500));
-            // hide the current snackbar
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            
-            Navigator.pop(context);
-          },  
-          child: const Text("upload")
+                          Navigator.pop(context);
+                        })
+                        .catchError((error) {
+                          debugState(error.toString());
+                        });
+                    }
+                  },  
+                  child: const Text("Upload")
+                ),
+              )
+            ],
+          ),
         )
       ]
     ),

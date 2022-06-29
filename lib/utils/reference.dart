@@ -3,8 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 const String fireStoreUsers = "users";
 const String fireStoreRequests = "requests";
+const String fireStoreBug = "bug_report";
+const String fireStoreFeedback = "feedback";
 CollectionReference dbUser = FirebaseFirestore.instance.collection(fireStoreUsers);
 CollectionReference dbRequests = FirebaseFirestore.instance.collection(fireStoreRequests);
+CollectionReference dbBug = FirebaseFirestore.instance.collection(fireStoreBug);
+CollectionReference dbFeedback = FirebaseFirestore.instance.collection(fireStoreFeedback);
 
 const backgroundColorArray = ["afef8d", "23cb23", "225508"];
 

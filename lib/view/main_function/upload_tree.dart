@@ -24,10 +24,9 @@ import 'package:urban_forest/utils/form_validation.dart';
 import '../../utils/reference.dart';
 
 class UploadTree extends StatefulWidget {
-  const UploadTree({ Key? key, this.tree, required this.model }) : super(key: key);
+  const UploadTree({ Key? key, this.tree}) : super(key: key);
 
   final Tree? tree;
-  final AccountModel model;
 
   @override
   State<UploadTree> createState() => _UploadTreeState();

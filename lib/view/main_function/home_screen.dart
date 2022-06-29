@@ -91,13 +91,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       tabBuilder: (context, index) {
         switch (index) {
           case 0: 
-            return TreeMap(controller: _tabController, model: userModel,);
+            return TreeMap(controller: _tabController);
           case 1:
-            return UploadTree(model: userModel,);
+            return UploadTree();
           case 2:
             return UserProfile(user: currentUser, model: userModel,);
           default:
-            return TreeMap(controller: _tabController, model: userModel,);
+            return TreeMap(controller: _tabController);
         }
       },
     );
