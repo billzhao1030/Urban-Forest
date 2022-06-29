@@ -7,10 +7,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -19,9 +21,10 @@ import 'package:urban_forest/view/main_function/upload_tree.dart';
 
 
 class TreeMap extends StatefulWidget {
-  const TreeMap({ Key? key, required this.controller }) : super(key: key);
+  const TreeMap({ Key? key, required this.controller, required this.model }) : super(key: key);
 
   final CupertinoTabController controller;
+  final AccountModel model;
 
   @override
   State<TreeMap> createState() => _TreeMapState();
@@ -129,14 +132,20 @@ class _TreeMapState extends State<TreeMap> {
     token = json['token'].toString();
     log("token:$token");
 
+
+    double distance = 100;
+
+    if (globalLevel > 1) {
+      distance = Settings.getValue('key-distance-map', defaultValue: 100)!;
+    }
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=100&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=$distance&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
-    //log(json.toString());
+    log(json.toString());
   
     //render the marker
     renderMarker(json);
@@ -313,7 +322,7 @@ class _TreeMapState extends State<TreeMap> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UploadTree(tree: tree,),
+        builder: (context) => UploadTree(tree: tree, model: widget.model,),
       )
     );
   }

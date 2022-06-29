@@ -2,6 +2,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:provider/provider.dart';
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -47,18 +49,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        var currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: iOSTabBar()
+    return ChangeNotifierProvider(
+      create: (context) => AccountModel(),
+      child: GestureDetector(
+        onTap: () {
+          var currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
+        child: Consumer<AccountModel> (
+          builder: iOSTabBar,
+        )
+      ),
     );
   }
 
-  CupertinoTabScaffold iOSTabBar() {
+  CupertinoTabScaffold iOSTabBar(BuildContext context, AccountModel userModel, _) {
     return CupertinoTabScaffold(
       controller: _tabController,
       tabBar: CupertinoTabBar(
@@ -84,13 +91,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       tabBuilder: (context, index) {
         switch (index) {
           case 0: 
-            return TreeMap(controller: _tabController);
+            return TreeMap(controller: _tabController, model: userModel,);
           case 1:
-            return const UploadTree();
+            return UploadTree(model: userModel,);
           case 2:
-            return UserProfile(user: currentUser,);
+            return UserProfile(user: currentUser, model: userModel,);
           default:
-            return TreeMap(controller: _tabController);
+            return TreeMap(controller: _tabController, model: userModel,);
         }
       },
     );

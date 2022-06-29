@@ -47,7 +47,10 @@ class _VerifyEmailState extends State<VerifyEmail> {
       'lastName': widget.lastName,
       'userName': widget.userName,
       'hasSignUpVerified': false,
-      'accessLevel': 1
+      'accessLevel': 1,
+      'requestAccepted': 0,
+      'requestAdd': 0,
+      'requestUpdate': 0
     }).catchError((error) {
       debugState(error.toString());
     });

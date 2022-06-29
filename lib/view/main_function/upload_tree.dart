@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/provider/tree.dart';
@@ -22,9 +24,10 @@ import 'package:urban_forest/utils/form_validation.dart';
 import '../../utils/reference.dart';
 
 class UploadTree extends StatefulWidget {
-  const UploadTree({ Key? key, this.tree }) : super(key: key);
+  const UploadTree({ Key? key, this.tree, required this.model }) : super(key: key);
 
   final Tree? tree;
+  final AccountModel model;
 
   @override
   State<UploadTree> createState() => _UploadTreeState();
@@ -474,13 +477,42 @@ class _UploadTreeState extends State<UploadTree> {
               }
             },
             child: !databaseUploading 
-              ? formText(Settings.getValue("key-advanced-upload-firebase", defaultValue: false).toString(), fontsize: 22, fontStyle: FontStyle.italic)
+              ? formText("Submit", fontsize: 22, fontStyle: FontStyle.italic)
               : const CircularProgressIndicator(color: Colors.white,),
           ),
         ),
+
+        (globalLevel > 1) && Settings.getValue("key-advanced-upload-firebase", defaultValue: false)! 
+          ? SizedBox(
+          width: MediaQuery.of(context).size.width * 0.35,
+          
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                setState(() {
+                  databaseUploading = true;
+                });
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return requestUploadAlert(context);
+                  },
+                  barrierDismissible: false
+                );
+              }
+            },
+            child: !databaseUploading 
+              ? formText("Firebase", fontsize: 22, fontStyle: FontStyle.italic)
+              : const CircularProgressIndicator(color: Colors.white,),
+          ),
+        )
+        : Container()
       ],
     );
   }
+
+
 
   Padding assetIDsection() {
     return Padding(

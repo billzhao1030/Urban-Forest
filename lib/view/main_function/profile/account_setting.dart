@@ -1,11 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:provider/provider.dart';
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/reference.dart';
 
 class AccountPage extends StatefulWidget {
-  const AccountPage({ Key? key }) : super(key: key);
+  const AccountPage({ Key? key, required this.model }) : super(key: key);
+
+  final AccountModel model;
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -44,7 +48,7 @@ class _AccountPageState extends State<AccountPage> {
             child: SettingsGroup(
               title: "System Setting", 
               children: [
-               buildAdvancedSettings()
+                buildAdvancedSettings()
               ]
             ),
           ) : Container()
@@ -108,8 +112,9 @@ class _AccountPageState extends State<AccountPage> {
         leading: const Icon(Icons.upload),
         settingKey: 'key-advanced-upload-firebase',
         title: 'Upload data to firebase',
-        onChange: (value) {
+        onChange: (value) async {
           debugPrint('key-advanced-upload-firebase: $value');
+          await widget.model.getUpload();
         },
       ),
       SimpleSettingsTile(

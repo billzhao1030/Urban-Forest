@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
@@ -11,9 +12,10 @@ import '../../../utils/debug_format.dart';
 import '../../../utils/reference.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({ Key? key, required this.user }) : super(key: key);
+  const UserProfile({ Key? key, required this.user, required this.model }) : super(key: key);
 
   final UserAccount user;
+  final AccountModel model;
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -160,7 +162,7 @@ class _UserProfileState extends State<UserProfile> {
           SettingsGroup(
             title: "General", 
             children: <Widget>[
-              const AccountPage(),
+              AccountPage(model: widget.model,),
               buildLogout(),
               buildClear(),
               buildDeleteAccount()
@@ -229,6 +231,21 @@ class _UserProfileState extends State<UserProfile> {
             "notice that all your account data would be deleted and can't be recoverd!",
             () async {
               debugState("Delete Account");
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SignInView(filledEmail: ""),
+                )
+              );
+
+              var uid = FirebaseAuth.instance.currentUser!.uid;
+              await dbUser.doc(uid).delete();
+
+              FirebaseAuth.instance.currentUser!.delete();
+
+              Settings.clearCache();
+              
             }
           );
         }
@@ -256,6 +273,7 @@ class _UserProfileState extends State<UserProfile> {
               // set preference
               final prefs = await SharedPreferences.getInstance();
               prefs.clear();
+              Settings.clearCache();
 
               Navigator.pushReplacement(
                 context,
