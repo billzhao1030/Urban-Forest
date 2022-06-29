@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:urban_forest/provider/user.dart';
@@ -7,11 +8,13 @@ import 'package:urban_forest/utils/reference.dart';
 class AccountModel extends ChangeNotifier {
   bool? toFirebase = false;
 
-  UserAccount user = UserAccount();
+  UserAccount modelUser = UserAccount();
+  String uid = "";
 
   AccountModel() {
     //fetch(currUser);
     getUpload();
+    getUser();
   }
 
 
@@ -21,6 +24,23 @@ class AccountModel extends ChangeNotifier {
       toFirebase = Settings.getValue("key-advanced-upload-firebase", defaultValue: false);
     }
     
+
+    notifyListeners();
+  }
+
+  Future getUser() async {
+    uid = FirebaseAuth.instance.currentUser!.uid;
+    debugState("now uid: $uid");
+
+    final user = FirebaseAuth.instance.currentUser!;
+
+    await dbUser.doc(user.uid).get().then((value) {
+      modelUser = UserAccount.fromJson(
+        value.data()! as Map<String, dynamic>,
+        value.id
+      );
+    });
+    modelUser.profileToDebug();
 
     notifyListeners();
   }

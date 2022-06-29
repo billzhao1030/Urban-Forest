@@ -1,9 +1,15 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:urban_forest/provider/account_provider.dart';
+import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
+import 'package:urban_forest/reusable_widgets/reusable_wiget.dart';
+import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
+import 'package:urban_forest/view/main_function/profile/profile.dart';
+import 'package:urban_forest/view/main_function/profile/user_profile.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({ Key? key, required this.model }) : super(key: key);
@@ -15,10 +21,17 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  UserAccount user = UserAccount();
 
   @override
   void initState() {
+    //getUser();
+
     super.initState();
+  }
+
+  getUser() async {
+    await widget.model.getUser();
   }
 
   @override
@@ -76,25 +89,21 @@ class _AccountPageState extends State<AccountPage> {
     title: 'User Profile',
     subtitle: '',
     leading: settingIcon(Icons.person, Colors.green),
-    child: SettingsScreen(
-      title: "User Profile",
-      children: const [
-        Padding(
-          padding: EdgeInsets.all(32.0),
-          child: Text("profile")
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfilePage(model: widget.model,),
         )
-      ]
-    ),
+      );
+    },
   );
 
-  Widget buildAdvancedSettings() =>  SwitchSettingsTile(
+  Widget buildAdvancedSettings() =>  ExpandableSettingsTile(
     leading: const Icon(Icons.developer_mode),
-    settingKey: 'key-switch-advance-mode',
     title: 'Advanced Settings',
-    onChange: (value) {
-      debugPrint('key-switch-advance-mod: $value');
-    },
-    childrenIfEnabled: <Widget>[
+    subtitle: 'Map distance, Upload method',
+    children: <Widget>[
       SliderSettingsTile(
         title: 'Tree map radius (metres)',
         settingKey: 'key-distance-map',

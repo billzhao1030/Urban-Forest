@@ -29,6 +29,12 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _bugController = TextEditingController();
   final TextEditingController _feedbackController = TextEditingController();
 
+  TextStyle greyTextStyle = const TextStyle(
+    color: Colors.grey,
+    fontWeight: FontWeight.bold,
+    fontStyle: FontStyle.italic
+  );
+
   @override
   void initState() {
     super.initState();
@@ -64,7 +70,7 @@ class _UserProfileState extends State<UserProfile> {
         padding: const EdgeInsets.all(24),
         children: [
           Text(
-            widget.user.userName,
+            widget.model.modelUser.userName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold, 
@@ -82,6 +88,16 @@ class _UserProfileState extends State<UserProfile> {
           ),
 
           const SizedBox(height: 24,),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text("Add Tree: ${widget.user.requestAdd}", style: greyTextStyle,),
+              Text("Edit Tree: ${widget.user.requestUpdate}", style: greyTextStyle,),
+              Text("Accepted: ${widget.user.requestAccepted}", style: greyTextStyle,),
+            ],
+          ),
+          const SizedBox(height: 8,),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -112,6 +128,7 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ],
           ),
+
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
