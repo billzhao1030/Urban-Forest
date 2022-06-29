@@ -133,7 +133,7 @@ class _UserProfileState extends State<UserProfile> {
                             content: SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  Text("data"),
+                                  const Text("data"),
                                   ElevatedButton(
                                     onPressed: (){
                                       Navigator.pop(context);

@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
-import 'package:provider/provider.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -79,9 +78,9 @@ class _AccountPageState extends State<AccountPage> {
     leading: settingIcon(Icons.person, Colors.green),
     child: SettingsScreen(
       title: "User Profile",
-      children:[
+      children: const [
         Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: EdgeInsets.all(32.0),
           child: Text("profile")
         )
       ]

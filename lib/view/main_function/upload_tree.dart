@@ -8,8 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/provider/tree.dart';
@@ -827,7 +825,7 @@ class _UploadTreeState extends State<UploadTree> {
     bestMatchStr = "";
   }
 
-  // add tree confirm
+  // request tree confirm
   AlertDialog requestUploadAlert(BuildContext context) {
     return AlertDialog(
       title: isAddTree ? const Text('Upload a new tree') : const Text('Edit an existing tree'),

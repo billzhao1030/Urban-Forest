@@ -12,7 +12,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';

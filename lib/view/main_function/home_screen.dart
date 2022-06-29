@@ -1,11 +1,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
-import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
 import 'package:urban_forest/view/main_function/profile/profile.dart';
@@ -93,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           case 0: 
             return TreeMap(controller: _tabController);
           case 1:
-            return UploadTree();
+            return const UploadTree();
           case 2:
             return UserProfile(user: currentUser, model: userModel,);
           default:
