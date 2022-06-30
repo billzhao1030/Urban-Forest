@@ -92,9 +92,9 @@ class _UserProfileState extends State<UserProfile> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text("Add Tree: ${widget.user.requestAdd}", style: greyTextStyle,),
-              Text("Edit Tree: ${widget.user.requestUpdate}", style: greyTextStyle,),
-              Text("Accepted: ${widget.user.requestAccepted}", style: greyTextStyle,),
+              Text("Add Tree: ${widget.model.modelUser.requestAdd}", style: greyTextStyle,),
+              Text("Edit Tree: ${widget.model.modelUser.requestUpdate}", style: greyTextStyle,),
+              Text("Accepted: ${widget.model.modelUser.requestAccepted}", style: greyTextStyle,),
             ],
           ),
           const SizedBox(height: 8,),
@@ -103,7 +103,7 @@ class _UserProfileState extends State<UserProfile> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "${widget.user.levelName} (${widget.user.levelPoints}):",
+                "${widget.model.modelUser.levelName} (${widget.model.modelUser.levelPoints}):",
                 style: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.bold
@@ -114,13 +114,13 @@ class _UserProfileState extends State<UserProfile> {
                 child: Transform.scale(
                   scale: 0.9,
                   child: LinearProgressIndicator(
-                    value: widget.user.levelProgress,
+                    value: widget.model.modelUser.levelProgress,
                     minHeight: 10,
                   ),
                 ),
               ),
               Text(
-                "${widget.user.thisLevelProgress}/${widget.user.thisLevelTotal}",
+                "${widget.model.modelUser.thisLevelProgress}/${widget.model.modelUser.thisLevelTotal}",
                 style: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.bold
@@ -266,7 +266,6 @@ class _UserProfileState extends State<UserProfile> {
               FirebaseAuth.instance.currentUser!.delete();
 
               Settings.clearCache();
-              
             }
           );
         }
@@ -430,37 +429,4 @@ class _UserProfileState extends State<UserProfile> {
       ]
     ),
   );
-
-   // add tree confirm
-  AlertDialog settingAlert(BuildContext context, String title, String content, Function onTap) {
-    return AlertDialog(
-      title: Text(title),
-      content: Text(content),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text(
-            'No',
-            style: TextStyle(
-              fontSize: 22
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () async {
-            Navigator.pop(context);
-            onTap();
-          },
-          child: const Text(
-            'Yes',
-            style: TextStyle(
-                fontSize: 22
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }

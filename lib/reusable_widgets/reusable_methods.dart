@@ -182,6 +182,38 @@ Text headerText(String text) {
   );
 }
 
+AlertDialog settingAlert(BuildContext context, String title, String content, Function onTap) {
+  return AlertDialog(
+    title: Text(title),
+    content: Text(content),
+    actions: <Widget>[
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: const Text(
+          'No',
+          style: TextStyle(
+            fontSize: 22
+          ),
+        ),
+      ),
+      TextButton(
+        onPressed: () async {
+          Navigator.pop(context);
+          onTap();
+        },
+        child: const Text(
+          'Yes',
+          style: TextStyle(
+              fontSize: 22
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 // the form text in cupertino
 DefaultTextStyle formText(String text, {
   double fontsize = 20, 

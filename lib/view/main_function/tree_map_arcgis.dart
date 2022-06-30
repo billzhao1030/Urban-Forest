@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/tree.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
@@ -20,7 +21,9 @@ import 'package:urban_forest/view/main_function/upload_tree.dart';
 
 
 class TreeMap extends StatefulWidget {
-  const TreeMap({ Key? key, required this.controller}) : super(key: key);
+  const TreeMap({ Key? key, required this.controller, required this.model}) : super(key: key);
+
+  final AccountModel model;
 
   final CupertinoTabController controller;
 
@@ -320,7 +323,7 @@ class _TreeMapState extends State<TreeMap> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => UploadTree(tree: tree),
+        builder: (context) => UploadTree(tree: tree, model: widget.model,),
       )
     );
   }

@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
 import 'package:urban_forest/provider/tree.dart';
@@ -22,9 +24,10 @@ import 'package:urban_forest/utils/form_validation.dart';
 import '../../utils/reference.dart';
 
 class UploadTree extends StatefulWidget {
-  const UploadTree({ Key? key, this.tree}) : super(key: key);
+  const UploadTree({ Key? key, this.tree, required this.model}) : super(key: key);
 
   final Tree? tree;
+  final AccountModel model;
 
   @override
   State<UploadTree> createState() => _UploadTreeState();
@@ -455,7 +458,7 @@ class _UploadTreeState extends State<UploadTree> {
 
         // submit button
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.35,
+          width: MediaQuery.of(context).size.width * 0.45,
           
           child: ElevatedButton(
             onPressed: () {
@@ -471,17 +474,20 @@ class _UploadTreeState extends State<UploadTree> {
                   },
                   barrierDismissible: false
                 );
+              } else {
+                showHint(context, "Please use correct form of/complete the compulsory form field");
               }
             },
             child: !databaseUploading 
-              ? formText("Submit", fontsize: 22, fontStyle: FontStyle.italic)
+              ? formText((globalLevel > 1) ? "To Firebase" : "Submit", fontsize: 22, fontStyle: FontStyle.italic)
               : const CircularProgressIndicator(color: Colors.white,),
           ),
         ),
 
-        (globalLevel > 1) && Settings.getValue("key-advanced-upload-firebase", defaultValue: false)! 
+        
+        (globalLevel > 1) && widget.model.toArcGIS!
           ? SizedBox(
-          width: MediaQuery.of(context).size.width * 0.35,
+          width: MediaQuery.of(context).size.width * 0.45,
           
           child: ElevatedButton(
             onPressed: () {
@@ -497,10 +503,12 @@ class _UploadTreeState extends State<UploadTree> {
                   },
                   barrierDismissible: false
                 );
+              } else {
+                showHint(context, "Please use correct form of/complete the compulsory form field");
               }
             },
             child: !databaseUploading 
-              ? formText("Firebase", fontsize: 22, fontStyle: FontStyle.italic)
+              ? formText("To ArcGIS", fontsize: 22, fontStyle: FontStyle.italic)
               : const CircularProgressIndicator(color: Colors.white,),
           ),
         )
@@ -508,8 +516,6 @@ class _UploadTreeState extends State<UploadTree> {
       ],
     );
   }
-
-
 
   Padding assetIDsection() {
     return Padding(
@@ -707,11 +713,27 @@ class _UploadTreeState extends State<UploadTree> {
 
   // process the form data and upload to the database (firebase/ArcGIS)
   processForm() async {
-    if (globalLevel > 1 && !twoStepUpload) {
-      //TODO: ArcGIS upload
-      
+    var uid = FirebaseAuth.instance.currentUser!.uid;
+    if (isAddTree) {
+      dbUser.doc(uid).update({
+        "requestAdd": widget.model.modelUser.requestAdd + 1
+      });
+    } else {
+      dbUser.doc(uid).update({
+        "requestUpdate": widget.model.modelUser.requestUpdate + 1
+      });
+    }
 
-      showHint(context, "Request uploaded to Firebase!");
+    await widget.model.getUser();
+
+    if (globalLevel > 1 && widget.model.toArcGIS!) {
+      await uploadToArcGIS();
+      
+      setState(() {
+        databaseUploading = false;
+      });
+
+      showHint(context, "Request uploaded to ArcGIS!");
     } else {
       TreeRequest request = TreeRequest();
 
@@ -774,6 +796,7 @@ class _UploadTreeState extends State<UploadTree> {
       requestTree.CRDATEI = timestamp;
       requestTree.LAST_MOD_D = timestamp;
       requestTree.LAST_RPT_U = timestamp;
+      requestTree.last_edi_1 = timestamp;
 
       request.toTable();
 
@@ -797,7 +820,7 @@ class _UploadTreeState extends State<UploadTree> {
       Navigator.pop(context);
     }
 
-    resetForm();
+    //resetForm();
   }
 
 
@@ -922,7 +945,7 @@ class _UploadTreeState extends State<UploadTree> {
       if (predict.accuracyList[0] >= 20) {
         setState(() {
           bestMatchStr = "Best Match: ${predict.scientificName[0]}\n"
-          "With accuracy of: ${predict.bestAccuracy}%\n";
+          "With accuracy of: ${predict.bestAccuracy.toStringAsFixed(3)}%\n";
 
           // auto fill text field
           _commonController.text = predict.commonName[0].toUpperCase();
@@ -1015,11 +1038,197 @@ class _UploadTreeState extends State<UploadTree> {
         locClass = "Roads";
       }
 
-      if (editTree.locType.contains("STREET")) {
+      if (editTree.locType.toUpperCase().contains("STREET")) {
         treeLoc = "Street";
       } else {
         treeLoc = "Park";
       }
     });
+  }
+
+  uploadToArcGIS() async {
+    var token = await getToken();
+
+    Tree requestTree = isAddTree ? Tree() : widget.tree!;
+
+    requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
+
+    // set the species fields
+    requestTree.scientificName = _scientificController.text.trim();
+    requestTree.shortScientificName = shortScientificName.trim();
+    requestTree.commonName = _commonController.text.toUpperCase().trim();
+
+    // set location 
+    requestTree.latitude = double.parse(_latitudeController.text.trim());
+    requestTree.longitude = double.parse(_longitudeController.text.trim());
+
+    requestTree.suburb = _surburbController.text.trim();
+    requestTree.streetName = _streetNameController.text.trim();
+
+    // set location class
+    requestTree.locClass = locClass;
+    requestTree.locCategory = locCategory.contains("Urban") ? locCategory : "";
+    requestTree.locType = treeLoc.toUpperCase(); 
+
+    // set scale
+    if (_treeHeightTextController.text.isNotEmpty) {
+      requestTree.height = double.parse(_treeHeightTextController.text.trim());
+    }
+    if (_treeLengthTextController.text.isNotEmpty) {
+      requestTree.length = double.parse(_treeLengthTextController.text.trim());
+    }
+    if (_treeWidthTextController.text.isNotEmpty) {
+      requestTree.width = double.parse(_treeWidthTextController.text.trim());
+    }
+
+    // condition and comment
+    if (_commentController.text.isNotEmpty) {
+      requestTree.comment = _commentController.text.trim();
+    }
+    if (_conditionController.text.isNotEmpty) {
+      requestTree.condition = _conditionController.text.trim();
+    }
+
+    requestTree.ASSNBRI = (globalLevel > 1) ? _assetIDController.text.trim() : "";
+
+    requestTree.last_edite = FirebaseAuth.instance.currentUser!.email!; // write the last edit email in db
+
+    // date related
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    debugState("The time upload: ${timestamp.toString()}");
+
+    requestTree.COMM_DATEI = timestamp;
+    requestTree.CRDATEI = timestamp;
+    requestTree.LAST_MOD_D = timestamp;
+    requestTree.LAST_RPT_U = timestamp;
+    requestTree.last_edi_1 = timestamp;
+
+
+    // user REST to upload
+
+    var requestFeature;
+    if (isAddTree) {
+      requestFeature = http.MultipartRequest("POST", Uri.parse(
+        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/addFeatures?f=json&token=$token")
+      );
+    } else {
+      requestFeature = http.MultipartRequest("POST", Uri.parse(
+        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/updateFeatures?f=json&token=$token")
+      );
+    }
+
+    
+
+    var data = treeToJson(requestTree);
+
+    requestFeature.fields['features'] = jsonEncode(data);
+
+    var send = await requestFeature.send();
+
+    var response = await http.Response.fromStream(send);
+
+    var json = jsonDecode(response.body);
+    debugState(json.toString());
+  }
+
+  getToken() async {
+    String token = "";
+    final response = await http.get(Uri.parse(
+      "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=dayi87327285&referer=launceston.maps.arcgis.com&f=json"
+    ));
+    var json = jsonDecode(response.body);
+  
+    token = json['token'].toString();
+    debugState("token:$token");
+
+    return token;
+  }
+
+  treeToJson(Tree tree) {
+    var attributes = {
+      "VERS": tree.version,
+      "ASSNBRI": tree.ASSNBRI,
+      "DESCR": tree.scientificName,
+      "SEARCH_DES": tree.commonName,
+      "LONG_DESCR": tree.longScientificName,
+      "SHORT_DESC": tree.shortScientificName,
+      "BARCODE": tree.BARCODE,
+      "ASSET_STAT": tree.ASSET_STAT,
+      "DEPR_ASSET": tree.DEPR_ASSET,
+      "ACQN_DATEI": tree.ACQN_DATEI,
+      "EXP_COMM_D": tree.EXP_COMM_D,
+      "COMM_DATEI": tree.COMM_DATEI,
+      "DISPOSAL_D": tree.DISPOSAL_D,
+      "SUPP_METH_": tree.SUPP_METH,
+      "SUPP_NAME": tree.SUPP_NAME,
+      "SUPP_REF": tree.SUPP_REF,
+      "COMMENT1": tree.COMMENT1,
+      "COMMENT2": tree.COMMENT2,
+      "COMMENT3": tree.COMMENT3,
+      "MANUF_NAME": tree.MANUF_NAME,
+      "OTHER_NBR": tree.OTHER_NBR,
+      "CRUSER": tree.CRUSER,
+      "CRDATEI": tree.CRDATEI,
+      "CRTIMEI": tree.CRTIMEI,
+      "CRTERM": tree.CRTERM,
+      "CRWINDOW": tree.CRWINDOW,
+      "LAST_MOD_U": tree.LAST_MOD_U,
+      "LAST_MOD_D": tree.LAST_MOD_D,
+      "LAST_MOD_T": tree.LAST_MOD_T,
+      "LAST_MOD_1": tree.LAST_MOD_1,
+      "LAST_MOD_W": tree.LAST_MOD_W,
+      "ASSET_RID": tree.ASSET_RID,
+      "OPERATING_": tree.OPERATING_,
+      "PRIMARY_AT": tree.PRIMARY_AT,
+      "GIS_ID": tree.GIS_ID,
+      "LAST_RPT_U": tree.LAST_RPT_U,
+      "LAST_RPT_1": tree.LAST_RPT_1,
+      "ConstructM": tree.ConstructM,
+      "AssetSourc": tree.AssetSourc,
+      "TreeLocati": tree.locType,
+      "WateringMe": tree.WateringMe,
+      "LengthDime": tree.length,
+      "WidthDimen": tree.width,
+      "HeightDime": tree.height,
+      "AreaDimens": tree.area,
+      "CapitalPro": tree.CapitalPro,
+      "Class": tree.Class_,
+      "Category": tree.Category,
+      "Grp": tree.Grp,
+      "Facility": tree.Facility,
+      "LocClass": tree.locClass,
+      "LocCat": tree.locCategory,
+      "LocGrp": tree.streetName,
+      "Suburb": tree.suburb,
+      "Network": tree.Network,
+      "Team": tree.Team,
+      "CostCentre": tree.CostCentre,
+      "LCCLeases": tree.LCCLeases,
+      "MaintZoneC": tree.MaintZoneC,
+      "MaintZon_1": tree.MaintZon_1,
+      "Condition": tree.condition,
+      "MaintCycle": tree.MaintCycle,
+      "GlobalID": tree.GlobalID,
+      "created_us": tree.create_us,
+      "created_da": tree.created_da,
+      "last_edite": tree.last_edite,
+      "last_edi_1": tree.last_edi_1,
+    };
+
+    if (!isAddTree) {
+      attributes["OBJECTID"] = tree.objectID;
+    }
+
+    var data = [
+      {
+        "attributes": attributes,
+        "geometry": {
+          "x": tree.longitude,
+          "y": tree.latitude,
+        }
+      }
+    ];
+
+    return data;
   }
 }

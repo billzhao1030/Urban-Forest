@@ -95,6 +95,7 @@ class _TreeDetailState extends State<TreeDetail> {
   List<DataRow> get treeDataRows {
     return <DataRow>[
       treeRow('Object ID', widget.tree.objectID),
+      treeRow("Version", widget.tree.version.toString()),
       treeRow('Asset ID', widget.tree.ASSNBRI),
       treeRow('Latitude', widget.tree.latitude.toStringAsFixed(6)),
       treeRow('Longitude', widget.tree.longitude.toStringAsFixed(6)),

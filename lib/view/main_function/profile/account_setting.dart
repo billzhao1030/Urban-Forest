@@ -1,14 +1,10 @@
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
-import 'package:urban_forest/reusable_widgets/reusable_wiget.dart';
-import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
-import 'package:urban_forest/view/main_function/profile/profile.dart';
 import 'package:urban_forest/view/main_function/profile/user_profile.dart';
 
 class AccountPage extends StatefulWidget {
@@ -42,7 +38,6 @@ class _AccountPageState extends State<AccountPage> {
       leading: settingIcon(Icons.settings, Colors.green),
       child: SettingsScreen(
         children: [
-          //TODO: account page
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SettingsGroup(
@@ -99,11 +94,12 @@ class _AccountPageState extends State<AccountPage> {
     },
   );
 
-  Widget buildAdvancedSettings() =>  ExpandableSettingsTile(
+  Widget buildAdvancedSettings() =>  CheckboxSettingsTile(
     leading: const Icon(Icons.developer_mode),
+    settingKey: 'key-check-box-dev-mode',
     title: 'Advanced Settings',
     subtitle: 'Map distance, Upload method',
-    children: <Widget>[
+    childrenIfEnabled: <Widget>[
       SliderSettingsTile(
         title: 'Tree map radius (metres)',
         settingKey: 'key-distance-map',
@@ -119,10 +115,10 @@ class _AccountPageState extends State<AccountPage> {
 
       CheckboxSettingsTile(
         leading: const Icon(Icons.upload),
-        settingKey: 'key-advanced-upload-firebase',
-        title: 'Upload data to firebase',
+        settingKey: 'key-advanced-upload-ArcGIS',
+        title: 'Upload data to ArcGIS',
         onChange: (value) async {
-          debugPrint('key-advanced-upload-firebase: $value');
+          debugPrint('key-advanced-upload-ArcGIS: $value');
           await widget.model.getUpload();
         },
       ),

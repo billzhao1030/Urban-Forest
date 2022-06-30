@@ -6,7 +6,7 @@ import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 
 class AccountModel extends ChangeNotifier {
-  bool? toFirebase = false;
+  bool? toArcGIS = false;
 
   UserAccount modelUser = UserAccount();
   String uid = "";
@@ -21,7 +21,8 @@ class AccountModel extends ChangeNotifier {
   Future getUpload() async {
     if (globalLevel > 1) {
       debugState("Set firebase");
-      toFirebase = Settings.getValue("key-advanced-upload-firebase", defaultValue: false);
+      toArcGIS = Settings.getValue("key-advanced-upload-ArcGIS", defaultValue: false);
+      debugState("Now ${toArcGIS.toString()}");
     }
     
 

@@ -6,7 +6,7 @@ import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/main_function/upload_tree.dart';
-import 'package:urban_forest/view/main_function/profile/profile.dart';
+import 'package:urban_forest/view/main_function/profile/profile_setting.dart';
 import 'package:urban_forest/view/main_function/tree_map_arcgis.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -89,13 +89,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       tabBuilder: (context, index) {
         switch (index) {
           case 0: 
-            return TreeMap(controller: _tabController);
+            return TreeMap(controller: _tabController, model: userModel,);
           case 1:
-            return const UploadTree();
+            return UploadTree(model: userModel,);
           case 2:
             return UserProfile(user: currentUser, model: userModel,);
           default:
-            return TreeMap(controller: _tabController);
+            return TreeMap(controller: _tabController, model: userModel,);
         }
       },
     );
