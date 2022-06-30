@@ -36,6 +36,13 @@ class _SignInViewState extends State<SignInView> {
   bool loading = false;
 
   @override
+  void dispose() {
+    _passwordTextController.dispose();
+    _emailTextController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 

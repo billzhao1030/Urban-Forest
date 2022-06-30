@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/ai_response.dart';
 import 'package:urban_forest/provider/form_request.dart';
@@ -82,6 +80,22 @@ class _UploadTreeState extends State<UploadTree> {
   // variable for storing edit tree
   var version = 1;
   var objectID = "";
+
+  @override
+  void dispose() {
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    _surburbController.dispose();
+    _streetNameController.dispose();
+    _treeHeightTextController.dispose();
+    _treeWidthTextController.dispose();
+    _treeLengthTextController.dispose();
+    _scientificController.dispose();
+    _commentController.dispose();
+    _commonController.dispose();
+    _conditionController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -299,8 +313,28 @@ class _UploadTreeState extends State<UploadTree> {
             // The location advice and instruction
             ElevatedButton(
               onPressed: () {
-                debugState("how to get location");
                 //TODO: implement hint
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("How to get good location?"),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const Text("data"),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }, 
+                              child: const Text("OK")
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                );
               }, 
               child: const Icon(
                 Icons.question_mark_outlined,
@@ -470,7 +504,7 @@ class _UploadTreeState extends State<UploadTree> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return requestUploadAlert(context);
+                    return requestUploadAlert(context, true);
                   },
                   barrierDismissible: false
                 );
@@ -499,7 +533,7 @@ class _UploadTreeState extends State<UploadTree> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return requestUploadAlert(context);
+                    return requestUploadAlert(context, false);
                   },
                   barrierDismissible: false
                 );
@@ -549,7 +583,7 @@ class _UploadTreeState extends State<UploadTree> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLength: 6,
-              autovalidateMode: AutovalidateMode.always,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 return validateAssetID(value);
               },
@@ -606,7 +640,7 @@ class _UploadTreeState extends State<UploadTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         return validateSpecies(value);
       },
@@ -632,7 +666,7 @@ class _UploadTreeState extends State<UploadTree> {
       textAlignVertical: TextAlignVertical.center,
       keyboardType: TextInputType.streetAddress,
       maxLength: 40,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         return validateAddress(value);
       },
@@ -657,7 +691,7 @@ class _UploadTreeState extends State<UploadTree> {
       keyboardType: TextInputType.number,
       maxLength: 11,
       readOnly: true,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         return validateGPS(value);
       },
@@ -703,7 +737,7 @@ class _UploadTreeState extends State<UploadTree> {
       keyboardType: TextInputType.number,
       maxLength: 4,
       readOnly: readOnly,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         return validateScale(value);
       }
@@ -712,21 +746,26 @@ class _UploadTreeState extends State<UploadTree> {
 
 
   // process the form data and upload to the database (firebase/ArcGIS)
-  processForm() async {
+  processForm(bool isFirebase) async {
     var uid = FirebaseAuth.instance.currentUser!.uid;
+
+    Map<String, Object?> userRequests = {}; 
+
     if (isAddTree) {
-      dbUser.doc(uid).update({
-        "requestAdd": widget.model.modelUser.requestAdd + 1
-      });
+      userRequests["requestAdd"] = widget.model.modelUser.requestAdd + 1;
     } else {
-      dbUser.doc(uid).update({
-        "requestUpdate": widget.model.modelUser.requestUpdate + 1
-      });
+      userRequests["requestUpdate"] = widget.model.modelUser.requestUpdate + 1;
     }
+
+    if (globalLevel > 1 && !isFirebase) {
+      userRequests["requestAccepted"] = widget.model.modelUser.requestAccepted + 1;
+    }
+
+    dbUser.doc(uid).update(userRequests);
 
     await widget.model.getUser();
 
-    if (globalLevel > 1 && widget.model.toArcGIS!) {
+    if (!isFirebase) {
       await uploadToArcGIS();
       
       setState(() {
@@ -741,62 +780,9 @@ class _UploadTreeState extends State<UploadTree> {
       request.tree = isAddTree ? Tree() : widget.tree!;
       Tree requestTree = request.tree;
       requestTree.version = isAddTree ? 1 : (requestTree.version);
+      request.requestUID = uid;
 
-      // set the species fields
-      requestTree.scientificName = _scientificController.text.trim();
-      requestTree.shortScientificName = shortScientificName.trim();
-      requestTree.commonName = _commonController.text.toUpperCase().trim();
-      
-      // set location 
-      requestTree.latitude = double.parse(_latitudeController.text.trim());
-      requestTree.longitude = double.parse(_longitudeController.text.trim());
-
-      requestTree.suburb = _surburbController.text.trim();
-      requestTree.streetName = _streetNameController.text.trim();
-
-      // set location class
-      requestTree.locClass = locClass;
-      requestTree.locCategory = locCategory.contains("Urban") ? locCategory : "";
-      requestTree.locType = treeLoc.toUpperCase(); 
-
-      // set scale
-      if (_treeHeightTextController.text.isNotEmpty) {
-        requestTree.height = double.parse(_treeHeightTextController.text.trim());
-      }
-      if (_treeLengthTextController.text.isNotEmpty) {
-        requestTree.length = double.parse(_treeLengthTextController.text.trim());
-      }
-      if (_treeWidthTextController.text.isNotEmpty) {
-        requestTree.width = double.parse(_treeWidthTextController.text.trim());
-      }
-
-      // condition and comment
-      if (_commentController.text.isNotEmpty) {
-        requestTree.comment = _commentController.text.trim();
-      }
-      if (_conditionController.text.isNotEmpty) {
-        requestTree.condition = _conditionController.text.trim();
-      }
-
-      requestTree.ASSNBRI = (globalLevel > 1) ? _assetIDController.text.trim() : "";
-
-      request.requestEmail = FirebaseAuth.instance.currentUser!.email.toString();
-      request.requestUID = FirebaseAuth.instance.currentUser!.uid.toString();
-      request.requestLevel = globalLevel;
-      request.isAdd = isAddTree;
-
-      requestTree.last_edite = request.requestEmail; // write the last edit email in db
-
-      // date related
-      int timestamp = DateTime.now().millisecondsSinceEpoch;
-      debugState("The time upload: ${timestamp.toString()}");
-      request.requestTime = timestamp;
-
-      requestTree.COMM_DATEI = timestamp;
-      requestTree.CRDATEI = timestamp;
-      requestTree.LAST_MOD_D = timestamp;
-      requestTree.LAST_RPT_U = timestamp;
-      requestTree.last_edi_1 = timestamp;
+      controllerToTree(requestTree);
 
       request.toTable();
 
@@ -849,7 +835,7 @@ class _UploadTreeState extends State<UploadTree> {
   }
 
   // request tree confirm
-  AlertDialog requestUploadAlert(BuildContext context) {
+  AlertDialog requestUploadAlert(BuildContext context, bool isFirebase) {
     return AlertDialog(
       title: isAddTree ? const Text('Upload a new tree') : const Text('Edit an existing tree'),
       content: const Text('Confirm this request?'),
@@ -873,7 +859,7 @@ class _UploadTreeState extends State<UploadTree> {
           onPressed: () async {
             Navigator.pop(context);
             
-            processForm();
+            processForm(isFirebase);
           },
           child: const Text(
             'Yes',
@@ -1053,6 +1039,46 @@ class _UploadTreeState extends State<UploadTree> {
 
     requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
 
+    controllerToTree(requestTree);
+
+
+    // user REST to upload
+    http.MultipartRequest requestFeature;
+    if (isAddTree) {
+      requestFeature = http.MultipartRequest("POST", Uri.parse(
+        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/addFeatures?f=json&token=$token")
+      );
+    } else {
+      requestFeature = http.MultipartRequest("POST", Uri.parse(
+        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/updateFeatures?f=json&token=$token")
+      );
+    }
+
+
+    var data = treeToJson(requestTree);
+    requestFeature.fields['features'] = jsonEncode(data);
+
+    var send = await requestFeature.send();
+    var response = await http.Response.fromStream(send);
+
+    var json = jsonDecode(response.body);
+    debugState(json.toString());
+  }
+
+  getToken() async {
+    String token = "";
+    final response = await http.get(Uri.parse(
+      "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=dayi87327285&referer=launceston.maps.arcgis.com&f=json"
+    ));
+    var json = jsonDecode(response.body);
+  
+    token = json['token'].toString();
+    debugState("token:$token");
+
+    return token;
+  }
+
+  controllerToTree(Tree requestTree) {
     // set the species fields
     requestTree.scientificName = _scientificController.text.trim();
     requestTree.shortScientificName = shortScientificName.trim();
@@ -1102,46 +1128,6 @@ class _UploadTreeState extends State<UploadTree> {
     requestTree.LAST_MOD_D = timestamp;
     requestTree.LAST_RPT_U = timestamp;
     requestTree.last_edi_1 = timestamp;
-
-
-    // user REST to upload
-
-    var requestFeature;
-    if (isAddTree) {
-      requestFeature = http.MultipartRequest("POST", Uri.parse(
-        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/addFeatures?f=json&token=$token")
-      );
-    } else {
-      requestFeature = http.MultipartRequest("POST", Uri.parse(
-        "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/updateFeatures?f=json&token=$token")
-      );
-    }
-
-    
-
-    var data = treeToJson(requestTree);
-
-    requestFeature.fields['features'] = jsonEncode(data);
-
-    var send = await requestFeature.send();
-
-    var response = await http.Response.fromStream(send);
-
-    var json = jsonDecode(response.body);
-    debugState(json.toString());
-  }
-
-  getToken() async {
-    String token = "";
-    final response = await http.get(Uri.parse(
-      "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=dayi87327285&referer=launceston.maps.arcgis.com&f=json"
-    ));
-    var json = jsonDecode(response.body);
-  
-    token = json['token'].toString();
-    debugState("token:$token");
-
-    return token;
   }
 
   treeToJson(Tree tree) {

@@ -28,6 +28,13 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   void dispose() {
+    _passwordTextController.dispose();
+    _emailTextController.dispose();
+    _userNameTextController.dispose();
+    _confirmPasswordTextController.dispose();
+    _firstNameTextController.dispose();
+    _lastNameTextController.dispose();
+
     super.dispose();
   }
 

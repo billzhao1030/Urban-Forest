@@ -36,17 +36,17 @@ class _UserProfileState extends State<UserProfile> {
   );
 
   @override
+  void dispose() {
+    _bugController.dispose();
+    _feedbackController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 
-    debugState("access level: $globalLevel");
-
-    setState(() {
-      email = user.email!;
-    });
-
-    debugState(email);
-
+    debugState("Profile section");
     widget.user.profileToDebug();
   }
 
@@ -138,21 +138,61 @@ class _UserProfileState extends State<UserProfile> {
                 scale: 0.75,
                 child: ElevatedButton(
                   onPressed: () {
-                    debugState("what is level?");
-                    //TODO: implement hint
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          child: AlertDialog(
-                            title: const Text("What is level?"),
-                            content: SingleChildScrollView(
+                        return AlertDialog(
+                          title: const Text("What is level?"),
+                          content: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                               child: Column(
                                 children: [
-                                  const Text("data"),
+                                  // level points description
+                                  headerText("Level Point"),
+                                  normalText(
+                                    "To engage people to upload add/update tree request, "
+                                    "users could earn level points based on the following rule:\n",
+                                    isJust: true
+                                  ),
+                                  const SizedBox(height: 6,),
+                                  normalText(
+                                    " \u2022 6 points if add a new tree\n"
+                                    " \u2022 4 points if edit a tree\n"
+                                    " \u2022 10 points if request is accepted\n"
+                                  ),
+
+                                  // level name decription
+                                  const SizedBox(height: 12,),
+                                  headerText("Level Name"),
+                                  normalText(
+                                    "Different level points would have a unique level, the "
+                                    "higher level means you have more contributes to the tree database. "
+                                    "The level names and the points required are: \n",
+                                    isJust: true
+                                  ),
+                                  const SizedBox(height: 6,),
+                                  normalText(
+                                    " \u2022 Tree Starter if points < 10\n"
+                                    " \u2022 Tree Junior if 10 <= points < 30\n"
+                                    " \u2022 Tree Senior if 30 <= points < 70\n"
+                                    " \u2022 Tree Hero if 70 <= points < 150\n"
+                                    " \u2022 Tree Legend if points < 150\n"
+                                  ),
+
+                                  // spam request description
+                                  const SizedBox(height: 12,),
+                                  headerText("Fallacious request"),
+                                  normalText(
+                                    "If the user keep uploading the unreasonable or redundant "
+                                    "tree request just for earning points, the user account will be disabled "
+                                    "if found. Please upload the useful and constructive request/data only",
+                                    isJust: true
+                                  ),
+
+                                  const SizedBox(height: 12,),
                                   ElevatedButton(
-                                    onPressed: (){
+                                    onPressed: () {
                                       Navigator.pop(context);
                                     }, 
                                     child: const Text("OK")

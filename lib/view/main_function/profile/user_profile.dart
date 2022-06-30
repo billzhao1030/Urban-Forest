@@ -148,11 +148,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     ) : Container (),
 
                     !resetEmailSending ? firebaseButton(context, "Reset password", () async {
-                      await showDialog(context: context, builder: (BuildContext context) {
+                      var response = await showDialog(context: context, builder: (BuildContext context) {
                         return resetPasswordInProfile(context);
                       });
 
-                      showHint(context, 'Please follow the steps in the email we sent you to reset the password');
+                      if (!response.toString().contains("No")) {
+                        showHint(context, 'Please follow the steps in the email we sent you to reset the password');
+                      }
                     }) : Container (
                       margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
                       child: const CircularProgressIndicator(

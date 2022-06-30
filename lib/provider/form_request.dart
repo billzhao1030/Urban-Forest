@@ -36,7 +36,7 @@ class TreeRequest {
 
   uploadFirebase() async {
     DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
-    var addID = dateFormatID.format(DateTime.now()) + "%$requestUID";
+    var requestID = dateFormatID.format(DateTime.now()) + "%$requestUID";
 
     var data = {
       'isAdd': isAdd,
@@ -118,9 +118,9 @@ class TreeRequest {
     };
 
 
-    dbRequests.doc(addID)
+    dbRequests.doc(requestID)
       .set(data)
-      .then((value) => debugState("added!"))
+      .then((value) => debugState("uploaded!"))
       .catchError((error) {
         debugState(error.toString());
       });

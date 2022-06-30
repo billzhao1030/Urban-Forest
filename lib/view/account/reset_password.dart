@@ -26,6 +26,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   @override
   void dispose() {
+    _emailTextController.dispose();
     super.dispose();
   }
 

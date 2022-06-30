@@ -119,6 +119,7 @@ class Tree {
 
       commonName = attributes["SEARCH_DES"].toString().toLowerCase();
       scientificName = attributes["DESCR"].toString();
+      shortScientificName = attributes["SHORT_DESC"];
 
       version = attributes["VERS"];
       ASSNBRI = attributes["ASSNBRI"];
@@ -130,7 +131,7 @@ class Tree {
       length = attributes["LengthDime"].toDouble();
       width = attributes["WidthDimen"].toDouble();
       height = attributes["HeightDime"].toDouble();
-
+      comment = attributes["COMMENT1"];
       shortScientificName = attributes["SHORT_DESC"];
       BARCODE = attributes["BARCODE"];
       ASSET_STAT = attributes["ASSET_STAT"];

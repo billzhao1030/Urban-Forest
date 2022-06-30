@@ -160,14 +160,14 @@ Column privacyPolicy() {
   );
 }
 
-Text normalText(String text) {
+Text normalText(String text, {bool isJust = false}) {
   return Text(
     text,
     style: const TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.w600
     ),
-    //textAlign: TextAlign.justify,
+    textAlign: isJust ? TextAlign.justify : null,
   );
 }
 
@@ -189,7 +189,7 @@ AlertDialog settingAlert(BuildContext context, String title, String content, Fun
     actions: <Widget>[
       TextButton(
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, "No");
         },
         child: const Text(
           'No',
@@ -200,7 +200,7 @@ AlertDialog settingAlert(BuildContext context, String title, String content, Fun
       ),
       TextButton(
         onPressed: () async {
-          Navigator.pop(context);
+          Navigator.pop(context, "Yes");
           onTap();
         },
         child: const Text(
