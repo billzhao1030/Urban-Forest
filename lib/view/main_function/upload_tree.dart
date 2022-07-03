@@ -313,7 +313,6 @@ class _UploadTreeState extends State<UploadTree> {
             // The location advice and instruction
             ElevatedButton(
               onPressed: () {
-                //TODO: implement hint
                 showDialog(
                   context: context, 
                   builder: (BuildContext context) {
@@ -322,12 +321,18 @@ class _UploadTreeState extends State<UploadTree> {
                       content: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const Text("data"),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              }, 
-                              child: const Text("OK")
+                            Image.asset(
+                              "assets/images/Instruction.jpg",
+                              fit: BoxFit.fitHeight,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: normalText(
+                                "* Notice that the GPS location of the tree is obtained from you "
+                                "mobile device. So it's very important to keep your device as close "
+                                "to the tree as possible",
+                                isJust: true
+                              ),
                             )
                           ],
                         ),
