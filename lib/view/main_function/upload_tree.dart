@@ -216,13 +216,107 @@ class _UploadTreeState extends State<UploadTree> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.05
+          height: MediaQuery.of(context).size.height * 0.06
         ),
         // title
         isAddTree ? formText("Add a tree", fontsize: 28) : formText("Edit the tree", fontsize: 28),
 
-        // camera and gallery function
+        // get the location button
         const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.35,
+              child: ElevatedButton(
+                onPressed: () async {
+                  processLocation();
+                }, 
+                child: !locationLoading 
+                  ? formText((isAddTree ? "Get location" : "Correct Location"), fontsize: 18, fontStyle: FontStyle.italic)
+                  : Center(
+                    child: Transform.scale(
+                      scale: 0.75,
+                      child: const CircularProgressIndicator(
+                        color:Colors.white, strokeWidth: 4.0,)
+                      )
+                    )
+              ),
+            ),
+
+            // The location advice and instruction
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("How to get good location?"),
+                      content: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              "assets/images/Instruction.jpg",
+                              fit: BoxFit.fitHeight,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: normalText(
+                                "* Notice that the GPS location of the tree is obtained from you "
+                                "mobile device. So it's very important to keep your device as close "
+                                "to the tree as possible",
+                                isJust: true
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                );
+              }, 
+              child: const Icon(
+                Icons.question_mark_outlined,
+                color: Colors.white,
+              ),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                primary: const Color.fromARGB(1, 1, 1, 1),
+              ),
+            )
+          ],
+        ),
+
+        // tree basic information
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoFormSection(
+            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+            header: const Text(
+              "Tree location", 
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+            ),
+            footer: const Center(
+              child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Text("Notice that the geolocation of the tree is automatically get (and is read-only)\n"
+                "Please hold your mobile device as close to the tree as possible to ensure the high accuracy", textAlign: TextAlign.center,),
+              ),
+            ),
+            margin: const EdgeInsets.all(4.0),
+            children: [
+              //latitude and longtitude
+              treeLocation("Latitude", "Latitude (read only))", _latitudeController),
+              treeLocation("Longtitude", "Longtitude (read only)", _longitudeController),
+              treeAddress("Street", "Street name", _streetNameController),
+              treeAddress("Suburb", "Locality", _surburbController)
+            ],
+          ),
+        ),
+
+        // camera and gallery function
+        const SizedBox(height: 30),
         formText("Upload a photo to identify the tree"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -293,96 +387,8 @@ class _UploadTreeState extends State<UploadTree> {
           ),
         ),
 
-        // get the location button
-        const SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.35,
-              child: ElevatedButton(
-                onPressed: () async {
-                  processLocation();
-                }, 
-                child: !locationLoading 
-                  ? formText((isAddTree ? "Get location" : "Correct Location"), fontsize: 18, fontStyle: FontStyle.italic)
-                  : const Center(child: CircularProgressIndicator(color:Colors.white, strokeWidth: 3.0,))
-              ),
-            ),
-
-            // The location advice and instruction
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context, 
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("How to get good location?"),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              "assets/images/Instruction.jpg",
-                              fit: BoxFit.fitHeight,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: normalText(
-                                "* Notice that the GPS location of the tree is obtained from you "
-                                "mobile device. So it's very important to keep your device as close "
-                                "to the tree as possible",
-                                isJust: true
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                );
-              }, 
-              child: const Icon(
-                Icons.question_mark_outlined,
-                color: Colors.white,
-              ),
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                primary: const Color.fromARGB(1, 1, 1, 1),
-              ),
-            )
-          ],
-        ),
-
-        // tree basic information
-        const SizedBox(height: 5),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CupertinoFormSection(
-            backgroundColor: const Color.fromARGB(177, 231, 226, 226),
-            header: const Text(
-              "Tree location", 
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
-            ),
-            footer: const Center(
-              child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Text("Notice that the geolocation of the tree is automatically get (and is read-only)\n"
-                "Please hold your mobile device as close to the tree as possible to ensure the high accuracy", textAlign: TextAlign.center,),
-              ),
-            ),
-            margin: const EdgeInsets.all(4.0),
-            children: [
-              //latitude and longtitude
-              treeLocation("Latitude", "Latitude (read only))", _latitudeController),
-              treeLocation("Longtitude", "Longtitude (read only)", _longitudeController),
-              treeAddress("Street", "Street name", _streetNameController),
-              treeAddress("Suburb", "Locality", _surburbController)
-            ],
-          ),
-        ),
-
         // tree location details
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CupertinoFormSection(
@@ -453,7 +459,7 @@ class _UploadTreeState extends State<UploadTree> {
         (globalLevel > 1) ? assetIDsection() : Container(),
 
         // tree scale
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CupertinoFormSection(
@@ -478,7 +484,7 @@ class _UploadTreeState extends State<UploadTree> {
         ),
 
         // condition and comment
-        const SizedBox(height: 10),
+        const SizedBox(height: 15),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: CupertinoFormSection(
@@ -495,63 +501,75 @@ class _UploadTreeState extends State<UploadTree> {
           ),
         ),
 
-        // submit button
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.45,
-          
-          child: ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  databaseUploading = true;
-                });
 
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return requestUploadAlert(context, true);
-                  },
-                  barrierDismissible: false
-                );
-              } else {
-                showHint(context, "Please use correct form of/complete the compulsory form field");
-              }
-            },
-            child: !databaseUploading 
-              ? formText((globalLevel > 1) ? "To Firebase" : "Submit", fontsize: 22, fontStyle: FontStyle.italic)
-              : const CircularProgressIndicator(color: Colors.white,),
-          ),
+        const SizedBox(height: 20,),
+        // submit button
+        Row(
+          mainAxisAlignment: (globalLevel > 1) && widget.model.toArcGIS! 
+            ? MainAxisAlignment.spaceAround : MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.42,
+              height: 45,
+              
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      databaseUploading = true;
+                    });
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return requestUploadAlert(context, true);
+                      },
+                      barrierDismissible: false
+                    );
+                  } else {
+                    showHint(context, "Please use correct form of/complete the compulsory form field");
+                  }
+                },
+                child: !databaseUploading 
+                  ? formText((globalLevel > 1) ? "To Firebase" : "Submit", fontsize: 22, fontStyle: FontStyle.italic)
+                  : const CircularProgressIndicator(color: Colors.white,),
+              ),
+            ),
+
+            // To ArcGIS button
+            (globalLevel > 1) && widget.model.toArcGIS!
+              ? SizedBox(
+              width: MediaQuery.of(context).size.width * 0.42,
+              height: 45,
+              
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      databaseUploading = true;
+                    });
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return requestUploadAlert(context, false);
+                      },
+                      barrierDismissible: false
+                    );
+                  } else {
+                    showHint(context, "Please use correct form of/complete the compulsory form field");
+                  }
+                },
+                child: !databaseUploading 
+                  ? formText("To ArcGIS", fontsize: 22, fontStyle: FontStyle.italic)
+                  : const CircularProgressIndicator(color: Colors.white,),
+              ),
+            )
+            : const SizedBox.shrink(),
+          ],
         ),
 
-        
-        (globalLevel > 1) && widget.model.toArcGIS!
-          ? SizedBox(
-          width: MediaQuery.of(context).size.width * 0.45,
-          
-          child: ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  databaseUploading = true;
-                });
-
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return requestUploadAlert(context, false);
-                  },
-                  barrierDismissible: false
-                );
-              } else {
-                showHint(context, "Please use correct form of/complete the compulsory form field");
-              }
-            },
-            child: !databaseUploading 
-              ? formText("To ArcGIS", fontsize: 22, fontStyle: FontStyle.italic)
-              : const CircularProgressIndicator(color: Colors.white,),
-          ),
-        )
-        : Container()
+        const SizedBox(height: 20,),
       ],
     );
   }
