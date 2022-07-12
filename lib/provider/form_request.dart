@@ -45,6 +45,7 @@ class TreeRequest {
       'requestEmail': requestEmail,
       'requestUID': requestUID,
       'confirmed': confirmed,
+      'objectID': tree.objectID,
       'version': tree.version,
       'scientificName': tree.scientificName,
       'shortScientificName': tree.shortScientificName,
