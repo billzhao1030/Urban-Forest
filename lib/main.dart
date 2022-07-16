@@ -25,7 +25,7 @@ void main() async {
   await Settings.init(cacheProvider: SharePreferenceCache());
   
   // run the splash animation then initialize environment
-  runApp(const SplashScreen());
+  runApp(const MaterialApp(home: SplashScreen()));
 
   // initialize google firebase
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,72 +64,88 @@ void main() async {
   }
 
   debugState("Initialization finished\n=============================");
-  
 }
 
 
 // splash screen of the mobile app
 // the cloud initialization will be perform during this
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({ Key? key }) : super(key: key);
-
-  final splashDuration = 2000; // the time duration of this screen
 
   static const String copyRightInfo = "\u00A9 City of Launceston & University of Tasmania";
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final splashDuration = 3000; 
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      
-      home: Scaffold(
-        body: AnimatedSplashScreen(
-          duration: splashDuration,
-          splashTransition: SplashTransition.scaleTransition,
-          pageTransitionType: PageTransitionType.bottomToTop,
-          backgroundColor: const Color.fromARGB(255, 127, 238, 127),
-          nextScreen: hasInternet ? const StartApp() : const CheckInternet(), // the next screen
-          splashIconSize: 500,
-          splash: SingleChildScrollView(
-            child: Column(
-              children: [
-                // logo image
-                Image.asset(
-                  "assets/images/logo1.png",
-                  width: 250,
-                  color: const Color.fromARGB(104, 5, 148, 24),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-
-                // app name
-                const Text(
-                  "Urban Forest",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // copyright info
-                const Text(
-                  copyRightInfo,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic
-                  ),
-                ),
-              ]
-            ),
-          ),
+    var width = MediaQuery.of(context).size.width;
+    return Scaffold(
+      body: AnimatedSplashScreen(
+        duration: splashDuration,
+        splashTransition: SplashTransition.scaleTransition,
+        pageTransitionType: PageTransitionType.bottomToTop,
+        backgroundColor: const Color.fromARGB(255, 127, 238, 127),
+        nextScreen: hasInternet ? const StartApp() : const CheckInternet(), // the next screen
+        splashIconSize: width * 1.3,
+        splash: SingleChildScrollView(
+          child: splashContent(width)
         ),
       ),
+    );
+  }
+
+  Column splashContent(double width) {
+    return Column(
+      children: [
+        // logo image
+        Image.asset(
+          "assets/images/logo1.png",
+          width: width * 0.65,
+          color: const Color.fromARGB(104, 5, 148, 24),
+        ),
+        SizedBox(
+          height: width * 0.04,
+        ),
+        // app name
+        const Text(
+          "Urban Forest",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+
+        SizedBox(
+          height: width * 0.16,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/images/CityCouncil.png",
+              width: width * 0.35,
+            ),
+            SizedBox(width: width * 0.07,),
+            Image.asset(
+              "assets/images/UTAS.png",
+              width: width * 0.35,
+            ),
+          ],
+        ),
+
+        const SizedBox(
+          height: 5,
+        ),
+        Image.asset(
+          "assets/images/PlantNet.png",
+          width: width * 0.3,
+        ),
+      ]
     );
   }
 }
