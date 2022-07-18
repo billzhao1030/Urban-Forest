@@ -45,6 +45,8 @@ class _AccountPageState extends State<AccountPage> {
               children: [
                 buildPrivacy(),
                 const SizedBox(height: 12,),
+                buildPlantPP(),
+                const SizedBox(height: 12,),
                 buildProfile()
               ]
             ),
@@ -79,11 +81,25 @@ class _AccountPageState extends State<AccountPage> {
       ]
     ),
   ); 
+  Widget buildPlantPP() => SimpleSettingsTile(
+    title: 'About Pl@ntNet AI',
+    subtitle: '',
+    leading: settingIcon(Icons.grass, Colors.green),
+    child: SettingsScreen(
+      title: "AI Terms Of Use",
+      children:[
+        Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: plantNetpp()
+        )
+      ]
+    ),
+  ); 
 
   Widget buildProfile() => SimpleSettingsTile(
     title: 'User Profile',
     subtitle: '',
-    leading: settingIcon(Icons.person, Colors.green),
+    leading: settingIcon(Icons.person, Colors.blueAccent),
     onTap: () {
       Navigator.push(
         context,

@@ -46,6 +46,10 @@ void main() async {
       email: email, 
       password: password
     );
+    // .onError((error, stackTrace) {
+    //   //TODO: add error detection
+    //   debugState("add error detection");
+    // });
     needSignIn = false;
     debugState("Auto Sign-in using credential (pref)");
   }

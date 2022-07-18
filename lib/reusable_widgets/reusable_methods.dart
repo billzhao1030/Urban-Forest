@@ -160,6 +160,117 @@ Column privacyPolicy() {
   );
 }
 
+Column plantNetpp() {
+  return Column(
+    children: [
+      normalText(
+        "These Terms and Conditions govern the conditions in which you may "
+        "access and use the Pl@ntNet API services (https://my.plantnet.org/). Any and "
+        "all users of the Pl@ntNet API service accept the present General Terms and "
+        "Conditions."
+      ),
+      headerText("User account"),
+      normalText(
+        "Using Pl@ntNet API requires the creation of a user account.\n"
+        "When you create an account, we collect your e-mail address ("
+        "useful for password reset; might be used very occasionally to"
+        " contact users), your name and first name (optionally) and a "
+        "username (to log in)."
+      ),
+      normalText(
+        "For security reasons, passwords are not directly stored in the"
+        " database. They pass through a cryptographic hash function whose "
+        "result is stored (the hashing action cannot be reversed). A unique"
+        " numeric identifier is attributed to each account and will be as"
+        "sociated with every data collected from this account (user account"
+        " data, history of queries)."
+      ),
+      headerText("Main Pl@ntNet API feature: Identify a plant with a query"),
+      normalText(
+        "Pl@ntNet API is free of use up to 500 identification queries per day"
+        ". It is also free of use for specific non-profit educational and scien"
+        "tific purposes: please contact us and indicate (i) the name and url of"
+        " your non-profit organization, (ii) a short description of the usage "
+        "of Pl@ntNet API you are targeting.\n"
+        "Pl@ntNet API is paying for commercial usage beyond 500 identification req"
+        "uests per day. This paying access requires signing the following agreement:"
+        "https://my.plantnet.org/documents/agreement_PlantNet_API_english_v4.pdf\n"
+        "In any case, the usage of Pl@ntNet API is limited to 10 simultaneous requests per client."
+      ),
+      headerText("Use of the Pl@ntNet API"),
+      normalText(
+        "Your personal account and your login information provided by Pl@ntNet"
+        " are placed under your exclusive responsibility. You will not share you"
+        "r password nor let anyone else access your account, or do anything else"
+        " that might jeopardize the security of your account. You are solely res"
+        "ponsible for the use made of your login information. You are solely res"
+        "ponsible for any loss, diversion or non-authorized use of your login in"
+        "formation and their consequences. All remarks and images submitted on t"
+        "his application must be in compliance with French laws and regulations "
+        "in force. You expressly commit not to using any racist, pornographic or"
+        " slanderous words on the application. It is reminded that you are entir"
+        "ely responsible for the content you spread and that Pl@ntNet will not b"
+        "e considered responsible for the content you have issued."
+      ),
+      headerText("Limitation of liability"),
+      normalText(
+        "You acknowledge having been informed and accept the fact that under no c"
+        "ircumstance whatsoever shall Pl@ntNet be liable for the creation, modifica"
+        "tion, suppression of your personal data, which is under your full responsi"
+        "bility. You use Pl@ntNet API at your own risks. Under no circumstance what"
+        "soever shall Pl@ntNet be liable for any direct or indirect damages, in par"
+        "ticular material prejudice, data loss or financial prejudice related to th"
+        "e access or use of this application. The Pl@ntNet's contents are displayed"
+        " without any warranty whatsoever.\n"
+        "In no event shall Pl@ntNet be liable for the accuracy of the results obtain"
+        "ed by the use of the Pl@ntNet API. Pl@ntNet shall by no means be responsible "
+        "for any direct or indirect damages that may incur as a result of the use of"
+        " the application."
+      ),
+      headerText("Users' rights and obligations"),
+      normalText(
+        "The contents of this site are protected under literary and artistic property "
+        "law, the Bern Convention, EU directive 96/9/CE and book 1 of the French Code "
+        "de la propriété intellectuelle . All reproductions other than for the persona"
+        "l use of visitors to the site, notably with a view to publication in any form"
+        ", are strictly forbidden without the express written permission of Pl@ntNet.\n"
+        "Visitors are responsible for their interpretation and use of the information con"
+        "sulted, and for the data they provide on forms included in the site. They are"
+        " bound by the prevailing rules and regulations."
+      ),
+      headerText("Intellectual property rights"),
+      normalText(
+        "No element of the Pl@ntNet application shall be copied, reproduced, mod"
+        "ified, republished, downloaded, distorted, transmitted or distributed, howsoe"
+        "ver done, partially or integrally, without the written and prior authorizatio"
+        "n from Pl@ntNet, except for the strict needs of the press and provided that "
+        "the intellectual property rights and any other mentioned property rights are "
+        "being respected."
+      ),
+      headerText("Personal data"),
+      normalText(
+        "By registering to the Pl@ntNet API application, you accept that your identity,"
+        " under the names, surnames and email address you specified when registering, "
+        "is stored by Pl@ntNet until the account is cancelled.\n"
+        "In accordance with Articles 49 and following of Law No 78-17 of 6 January 1978 "
+        "on data processing, files and freedoms and Articles 15 and following of Regul"
+        "ation (EU) 2016/679 of the European Parliament and of the Council of 27 April"
+        " 2016 on the protection of individuals with regard to the processing of perso"
+        "nal data and on the free movement of such data, and repealing Directive 95/46"
+        "/EC (RGPD or GDPR), any person may:\n"
+        "  \u2022 have confirmation that personal data relating to him/her are or are not process"
+        "ed and, where they are processed, access to such personal data,\n"
+        "  \u2022 request the correction or deletion of his/her personal data,\n"
+        "  \u2022 request that the processing of his/her personal data be limited,\n"
+        "  \u2022 request the portability of his/her personal data if the processing is based on consent or a contract."
+        "Any person may also, for legitimate reasons, object to the processing of data concerning him/her.\n"
+        "Any person may give general or specific instructions regarding the storage, erasure and communication"
+        " of your personal data after your death.\n"
+      ),
+    ],
+  );
+}
+
 Text normalText(String text, {bool isJust = false}) {
   return Text(
     text,
