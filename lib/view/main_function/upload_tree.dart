@@ -798,12 +798,14 @@ class _UploadTreeState extends State<UploadTree> {
       showHint(context, "Request uploaded to ArcGIS!");
     } else {
       TreeRequest request = TreeRequest();
+      request.isAdd = isAddTree;
 
       // get the tree and set the version to 1
       request.tree = isAddTree ? Tree() : widget.tree!;
       Tree requestTree = request.tree;
       requestTree.version = isAddTree ? 1 : (requestTree.version);
       request.requestUID = uid;
+      request.requestTime = DateTime.now().millisecondsSinceEpoch;
 
       controllerToTree(requestTree);
 
