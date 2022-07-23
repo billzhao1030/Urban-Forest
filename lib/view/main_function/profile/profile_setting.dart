@@ -52,15 +52,25 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Profile & Setting",
-          textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Profile & Setting",
+            textAlign: TextAlign.center,
+          ),
+          automaticallyImplyLeading: false,
         ),
-        automaticallyImplyLeading: false,
+        body: settingArea(context),
       ),
-      body: settingArea(context),
     );
   }
 
@@ -352,64 +362,71 @@ class _UserProfileState extends State<UserProfile> {
     title: 'Report a bug',
     subtitle: '',
     leading: settingIcon(Icons.bug_report, Colors.teal),
-    child: SettingsScreen(
-      title: "Report a bug",
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _bugController,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                minLines: 3,
-                maxLines: 7,
-                autofocus: true
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_bugController.text.trim().isEmpty) {
-                      showHint(context, "The content is empty!");
-                    } else if (_bugController.text.trim().length < 8) {
-                      showHint(context, "The bug detail is too short\nPlease give more description");
-                    } else {
-                      DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
-                      String uid = FirebaseAuth.instance.currentUser!.uid;
-                      var bugID = dateFormatID.format(DateTime.now()) + "!$uid";
-                      var time = DateTime.now().millisecondsSinceEpoch;
-                      dbBug.doc(bugID)
-                        .set({
-                          "bug_content": _bugController.text.trim(),
-                          "time": time,
-                          "uid": uid
-                        })
-                        .then((value) async {
-                          debugState("Send a bug");
-                          showHint(context, "You have uploaded the bug report!");
-                          await Future.delayed(const Duration(milliseconds: 1500));
-                          // hide the current snackbar
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          
-                          _bugController.clear();
-
-                          Navigator.pop(context);
-                        })
-                        .catchError((error) {
-                          debugState(error.toString());
-                        });
-                    }
-                  },  
-                  child: const Text("Upload")
+    child: WillPopScope(
+      onWillPop: () {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: SettingsScreen(
+        title: "Report a bug",
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _bugController,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  minLines: 3,
+                  maxLines: 7,
+                  autofocus: true
                 ),
-              )
-            ],
-          ),
-        )
-      ]
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_bugController.text.trim().isEmpty) {
+                        showHint(context, "The content is empty!");
+                      } else if (_bugController.text.trim().length < 8) {
+                        showHint(context, "The bug detail is too short\nPlease give more description");
+                      } else {
+                        DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
+                        String uid = FirebaseAuth.instance.currentUser!.uid;
+                        var bugID = dateFormatID.format(DateTime.now()) + "!$uid";
+                        var time = DateTime.now().millisecondsSinceEpoch;
+                        dbBug.doc(bugID)
+                          .set({
+                            "bug_content": _bugController.text.trim(),
+                            "time": time,
+                            "uid": uid
+                          })
+                          .then((value) async {
+                            debugState("Send a bug");
+                            showHint(context, "You have uploaded the bug report!");
+                            await Future.delayed(const Duration(milliseconds: 1500));
+                            // hide the current snackbar
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            
+                            _bugController.clear();
+    
+                            Navigator.pop(context);
+                          })
+                          .catchError((error) {
+                            debugState(error.toString());
+                          });
+                      }
+                    },  
+                    child: const Text("Upload")
+                  ),
+                )
+              ],
+            ),
+          )
+        ]
+      ),
     ),
   );
 
@@ -417,62 +434,69 @@ class _UserProfileState extends State<UserProfile> {
     title: 'Send Feedback',
     subtitle: '',
     leading: settingIcon(Icons.thumb_up, Colors.purple),
-    child: SettingsScreen(
-      title: "Send feedback",
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _feedbackController,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                minLines: 3,
-                maxLines: 7,
-                autofocus: true
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_bugController.text.trim().isEmpty) {
-                      showHint(context, "The content is empty!");
-                    } else {
-                      DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
-                      String uid = FirebaseAuth.instance.currentUser!.uid;
-                      var feedbackID = dateFormatID.format(DateTime.now()) + "#$uid";
-                      var time = DateTime.now().millisecondsSinceEpoch;
-                      dbFeedback.doc(feedbackID)
-                        .set({
-                          "feedback_content": _feedbackController.text.trim(),
-                          "time": time,
-                          "uid": uid
-                        })
-                        .then((value) async {
-                          debugState("Send a feedback");
-                          showHint(context, "You have uploaded the feedback!");
-                          await Future.delayed(const Duration(milliseconds: 1500));
-                          // hide the current snackbar
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          
-                          _feedbackController.clear();
-
-                          Navigator.pop(context);
-                        })
-                        .catchError((error) {
-                          debugState(error.toString());
-                        });
-                    }
-                  },  
-                  child: const Text("Upload")
+    child: WillPopScope(
+      onWillPop: () {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: SettingsScreen(
+        title: "Send feedback",
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _feedbackController,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  minLines: 3,
+                  maxLines: 7,
+                  autofocus: true
                 ),
-              )
-            ],
-          ),
-        )
-      ]
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_feedbackController.text.trim().isEmpty) {
+                        showHint(context, "The content is empty!");
+                      } else {
+                        DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
+                        String uid = FirebaseAuth.instance.currentUser!.uid;
+                        var feedbackID = dateFormatID.format(DateTime.now()) + "#$uid";
+                        var time = DateTime.now().millisecondsSinceEpoch;
+                        dbFeedback.doc(feedbackID)
+                          .set({
+                            "feedback_content": _feedbackController.text.trim(),
+                            "time": time,
+                            "uid": uid
+                          })
+                          .then((value) async {
+                            debugState("Send a feedback");
+                            showHint(context, "You have uploaded the feedback!");
+                            await Future.delayed(const Duration(milliseconds: 1500));
+                            // hide the current snackbar
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            
+                            _feedbackController.clear();
+                            
+                            Navigator.pop(context);
+                          })
+                          .catchError((error) {
+                            debugState(error.toString());
+                          });
+                      }
+                    },  
+                    child: const Text("Upload")
+                  ),
+                )
+              ],
+            ),
+          )
+        ]
+      ),
     ),
   );
 }

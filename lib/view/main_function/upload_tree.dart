@@ -140,25 +140,30 @@ class _UploadTreeState extends State<UploadTree> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: !isAddTree, // if edit then add back button
-      ),
-      body: backgroundDecoration(
-        context, 
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
-            child: Form(
-              key: _formKey,
-              child: treeFormColumn()
-            ),
-          )
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: !isAddTree, // if edit then add back button
         ),
-        dismiss: false // let dismiss manual
+        body: backgroundDecoration(
+          context, 
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
+              child: Form(
+                key: _formKey,
+                child: treeFormColumn()
+              ),
+            )
+          ),
+          dismiss: false // let dismiss manual
+        ),
       ),
     );
   }
@@ -831,7 +836,7 @@ class _UploadTreeState extends State<UploadTree> {
       Navigator.pop(context);
     }
 
-    //resetForm();
+    resetForm();
   }
 
 
