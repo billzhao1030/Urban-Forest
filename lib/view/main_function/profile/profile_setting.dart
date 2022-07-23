@@ -372,7 +372,7 @@ class _UserProfileState extends State<UserProfile> {
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_bugController.text.isEmpty) {
+                    if (_bugController.text.trim().isEmpty) {
                       showHint(context, "The content is empty!");
                     } else if (_bugController.text.trim().length < 8) {
                       showHint(context, "The bug detail is too short\nPlease give more description");
@@ -380,9 +380,12 @@ class _UserProfileState extends State<UserProfile> {
                       DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
                       String uid = FirebaseAuth.instance.currentUser!.uid;
                       var bugID = dateFormatID.format(DateTime.now()) + "!$uid";
+                      var time = DateTime.now().millisecondsSinceEpoch;
                       dbBug.doc(bugID)
                         .set({
-                          "bug_content": _bugController.text
+                          "bug_content": _bugController.text.trim(),
+                          "time": time,
+                          "uid": uid
                         })
                         .then((value) async {
                           debugState("Send a bug");
@@ -434,15 +437,18 @@ class _UserProfileState extends State<UserProfile> {
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_bugController.text.isEmpty) {
+                    if (_bugController.text.trim().isEmpty) {
                       showHint(context, "The content is empty!");
                     } else {
                       DateFormat dateFormatID = DateFormat("yyyyMMddHHmmss");
                       String uid = FirebaseAuth.instance.currentUser!.uid;
                       var feedbackID = dateFormatID.format(DateTime.now()) + "#$uid";
+                      var time = DateTime.now().millisecondsSinceEpoch;
                       dbFeedback.doc(feedbackID)
                         .set({
-                          "feedback_content": _feedbackController.text
+                          "feedback_content": _feedbackController.text.trim(),
+                          "time": time,
+                          "uid": uid
                         })
                         .then((value) async {
                           debugState("Send a feedback");
