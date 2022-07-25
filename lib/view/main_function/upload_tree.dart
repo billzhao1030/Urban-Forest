@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -168,53 +169,6 @@ class _UploadTreeState extends State<UploadTree> {
     );
   }
 
-  // get current position
-  Future _determinePosition() async {
-    /*
-    Three error cases
-    1. GPS disabled
-    2. Permanently denied at first
-    3. Denied after ask 
-    */
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // check if the GPS service is enabled 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    // then check if allow the geolocator 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-    
-    // if the permission is permanently denied
-    if (permission == LocationPermission.deniedForever) { 
-      return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
-    } 
-
-    return await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
-  }
-
-  // get address from position
-  getAddress(Position position) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-    var place = placemarks[0];
-    //debugState(place.toString());
-
-    setState(() {
-      _surburbController.text = place.locality.toString();
-      _streetNameController.text = place.street.toString();
-    });
-  }
-
   Column treeFormColumn() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +186,7 @@ class _UploadTreeState extends State<UploadTree> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.35,
+              width: isAddTree ? MediaQuery.of(context).size.width * 0.35 : MediaQuery.of(context).size.width * 0.5,
               child: ElevatedButton(
                 onPressed: () async {
                   processLocation();
@@ -255,28 +209,7 @@ class _UploadTreeState extends State<UploadTree> {
                 showDialog(
                   context: context, 
                   builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text("How to get good location?"),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              "assets/images/Instruction.jpg",
-                              fit: BoxFit.fitHeight,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: normalText(
-                                "* Notice that the GPS location of the tree is obtained from you "
-                                "mobile device. So it's very important to keep your device as close "
-                                "to the tree as possible",
-                                isJust: true
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
+                    return locationFetchAdvice();
                   }
                 );
               }, 
@@ -327,7 +260,7 @@ class _UploadTreeState extends State<UploadTree> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
@@ -343,7 +276,7 @@ class _UploadTreeState extends State<UploadTree> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
@@ -359,6 +292,25 @@ class _UploadTreeState extends State<UploadTree> {
               ),
             ),
           ],
+        ),
+
+        ElevatedButton(
+          onPressed: () {
+            showDialog(
+              context: context, 
+              builder: (BuildContext context) {
+                return imageFetchAdvice();
+              }
+            );
+          }, 
+          child: const Icon(
+            Icons.question_mark_outlined,
+            color: Colors.white,
+          ),
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            primary: const Color.fromARGB(1, 1, 1, 1),
+          ),
         ),
 
         // the simple response (display somewhere else)
@@ -461,7 +413,7 @@ class _UploadTreeState extends State<UploadTree> {
 
         // asset id
         (globalLevel > 1) ? const SizedBox(height: 10) : Container(),
-        (globalLevel > 1) ? assetIDsection() : Container(),
+        (globalLevel > 1) ? assetIDsection(_assetIDController) : Container(),
 
         // tree scale
         const SizedBox(height: 15),
@@ -579,199 +531,78 @@ class _UploadTreeState extends State<UploadTree> {
     );
   }
 
-  Padding assetIDsection() {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CupertinoFormSection(
-          backgroundColor: const Color.fromARGB(177, 231, 226, 226),
-          header: const Text(
-            "Tree Identifier", 
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
-          ),
-          footer: const Center(
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Text("Tree Asset ID (ASSNBRI), please make sure this is the unique ID in the database"),
-            ),
-          ),
-          margin: const EdgeInsets.all(4.0),
+  // location suggestion
+  AlertDialog locationFetchAdvice() {
+    return AlertDialog(
+      title: const Text("How to get good location?"),
+      content: SingleChildScrollView(
+        child: Column(
           children: [
-            CupertinoTextFormFieldRow(
-              controller: _assetIDController,
-              prefix: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.32,
-                child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
+            Image.asset(
+              "assets/images/Instruction.jpg",
+              fit: BoxFit.fitHeight,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: normalText(
+                "* Notice that the GPS location of the tree is obtained from you "
+                "mobile device. So it's very important to keep your device as close "
+                "to the tree as possible",
+                isJust: true
               ),
-              obscureText: false,
-              autocorrect: true,
-              enableSuggestions: true,
-              cursorColor: Colors.black,
-              style: TextStyle(color: Colors.black.withOpacity(0.88)),
-              placeholder: "6 digits ID",
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) {
-                return validateAssetID(value);
-              },
             )
-          ]
+          ],
         ),
-      );
-  }
-
-  // Three dropdown menus
-  Row dropDownMenus(String prefix, Widget dropdown) {
-    return Row(
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.05,
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: formText(
-            prefix, 
-            fontColor: CupertinoColors.black, 
-            fontsize: 16
-          ),
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              dropdown,
-            ],
-          )
-        )
-      ],
+      ),
     );
   }
 
-  // tree species row
-  CupertinoTextFormFieldRow treeSpecies(String prefix, String placeHolder, TextEditingController _controller) {
-    return CupertinoTextFormFieldRow(
-      controller: _controller,
-      prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.35,
-        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
-      ),
-      obscureText: false,
-      maxLines: 1,
-      autocorrect: true,
-      enableSuggestions: true,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.88)),
-      placeholder: placeHolder,
-      textAlign: TextAlign.center,
-      textAlignVertical: TextAlignVertical.center,
-      keyboardType: TextInputType.streetAddress,
-      maxLength: 40,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        return validateSpecies(value);
-      },
-    );
+  // get current position
+  Future _determinePosition() async {
+    /*
+    Three error cases
+    1. GPS disabled
+    2. Permanently denied at first
+    3. Denied after ask 
+    */
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // check if the GPS service is enabled 
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      denyGPS();
+      return Future.error('Location services are disabled.');
+    }
+
+    // then check if allow the geolocator 
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        denyGPS();
+        return Future.error('Location permissions are denied');
+      }
+    }
+    
+    // if the permission is permanently denied
+    if (permission == LocationPermission.deniedForever) { 
+      denyGPS();
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+    } 
+
+    return await Geolocator.getCurrentPosition(forceAndroidLocationManager: true);
   }
 
-  // tree address row
-  CupertinoTextFormFieldRow treeAddress(String prefix, String placeHolder, TextEditingController _controller) {
-    return CupertinoTextFormFieldRow(
-      controller: _controller,
-      prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.28,
-        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
-      ),
-      obscureText: false,
-      maxLines: 1,
-      autocorrect: true,
-      enableSuggestions: true,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.88)),
-      placeholder: placeHolder,
-      textAlign: TextAlign.center,
-      textAlignVertical: TextAlignVertical.center,
-      keyboardType: TextInputType.streetAddress,
-      maxLength: 40,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        return validateAddress(value);
-      },
-    );
-  }
-
-  // latitude and longtitude
-  CupertinoTextFormFieldRow treeLocation(String prefix, String placeHolder, TextEditingController _controller) {
-    return CupertinoTextFormFieldRow(
-      controller: _controller,
-      prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.28,
-        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
-      ),
-      obscureText: false,
-      autocorrect: true,
-      enableSuggestions: true,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.88)),
-      placeholder: placeHolder,
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      maxLength: 11,
-      readOnly: true,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        return validateGPS(value);
-      },
-    );
-  }
-
-  // form row of tree comments
-  CupertinoTextFormFieldRow treeComment(String prefix, String placeHolder, TextEditingController _controller, {int maxLines = 3}) {
-    return CupertinoTextFormFieldRow(
-      controller: _controller,
-      prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.25,
-        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
-      ),
-      obscureText: false,
-      autocorrect: true,
-      enableSuggestions: true,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.88)),
-      placeholder: placeHolder,
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.text,
-      maxLength: 256,
-      maxLines: maxLines
-    );
-  }
-
-  // form row of tree scale: height, width, length, area(read only)
-  CupertinoTextFormFieldRow treeScale(String prefix, String placeHolder, TextEditingController _controller, {bool readOnly = false}) {
-    return CupertinoTextFormFieldRow(
-      controller: _controller,
-      prefix: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.25,
-        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
-      ),
-      obscureText: false,
-      autocorrect: true,
-      enableSuggestions: true,
-      cursorColor: Colors.black,
-      style: TextStyle(color: Colors.black.withOpacity(0.88)),
-      placeholder: placeHolder,
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      maxLength: 4,
-      readOnly: readOnly,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) {
-        return validateScale(value);
+  Future<dynamic> denyGPS() {
+    return showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return geolocatorEnabled(context);
       }
     );
   }
-
 
   // process the form data and upload to the database (firebase/ArcGIS)
   processForm(bool isFirebase) async {
@@ -810,6 +641,7 @@ class _UploadTreeState extends State<UploadTree> {
       Tree requestTree = request.tree;
       requestTree.version = isAddTree ? 1 : (requestTree.version);
       request.requestUID = uid;
+      request.requestEmail = widget.model.modelUser.emailAddress;
       request.requestTime = DateTime.now().millisecondsSinceEpoch;
 
       controllerToTree(requestTree);
@@ -864,49 +696,12 @@ class _UploadTreeState extends State<UploadTree> {
     bestMatchStr = "";
   }
 
-  // request tree confirm
-  AlertDialog requestUploadAlert(BuildContext context, bool isFirebase) {
-    return AlertDialog(
-      title: isAddTree ? const Text('Upload a new tree') : const Text('Edit an existing tree'),
-      content: const Text('Confirm this request?'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            setState(() {
-              databaseUploading = false;
-            });
-
-            Navigator.pop(context);
-          },
-          child: const Text(
-            'No',
-            style: TextStyle(
-              fontSize: 22
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () async {
-            Navigator.pop(context);
-            
-            processForm(isFirebase);
-          },
-          child: const Text(
-            'Yes',
-            style: TextStyle(
-                fontSize: 22
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   // get image from gallery
   getFromGallery() async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (image == null){
+      showHint(context, "No image selected!");
       setState(() {
         imageProcessing = false;
       });
@@ -927,6 +722,7 @@ class _UploadTreeState extends State<UploadTree> {
             builder: (context) => TakePictureScreen(camera: firstCamera))
     );
     if (image == null) {
+      showHint(context, "No image selected!");
       setState(() {
         imageProcessing = false;
       });
@@ -958,7 +754,7 @@ class _UploadTreeState extends State<UploadTree> {
     if (!badImage) {
       AIResponse predict = AIResponse.fromJson(json);
       predict.todebug();
-      if (predict.accuracyList[0] >= 20) {
+      if (predict.accuracyList[0] >= 5) {
         setState(() {
           bestMatchStr = "Best Match: ${predict.scientificName[0]}\n"
           "With accuracy of: ${predict.bestAccuracy.toStringAsFixed(3)}%\n";
@@ -1002,16 +798,51 @@ class _UploadTreeState extends State<UploadTree> {
     latitude = position.latitude;
     longitude = position.longitude;
 
-    getAddress(position);
-
     debugState("latitude: $latitude");
     debugState("longitude: $longitude");
 
+    bool willUpdateLocation = true;
+
+    if (!isAddTree) {
+      var oldLatitude = widget.tree!.latitude;
+      var oldLongitude = widget.tree!.longitude;
+
+      var distance = Geolocator.distanceBetween(oldLatitude, oldLongitude, latitude, longitude);
+
+      if (distance > 10) {
+        willUpdateLocation = false;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return longDistanceAlert(context, distance);
+          },
+        );
+      }
+    }
+
     setState(() {
       locationLoading = false;
-      _latitudeController.text = position.latitude.toStringAsFixed(6);
-      _longitudeController.text = position.longitude.toStringAsFixed(6);
-    }); 
+    });
+
+    if (willUpdateLocation) {
+      setState(() {
+        _latitudeController.text = position.latitude.toStringAsFixed(6);
+        _longitudeController.text = position.longitude.toStringAsFixed(6);
+      }); 
+      getAddress(position);
+    }
+  }
+
+  // get address from position
+  getAddress(Position position) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+    var place = placemarks[0];
+    //debugState(place.toString());
+
+    setState(() {
+      _surburbController.text = place.locality.toString();
+      _streetNameController.text = place.street.toString();
+    });
   }
 
 
@@ -1246,5 +1077,306 @@ class _UploadTreeState extends State<UploadTree> {
     ];
 
     return data;
+  }
+
+   AlertDialog geolocatorEnabled(BuildContext context) {
+    return AlertDialog(
+      title: const Text('GPS service'),
+      content: const Text('Please enable the GPS service to access the rest fucntions'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            SystemNavigator.pop();
+          },
+          child: const Text(
+            'OK',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  AlertDialog longDistanceAlert(BuildContext context, double distance) {
+    return AlertDialog(
+      title: const Text('Pay attention'),
+      content: Text(
+        'You are ${distance.toStringAsFixed(1)} metres away from this tree. '
+        'The new geolocation might be inaccurate, please get closer to the tree and try again, '
+        'or keep the old geolocation'
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'OK',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // request tree confirm
+  AlertDialog requestUploadAlert(BuildContext context, bool isFirebase) {
+    return AlertDialog(
+      title: isAddTree ? const Text('Upload a new tree') : const Text('Edit an existing tree'),
+      content: const Text('Confirm this request?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            setState(() {
+              databaseUploading = false;
+            });
+
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'No',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            
+            processForm(isFirebase);
+          },
+          child: const Text(
+            'Yes',
+            style: TextStyle(
+                fontSize: 22
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // image suggestion dialog
+  AlertDialog imageFetchAdvice() {
+    return AlertDialog(
+      title: const Text("How to upload good image?"),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.asset(
+              "assets/images/Instruction.jpg",
+              fit: BoxFit.fitHeight,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: normalText(
+                "* Notice that the GPS location of the tree is obtained from you "
+                "mobile device. So it's very important to keep your device as close "
+                "to the tree as possible",
+                isJust: true
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding assetIDsection(TextEditingController _controller) {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CupertinoFormSection(
+          backgroundColor: const Color.fromARGB(177, 231, 226, 226),
+          header: const Text(
+            "Tree Identifier", 
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black54)
+          ),
+          footer: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Text("Tree Asset ID (ASSNBRI), please make sure this is the unique ID in the database"),
+            ),
+          ),
+          margin: const EdgeInsets.all(4.0),
+          children: [
+            CupertinoTextFormFieldRow(
+              controller: _controller,
+              prefix: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.32,
+                child: formText("Asset ID", fontColor: CupertinoColors.black, fontsize: 16)
+              ),
+              obscureText: false,
+              autocorrect: true,
+              enableSuggestions: true,
+              cursorColor: Colors.black,
+              style: TextStyle(color: Colors.black.withOpacity(0.88)),
+              placeholder: "6 digits ID",
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                return validateAssetID(value);
+              },
+            )
+          ]
+        ),
+      );
+  }
+
+  // Three dropdown menus
+  Row dropDownMenus(String prefix, Widget dropdown) {
+    return Row(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.05,
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: formText(
+            prefix, 
+            fontColor: CupertinoColors.black, 
+            fontsize: 16
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              dropdown,
+            ],
+          )
+        )
+      ],
+    );
+  }
+
+  // tree species row
+  CupertinoTextFormFieldRow treeSpecies(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.35,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      maxLines: 1,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical.center,
+      keyboardType: TextInputType.streetAddress,
+      maxLength: 40,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        return validateSpecies(value);
+      },
+    );
+  }
+
+  // tree address row
+  CupertinoTextFormFieldRow treeAddress(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.28,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      maxLines: 1,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical.center,
+      keyboardType: TextInputType.streetAddress,
+      maxLength: 40,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        return validateAddress(value);
+      },
+    );
+  }
+
+  // latitude and longtitude
+  CupertinoTextFormFieldRow treeLocation(String prefix, String placeHolder, TextEditingController _controller) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.28,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      maxLength: 11,
+      readOnly: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        return validateGPS(value);
+      },
+    );
+  }
+
+  // form row of tree comments
+  CupertinoTextFormFieldRow treeComment(String prefix, String placeHolder, TextEditingController _controller, {int maxLines = 3}) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.25,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.text,
+      maxLength: 256,
+      maxLines: maxLines
+    );
+  }
+
+  // form row of tree scale: height, width, length, area(read only)
+  CupertinoTextFormFieldRow treeScale(String prefix, String placeHolder, TextEditingController _controller, {bool readOnly = false}) {
+    return CupertinoTextFormFieldRow(
+      controller: _controller,
+      prefix: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.25,
+        child: formText(prefix, fontColor: CupertinoColors.black, fontsize: 16)
+      ),
+      obscureText: false,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black.withOpacity(0.88)),
+      placeholder: placeHolder,
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      maxLength: 4,
+      readOnly: readOnly,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) {
+        return validateScale(value);
+      }
+    );
   }
 }
