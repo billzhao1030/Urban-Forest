@@ -126,7 +126,7 @@ class _TreeMapState extends State<TreeMap> {
     // get token for oAuth
     token = "";
     final response = await http.get(Uri.parse(
-      "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=dayi87327285&referer=launceston.maps.arcgis.com&f=json"
+      "https://www.arcgis.com/sharing/generateToken?username=xunyiz@utas.edu.au&password=$tokenPass&referer=launceston.maps.arcgis.com&f=json"
     ));
     var json = jsonDecode(response.body);
   
