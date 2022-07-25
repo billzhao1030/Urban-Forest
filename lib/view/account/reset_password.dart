@@ -38,6 +38,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,

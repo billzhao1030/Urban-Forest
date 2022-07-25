@@ -46,6 +46,8 @@ class _SignUpViewState extends State<SignUpView> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,

@@ -19,6 +19,7 @@ import 'package:urban_forest/view/main_function/home_screen.dart';
 
 bool needSignIn = true; // judge if user need to sign in
 bool hasInternet = true; // judge if has connection
+bool passErrorWhenAutoSignIn = false; // judge if error occur while auto sign in
 
 void main() async {
   hasInternet = await InternetConnectionChecker().hasConnection;
@@ -45,13 +46,15 @@ void main() async {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email, 
       password: password
-    );
-    // .onError((error, stackTrace) {
-    //   //TODO: add error detection
-    //   debugState("add error detection");
-    // });
-    needSignIn = false;
-    debugState("Auto Sign-in using credential (pref)");
+    ).then((value) {
+      needSignIn = false;
+      debugState("Auto Sign-in using credential (pref)");
+    }).onError((error, stackTrace) {
+      needSignIn = true;
+      passErrorWhenAutoSignIn = true;
+      debugState("add error detection");
+    });
+    
   }
 
   // get access level
@@ -184,9 +187,14 @@ class _StartAppState extends State<StartApp> {
       home: hasAcknowledged 
       ? (
         needSignIn 
-        ? SignInView(
+        ? (
+          passErrorWhenAutoSignIn 
+          ? SignInView(
+            filledEmail: email, haserror: true,
+          ) : SignInView(
             filledEmail: email,
           )
+        )
         : const HomeScreen() // go to home screen directly if signed in
       ) 
       : const Acknowledge(), // go to terms of service is not acknowleged

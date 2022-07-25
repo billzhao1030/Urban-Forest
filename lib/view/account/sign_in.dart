@@ -18,10 +18,12 @@ const logoFileName = "assets/images/logo2.png"; // logo in assets/images
 class SignInView extends StatefulWidget {
   const SignInView({
     Key? key, 
-    required this.filledEmail, // pre-entered email
+    required this.filledEmail, 
+    this.haserror// pre-entered email
   }) : super(key: key);
 
   final String filledEmail;
+  final bool? haserror;
 
   @override
   State<SignInView> createState() => _SignInViewState();
@@ -48,6 +50,12 @@ class _SignInViewState extends State<SignInView> {
 
     // set the controller text if has pre-entered fields
     _emailTextController.text = widget.filledEmail;
+
+    if (widget.haserror != null) {
+      Future.delayed(Duration.zero, () {
+        showHint(context, "Error occurs when sign in\nYour account is diabled/deleted by admin", keep: true);
+      });
+    }
   }
 
   @override
@@ -58,6 +66,8 @@ class _SignInViewState extends State<SignInView> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
       },
       child: Scaffold(
         body: backgroundDecoration(
