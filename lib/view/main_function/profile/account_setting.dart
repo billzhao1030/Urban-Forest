@@ -138,6 +138,15 @@ class _AccountPageState extends State<AccountPage> {
           await widget.model.getUpload();
         },
       ),
+      CheckboxSettingsTile(
+        leading: const Icon(Icons.map),
+        settingKey: 'key-advanced-map-type',
+        title: 'Enable hybrid map',
+        onChange: (value) async {
+          debugPrint('key-advanced-map-type: $value');
+          await widget.model.getMapType();
+        },
+      ),
       SimpleSettingsTile(
         title: 'Advanced Settings',
         subtitle: 'These settings is only available for advanced users',

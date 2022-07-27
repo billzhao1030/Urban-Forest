@@ -7,6 +7,7 @@ import 'package:urban_forest/utils/reference.dart';
 
 class AccountModel extends ChangeNotifier {
   bool? toArcGIS = false;
+  bool? isHybrid = false;
 
   UserAccount modelUser = UserAccount();
   String uid = "";
@@ -15,6 +16,7 @@ class AccountModel extends ChangeNotifier {
     //fetch(currUser);
     getUpload();
     getUser();
+    getMapType();
   }
 
 
@@ -23,6 +25,17 @@ class AccountModel extends ChangeNotifier {
       debugState("Set firebase");
       toArcGIS = Settings.getValue("key-advanced-upload-ArcGIS", defaultValue: false);
       debugState("Now ${toArcGIS.toString()}");
+    }
+    
+
+    notifyListeners();
+  }
+
+  Future getMapType() async {
+    if (globalLevel > 1) {
+      debugState("Set map type");
+      isHybrid = Settings.getValue("key-advanced-map-type", defaultValue: false);
+      debugState("Now ${isHybrid.toString()}");
     }
     
 

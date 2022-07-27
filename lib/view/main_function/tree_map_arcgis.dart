@@ -44,7 +44,6 @@ class _TreeMapState extends State<TreeMap> {
 
   @override
   void initState() {
-    //debugState("access level: $globalLevel");
     setMarker();
     dataLoading();
     super.initState();
@@ -63,7 +62,45 @@ class _TreeMapState extends State<TreeMap> {
             Expanded(
               child: mapLoading 
                 ? const Center(child: CircularProgressIndicator(),)
-                : TreePointMap(marker: marker, longitude: currLongitude, latitude: currLatitude,),
+                : GoogleMap(
+                  myLocationButtonEnabled: true,
+                  myLocationEnabled: true,
+                  mapType: widget.model.isHybrid! ? MapType.hybrid : MapType.normal,
+                  rotateGesturesEnabled: false,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(currLatitude, currLongitude),
+                    zoom: 18,
+                    tilt: 0
+                  ),
+                  markers: marker,
+                  onLongPress: (LatLng location) {
+                    debugState("Your tap now");
+                    debugState(location.latitude.toString());
+                    debugState(location.longitude.toString());
+
+                    setState(() {
+                        const MarkerId markerId = MarkerId("RANDOM_ID");
+                        Marker newMarker = Marker(
+                            markerId: markerId,
+                            draggable: true,
+                            position: location, //With this parameter you automatically obtain latitude and longitude
+                            infoWindow: InfoWindow(
+                                title: "Location",
+                                snippet: 'Latitude: ${location.latitude.toStringAsFixed(4)}\n'
+                                'Longitude: ${location.longitude.toStringAsFixed(4)}',
+                            ),
+                            icon: BitmapDescriptor.defaultMarker,
+                            onTap: () {
+                              debugState("add a tree?");
+
+                              //TODO: maybe add a tree from here
+                            }
+                        );
+
+                        marker.add(newMarker);
+                    });
+                  }
+                )
             ),
           ],
         ),
@@ -115,6 +152,7 @@ class _TreeMapState extends State<TreeMap> {
     mapMarker = await BitmapDescriptor.fromBytes(markerIcon!);
   }
 
+  // refetch all trees
   dataLoading() async {
     // get location
     Position position = await _determinePosition();
@@ -188,20 +226,6 @@ class _TreeMapState extends State<TreeMap> {
       //tree.treeInfoDebug(); // show the tree list
       i++;
     }
-
-    // the current place marker
-    marker.add(
-      Marker(
-        markerId: const MarkerId("curr"),
-        icon: BitmapDescriptor.defaultMarker,
-        position: LatLng(currLatitude, currLongitude),
-        
-        onTap: () {
-          //showHint(context, "You are here!");
-          debugState("here");
-        }
-      )
-    );
   }
 
   void _displayPopup(BuildContext context, Tree tree) {
@@ -325,37 +349,6 @@ class _TreeMapState extends State<TreeMap> {
       MaterialPageRoute(
         builder: (context) => UploadTree(tree: tree, model: widget.model,),
       )
-    );
-  }
-}
-
-class TreePointMap extends StatefulWidget {
-  const TreePointMap({
-    Key? key,
-    required this.marker,
-    required this.longitude, 
-    required this.latitude
-  }) : super(key: key);
-
-  final Set<Marker> marker;
-  final double longitude;  // x
-  final double latitude; // y
-  @override
-  State<TreePointMap> createState() => _TreePointMapState();
-}
-
-class _TreePointMapState extends State<TreePointMap> {
-  @override
-  Widget build(BuildContext context) {
-    return GoogleMap(
-      mapType: MapType.normal,
-      rotateGesturesEnabled: false,
-      initialCameraPosition: CameraPosition(
-        target: LatLng(widget.latitude, widget.longitude),
-        zoom: 18,
-        tilt: 0
-      ),
-      markers: widget.marker,
     );
   }
 }

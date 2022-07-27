@@ -52,7 +52,7 @@ void main() async {
     }).onError((error, stackTrace) {
       needSignIn = true;
       passErrorWhenAutoSignIn = true;
-      debugState("add error detection");
+      //debugState("add error detection");
     });
     
   }
