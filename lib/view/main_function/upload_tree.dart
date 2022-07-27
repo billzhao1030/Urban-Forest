@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -23,9 +24,10 @@ import 'package:urban_forest/utils/form_validation.dart';
 import '../../utils/reference.dart';
 
 class UploadTree extends StatefulWidget {
-  const UploadTree({ Key? key, this.tree, required this.model}) : super(key: key);
+  const UploadTree({ Key? key, this.tree, required this.model, this.preLocation}) : super(key: key);
 
   final Tree? tree;
+  final LatLng? preLocation;
   final AccountModel model;
 
   @override
@@ -34,6 +36,7 @@ class UploadTree extends StatefulWidget {
 
 class _UploadTreeState extends State<UploadTree> {
   bool isAddTree = true;
+  bool isAddFromMap = false;
 
   bool enableGPS = false;
 
@@ -100,17 +103,37 @@ class _UploadTreeState extends State<UploadTree> {
 
   @override
   void initState() {
-    if (widget.tree == null) {
-      debugState("Is add");
-      isAddTree = true;
+    if (widget.preLocation != null) {
+      var latitude = widget.preLocation!.latitude;
+      var longitude = widget.preLocation!.longitude;
+      _latitudeController.text = latitude.toStringAsFixed(6);
+      _longitudeController.text = longitude.toStringAsFixed(6);
 
-      processLocation();
+      Position position = Position(
+        longitude: longitude, 
+        latitude: latitude, 
+        timestamp: null, 
+        accuracy: 0, 
+        altitude: 0, 
+        heading: 0, 
+        speed: 0, 
+        speedAccuracy: 0
+      );
+      getAddress(position);
     } else {
-      debugState("Is edit");
-      isAddTree = false;
+      if (widget.tree == null) {
+        debugState("Is add");
+        isAddTree = true;
 
-      editControllerPreset();
+        processLocation();
+      } else {
+        debugState("Is edit");
+        isAddTree = false;
+
+        editControllerPreset();
+      }
     }
+    
 
     super.initState();
     _locClassDropDown = setDropDown(locClassItems);
@@ -150,7 +173,7 @@ class _UploadTreeState extends State<UploadTree> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          automaticallyImplyLeading: !isAddTree, // if edit then add back button
+          automaticallyImplyLeading: !isAddTree || isAddFromMap, // if edit then add back button
         ),
         body: backgroundDecoration(
           context, 
@@ -811,6 +834,7 @@ class _UploadTreeState extends State<UploadTree> {
 
       if (distance > 10) {
         willUpdateLocation = false;
+        // TODO: force update (two button)
         showDialog(
           context: context,
           builder: (BuildContext context) {

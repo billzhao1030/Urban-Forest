@@ -84,15 +84,15 @@ class _TreeMapState extends State<TreeMap> {
                             markerId: markerId,
                             draggable: true,
                             position: location, //With this parameter you automatically obtain latitude and longitude
-                            infoWindow: InfoWindow(
-                                title: "Location",
-                                snippet: 'Latitude: ${location.latitude.toStringAsFixed(4)}\n'
-                                'Longitude: ${location.longitude.toStringAsFixed(4)}',
-                            ),
+                            // infoWindow: InfoWindow(
+                            //     title: "Location",
+                            //     snippet: 'Latitude: ${location.latitude.toStringAsFixed(4)}\n'
+                            //     'Longitude: ${location.longitude.toStringAsFixed(4)}',
+                            // ),
                             icon: BitmapDescriptor.defaultMarker,
                             onTap: () {
                               debugState("add a tree?");
-
+                              askAddDialog(context, location);
                               //TODO: maybe add a tree from here
                             }
                         );
@@ -228,6 +228,52 @@ class _TreeMapState extends State<TreeMap> {
     }
   }
 
+  void askAddDialog(BuildContext context, LatLng location) {
+    TextStyle locationStyle = const TextStyle(
+      fontSize: 16,
+      fontStyle: FontStyle.italic,
+      fontWeight: FontWeight.w600
+    );
+
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("Location"),
+          children: [
+            Text(
+              "Latitude: ${location.latitude.toStringAsFixed(4)}",
+              textAlign: TextAlign.center,
+              style: locationStyle,
+            ),
+            Text(
+              "Longitude: ${location.longitude.toStringAsFixed(4)}",
+              textAlign: TextAlign.center,
+              style: locationStyle,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: SimpleDialogOption(
+                child: ElevatedButton(
+                  child: const Text(
+                    "Add from here",
+                    style: TextStyle(
+                      fontSize: 20
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    addTreeFromMap(context, location);
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   void _displayPopup(BuildContext context, Tree tree) {
     showDialog(
       context: context, 
@@ -348,6 +394,17 @@ class _TreeMapState extends State<TreeMap> {
       context,
       MaterialPageRoute(
         builder: (context) => UploadTree(tree: tree, model: widget.model,),
+      )
+    );
+  }
+
+  void addTreeFromMap(BuildContext context, LatLng location) {
+    log("add from map");
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UploadTree(preLocation: location, model: widget.model,),
       )
     );
   }
