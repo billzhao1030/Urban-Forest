@@ -35,10 +35,12 @@ class _TreeMapState extends State<TreeMap> {
   var marker = <Marker>{};
   var token = ""; // for map access
 
+  bool mapHybrid = false;
+
   var mapLoading = true;
 
-  double currLatitude = 0;
-  double currLongitude = 0;
+  double searchLatitude = 0;
+  double searchLongitude = 0;
 
   late BitmapDescriptor mapMarker;
 
@@ -65,45 +67,62 @@ class _TreeMapState extends State<TreeMap> {
                 : GoogleMap(
                   myLocationButtonEnabled: true,
                   myLocationEnabled: true,
-                  mapType: widget.model.isHybrid! ? MapType.hybrid : MapType.normal,
+                  mapToolbarEnabled: false,
+                  mapType: mapHybrid ? MapType.hybrid : MapType.normal,
                   rotateGesturesEnabled: false,
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(currLatitude, currLongitude),
+                    target: LatLng(searchLatitude, searchLongitude),
                     zoom: 18,
                     tilt: 0
                   ),
                   markers: marker,
                   onLongPress: (LatLng location) {
                     setState(() {
-                        const MarkerId markerId = MarkerId("RANDOM_ID");
-                        Marker newMarker = Marker(
-                            markerId: markerId,
-                            draggable: true,
-                            position: location, 
-                            icon: BitmapDescriptor.defaultMarker,
-                            onTap: () {
-                              debugState("add a tree?");
-                              askAddDialog(context, location);
-                            }
-                        );
+                      const MarkerId markerId = MarkerId("RANDOM_ID");
+                      Marker newMarker = Marker(
+                        markerId: markerId,
+                        draggable: true,
+                        position: location, 
+                        icon: BitmapDescriptor.defaultMarker,
+                        onTap: () {
+                          longPressPointDialog(context, location);
+                        }
+                      );
 
-                        marker.add(newMarker);
+                      marker.add(newMarker);
                     });
                   }
                 )
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.refresh),
-          onPressed: (){
-            setState(() {
-              mapLoading = true;
-            });
-            dataLoading();
-          },
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
+          child: Row(
+            children: [
+              FloatingActionButton(
+                child: const Icon(Icons.refresh),
+                onPressed: (){
+                  setState(() {
+                    mapLoading = true;
+                  });
+                  dataLoading();
+                },
+              ),
+              const SizedBox(width: 8,),
+              FloatingActionButton(
+                child: const Icon(Icons.map),
+                backgroundColor: mapHybrid ? Colors.green : Colors.grey,
+                onPressed: (){
+                  setState(() {
+                    mapHybrid = !mapHybrid;
+                  });
+                },
+              ),
+            ],
+          ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniStartFloat,
       ),
     );
 
@@ -143,13 +162,17 @@ class _TreeMapState extends State<TreeMap> {
   }
 
   // refetch all trees
-  dataLoading() async {
+  dataLoading({LatLng? search}) async {
     // get location
-    Position position = await _determinePosition();
-    currLatitude = position.latitude;
-    currLongitude = position.longitude;
-    debugState("latitude: ${currLatitude.toStringAsFixed(6)}");
-    debugState("longtitude: ${currLongitude.toStringAsFixed(6)}");
+    Position position;
+    if (search == null) {
+      position = await _determinePosition();
+      searchLatitude = position.latitude;
+      searchLongitude = position.longitude;
+    } else {
+      searchLatitude = search.latitude;
+      searchLongitude = search.longitude;
+    }
 
     // get token for oAuth
     token = "";
@@ -170,11 +193,11 @@ class _TreeMapState extends State<TreeMap> {
     // get nearest trees
     var findTree = await http.get(Uri.parse(
       "https://services.arcgis.com/yeXpdyjk3azbqItW/arcgis/rest/services/TreeDatabase/FeatureServer/24/query?"
-      "geometryType=esriGeometryPoint&distance=$distance&geometry=$currLongitude,$currLatitude&outFields=*&token=$token&f=json"
+      "geometryType=esriGeometryPoint&distance=$distance&geometry=$searchLongitude,$searchLatitude&outFields=*&token=$token&f=json"
     ));
 
     json = jsonDecode(findTree.body);
-    log(json.toString());
+    //log(json.toString());
   
     //render the marker
     renderMarker(json);
@@ -218,9 +241,9 @@ class _TreeMapState extends State<TreeMap> {
     }
   }
 
-  void askAddDialog(BuildContext context, LatLng location) {
+  void longPressPointDialog(BuildContext context, LatLng location) {
     TextStyle locationStyle = const TextStyle(
-      fontSize: 16,
+      fontSize: 18,
       fontStyle: FontStyle.italic,
       fontWeight: FontWeight.w600
     );
@@ -229,20 +252,23 @@ class _TreeMapState extends State<TreeMap> {
       context: context, 
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text("Location"),
+          title: const Text("Location", style: TextStyle(fontSize: 24, fontWeight:FontWeight.bold)),
           children: [
+            const SizedBox(height: 12,),
             Text(
-              "Latitude: ${location.latitude.toStringAsFixed(4)}",
+              "Latitude: ${location.latitude.toStringAsFixed(6)}",
               textAlign: TextAlign.center,
               style: locationStyle,
             ),
             Text(
-              "Longitude: ${location.longitude.toStringAsFixed(4)}",
+              "Longitude: ${location.longitude.toStringAsFixed(6)}",
               textAlign: TextAlign.center,
               style: locationStyle,
             ),
+            const SizedBox(height: 12,),
+
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
+              width: MediaQuery.of(context).size.width * 0.4,
               child: SimpleDialogOption(
                 child: ElevatedButton(
                   child: const Text(
@@ -254,6 +280,27 @@ class _TreeMapState extends State<TreeMap> {
                   onPressed: () {
                     Navigator.pop(context);
                     addTreeFromMap(location);
+                  },
+                ),
+              ),
+            ),
+
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: SimpleDialogOption(
+                child: ElevatedButton(
+                  child: const Text(
+                    "Search trees",
+                    style: TextStyle(
+                      fontSize: 20
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      mapLoading = true;
+                    });
+                    dataLoading(search: location);
                   },
                 ),
               ),

@@ -86,15 +86,7 @@ class _UploadTreeState extends State<UploadTree> {
   var version = 1;
   var objectID = "";
 
-  //TODO add variable 
-  /*
-    location controller, address
-    three location type, 
-    comment and condition
-    asset id
-    scale
-    species
-  */
+  // variable for compare
   var orgLatitude = "";
   var orgLongitude = "";
   var orgStreet = "";
@@ -191,18 +183,19 @@ class _UploadTreeState extends State<UploadTree> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      },
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: !isAddTree || isAddFromMap, // if edit then add back button
-        ),
-        body: backgroundDecoration(
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: !isAddTree || isAddFromMap, // if edit then add back button
+      ),
+      body: GestureDetector(
+        onTap: () {
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+        child: backgroundDecoration(
           context, 
           Center(
             child: Padding(

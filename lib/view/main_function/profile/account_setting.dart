@@ -21,8 +21,6 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   void initState() {
-    //getUser();
-
     super.initState();
   }
 
@@ -110,12 +108,21 @@ class _AccountPageState extends State<AccountPage> {
     },
   );
 
-  Widget buildAdvancedSettings() =>  CheckboxSettingsTile(
+  Widget buildAdvancedSettings() =>  ExpandableSettingsTile(
     leading: const Icon(Icons.developer_mode),
-    settingKey: 'key-check-box-dev-mode',
+    expanded: true,
     title: 'Advanced Settings',
     subtitle: 'Map distance, Upload method',
-    childrenIfEnabled: <Widget>[
+    children: <Widget>[
+      CheckboxSettingsTile(
+        leading: const Icon(Icons.upload),
+        settingKey: 'key-advanced-upload-ArcGIS',
+        title: 'Upload data to ArcGIS',
+        onChange: (value) async {
+          debugPrint('key-advanced-upload-ArcGIS: $value');
+          await widget.model.getUpload();
+        },
+      ),
       SliderSettingsTile(
         title: 'Tree map radius (metres)',
         settingKey: 'key-distance-map',
@@ -129,24 +136,6 @@ class _AccountPageState extends State<AccountPage> {
         },
       ),
 
-      CheckboxSettingsTile(
-        leading: const Icon(Icons.upload),
-        settingKey: 'key-advanced-upload-ArcGIS',
-        title: 'Upload data to ArcGIS',
-        onChange: (value) async {
-          debugPrint('key-advanced-upload-ArcGIS: $value');
-          await widget.model.getUpload();
-        },
-      ),
-      CheckboxSettingsTile(
-        leading: const Icon(Icons.map),
-        settingKey: 'key-advanced-map-type',
-        title: 'Enable hybrid map',
-        onChange: (value) async {
-          debugPrint('key-advanced-map-type: $value');
-          await widget.model.getMapType();
-        },
-      ),
       SimpleSettingsTile(
         title: 'Advanced Settings',
         subtitle: 'These settings is only available for advanced users',
