@@ -86,6 +86,31 @@ class _UploadTreeState extends State<UploadTree> {
   var version = 1;
   var objectID = "";
 
+  //TODO add variable 
+  /*
+    location controller, address
+    three location type, 
+    comment and condition
+    asset id
+    scale
+    species
+  */
+  var orgLatitude = "";
+  var orgLongitude = "";
+  var orgStreet = "";
+  var orgSuburb = "";
+  var orgLocType = "";
+  var orgLocClass = "";
+  var orgLocCate = "";
+  var orgAssetID = "";
+  var orgComment = "";
+  var orgCondition = "";
+  var orgCommon = "";
+  var orgScientific = "";
+  var orgHeight = "";
+  var orgWidth = "";
+  var orgLength = "";
+
   @override
   void dispose() {
     _latitudeController.dispose();
@@ -497,17 +522,21 @@ class _UploadTreeState extends State<UploadTree> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      databaseUploading = true;
-                    });
+                    if (!isAddTree && !compareEditChange()) {
+                      showHint(context, "Data didn't change!");
+                    } else {
+                      setState(() {
+                        databaseUploading = true;
+                      });
 
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return requestUploadAlert(context, true);
-                      },
-                      barrierDismissible: false
-                    );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return requestUploadAlert(context, true);
+                        },
+                        barrierDismissible: false
+                      );
+                    }
                   } else {
                     showHint(context, "Please use correct form of/complete the compulsory form field");
                   }
@@ -527,17 +556,22 @@ class _UploadTreeState extends State<UploadTree> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    setState(() {
-                      databaseUploading = true;
-                    });
+                    //debugState("$isAddTree");
+                    if (!isAddTree && !compareEditChange()) {
+                      showHint(context, "Data didn't change!");
+                    } else {
+                      setState(() {
+                        databaseUploading = true;
+                      });
 
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return requestUploadAlert(context, false);
-                      },
-                      barrierDismissible: false
-                    );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return requestUploadAlert(context, false);
+                        },
+                        barrierDismissible: false
+                      );
+                    }
                   } else {
                     showHint(context, "Please use correct form of/complete the compulsory form field");
                   }
@@ -684,16 +718,42 @@ class _UploadTreeState extends State<UploadTree> {
       showHint(context, "Request uploaded to Firebase!");
     }
 
-    
-    if (!isAddTree) {
+    resetForm();
+
+    if (!isAddTree || isAddFromMap) {
       await Future.delayed(const Duration(milliseconds: 1500));
       // hide the current snackbar
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       
       Navigator.pop(context);
     }
+  }
 
-    resetForm();
+  // compare changes
+  bool compareEditChange() {
+    bool isChanged = false;
+    //debugState("$orgAssetID, ${_assetIDController.text}");
+    if (orgLocCate == locCategory &&
+        orgLocClass == locClass &&
+        orgLocType == treeLoc &&
+        orgComment == _commentController.text && 
+        orgCondition == _conditionController.text &&
+        orgHeight == _treeHeightTextController.text &&
+        orgLength == _treeLengthTextController.text &&
+        orgWidth == _treeWidthTextController.text &&
+        orgLatitude == _latitudeController.text &&
+        orgLongitude == _longitudeController.text &&
+        orgStreet == _streetNameController.text &&
+        orgSuburb == _surburbController.text &&
+        orgAssetID == _assetIDController.text &&
+        orgCommon == _commonController.text &&
+        orgScientific == _scientificController.text) {
+      debugState("Same");
+    } else {
+      debugState("Changed");
+      isChanged = true;
+    }
+    return isChanged;
   }
 
 
@@ -879,45 +939,48 @@ class _UploadTreeState extends State<UploadTree> {
     Tree editTree = widget.tree!;
 
     setState(() {
-      _commonController.text = editTree.commonName;
-      _scientificController.text = editTree.scientificName;
+      orgCommon = _commonController.text = editTree.commonName;
+      orgScientific = _scientificController.text = editTree.scientificName;
 
-      _latitudeController.text = editTree.latitude.toStringAsFixed(6);
-      _longitudeController.text = editTree.longitude.toStringAsFixed(6);
-      _streetNameController.text = editTree.streetName;
-      _surburbController.text = editTree.suburb;
+      orgLatitude = _latitudeController.text = editTree.latitude.toStringAsFixed(6);
+      orgLongitude = _longitudeController.text = editTree.longitude.toStringAsFixed(6);
+      orgStreet = _streetNameController.text = editTree.streetName;
+      orgSuburb = _surburbController.text = editTree.suburb;
 
       if (editTree.height != 0) {
-        _treeHeightTextController.text = editTree.height.toString();
+        orgHeight = _treeHeightTextController.text = editTree.height.toString();
       }
 
       if (editTree.length != 0) {
-        _treeLengthTextController.text = editTree.length.toString();
+        orgLength = _treeLengthTextController.text = editTree.length.toString();
       }
 
       if (editTree.width != 0) {
-        _treeWidthTextController.text = editTree.width.toString();
+        orgWidth = _treeWidthTextController.text = editTree.width.toString();
       }
 
-      _assetIDController.text = editTree.ASSNBRI;
+      orgAssetID = _assetIDController.text = editTree.ASSNBRI;
 
       if (editTree.locCategory == null) {
         locCategory = "Rural";
       } else {
         locCategory = "Urban";
       }
+      orgLocCate = locCategory;
 
       if (editTree.locClass == null || !editTree.locClass!.contains("Roads")) {
         locClass = "Not Applicable";
       } else {
         locClass = "Roads";
       }
+      orgLocClass = locClass;
 
       if (editTree.locType.toUpperCase().contains("STREET")) {
         treeLoc = "Street";
       } else {
         treeLoc = "Park";
       }
+      orgLocType = treeLoc;
     });
   }
 
@@ -1207,6 +1270,7 @@ class _UploadTreeState extends State<UploadTree> {
       content: SingleChildScrollView(
         child: Column(
           children: [
+            //TODO: how to get good image
             Image.asset(
               "assets/images/Instruction.jpg",
               fit: BoxFit.fitHeight,
