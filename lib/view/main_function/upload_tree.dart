@@ -37,6 +37,7 @@ class UploadTree extends StatefulWidget {
 class _UploadTreeState extends State<UploadTree> {
   bool isAddTree = true;
   bool isAddFromMap = false;
+  bool longDistanceMatter = true;
 
   bool enableGPS = false;
 
@@ -108,6 +109,7 @@ class _UploadTreeState extends State<UploadTree> {
       var longitude = widget.preLocation!.longitude;
       _latitudeController.text = latitude.toStringAsFixed(6);
       _longitudeController.text = longitude.toStringAsFixed(6);
+      isAddFromMap = true;
 
       Position position = Position(
         longitude: longitude, 
@@ -832,15 +834,9 @@ class _UploadTreeState extends State<UploadTree> {
 
       var distance = Geolocator.distanceBetween(oldLatitude, oldLongitude, latitude, longitude);
 
-      if (distance > 10) {
-        willUpdateLocation = false;
-        // TODO: force update (two button)
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return longDistanceAlert(context, distance);
-          },
-        );
+      if (distance > 10 && longDistanceMatter) {
+        willUpdateLocation = await _longDistanceWarning(context, distance);
+        debugState("will update: $willUpdateLocation");
       }
     }
 
@@ -850,11 +846,19 @@ class _UploadTreeState extends State<UploadTree> {
 
     if (willUpdateLocation) {
       setState(() {
+        longDistanceMatter = false;
         _latitudeController.text = position.latitude.toStringAsFixed(6);
         _longitudeController.text = position.longitude.toStringAsFixed(6);
       }); 
       getAddress(position);
-    }
+    } 
+  }
+
+  Future<bool> _longDistanceWarning(BuildContext context, double distance) async {
+    return await showDialog(
+      context: context, 
+      builder: (BuildContext context) => longDistanceAlert(context, distance)
+    );
   }
 
   // get address from position
@@ -1103,7 +1107,7 @@ class _UploadTreeState extends State<UploadTree> {
     return data;
   }
 
-   AlertDialog geolocatorEnabled(BuildContext context) {
+  AlertDialog geolocatorEnabled(BuildContext context) {
     return AlertDialog(
       title: const Text('GPS service'),
       content: const Text('Please enable the GPS service to access the rest fucntions'),
@@ -1134,7 +1138,18 @@ class _UploadTreeState extends State<UploadTree> {
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
+          },
+          child: const Text(
+            'Never mind',
+            style: TextStyle(
+              fontSize: 22
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, false);
           },
           child: const Text(
             'OK',

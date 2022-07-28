@@ -74,26 +74,16 @@ class _TreeMapState extends State<TreeMap> {
                   ),
                   markers: marker,
                   onLongPress: (LatLng location) {
-                    debugState("Your tap now");
-                    debugState(location.latitude.toString());
-                    debugState(location.longitude.toString());
-
                     setState(() {
                         const MarkerId markerId = MarkerId("RANDOM_ID");
                         Marker newMarker = Marker(
                             markerId: markerId,
                             draggable: true,
-                            position: location, //With this parameter you automatically obtain latitude and longitude
-                            // infoWindow: InfoWindow(
-                            //     title: "Location",
-                            //     snippet: 'Latitude: ${location.latitude.toStringAsFixed(4)}\n'
-                            //     'Longitude: ${location.longitude.toStringAsFixed(4)}',
-                            // ),
+                            position: location, 
                             icon: BitmapDescriptor.defaultMarker,
                             onTap: () {
                               debugState("add a tree?");
                               askAddDialog(context, location);
-                              //TODO: maybe add a tree from here
                             }
                         );
 
@@ -263,7 +253,7 @@ class _TreeMapState extends State<TreeMap> {
                   ),
                   onPressed: () {
                     Navigator.pop(context);
-                    addTreeFromMap(context, location);
+                    addTreeFromMap(location);
                   },
                 ),
               ),
@@ -398,7 +388,7 @@ class _TreeMapState extends State<TreeMap> {
     );
   }
 
-  void addTreeFromMap(BuildContext context, LatLng location) {
+  void addTreeFromMap(LatLng location) {
     log("add from map");
     
     Navigator.push(
