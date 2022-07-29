@@ -337,23 +337,30 @@ class _UploadTreeState extends State<UploadTree> {
           ],
         ),
 
-        ElevatedButton(
-          onPressed: () {
-            showDialog(
-              context: context, 
-              builder: (BuildContext context) {
-                return imageFetchAdvice();
-              }
-            );
-          }, 
-          child: const Icon(
-            Icons.question_mark_outlined,
-            color: Colors.white,
-          ),
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            primary: const Color.fromARGB(1, 1, 1, 1),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            formText("How to upload good photo?", fontsize: 16,
+             fontStyle: FontStyle.italic, fontColor: Colors.black54),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context, 
+                  builder: (BuildContext context) {
+                    return imageFetchAdvice();
+                  }
+                );
+              }, 
+              child: const Icon(
+                Icons.question_mark_outlined,
+                color: Colors.white,
+              ),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                primary: const Color.fromARGB(1, 1, 1, 1),
+              ),
+            ),
+          ],
         ),
 
         // the simple response (display somewhere else)
@@ -586,12 +593,11 @@ class _UploadTreeState extends State<UploadTree> {
   // location suggestion
   AlertDialog locationFetchAdvice() {
     return AlertDialog(
-      title: const Text("How to get good location?"),
       content: SingleChildScrollView(
         child: Column(
           children: [
             Image.asset(
-              "assets/images/Instruction.jpg",
+              "assets/images/location_instruction.jpg",
               fit: BoxFit.fitHeight,
             ),
             Padding(
@@ -1259,24 +1265,13 @@ class _UploadTreeState extends State<UploadTree> {
   // image suggestion dialog
   AlertDialog imageFetchAdvice() {
     return AlertDialog(
-      title: const Text("How to upload good image?"),
       content: SingleChildScrollView(
         child: Column(
           children: [
-            //TODO: how to get good image
             Image.asset(
-              "assets/images/Instruction.jpg",
+              "assets/images/image_instruction.png",
               fit: BoxFit.fitHeight,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: normalText(
-                "* Notice that the GPS location of the tree is obtained from you "
-                "mobile device. So it's very important to keep your device as close "
-                "to the tree as possible",
-                isJust: true
-              ),
-            )
           ],
         ),
       ),
