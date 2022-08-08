@@ -123,18 +123,18 @@ class _AccountPageState extends State<AccountPage> {
           await widget.model.getUpload();
         },
       ),
-      SliderSettingsTile(
-        title: 'Tree map radius (metres)',
-        settingKey: 'key-distance-map',
-        defaultValue: 100,
-        min: 25,
-        max: 250,
-        step: 5,
-        leading: const Icon(Icons.social_distance),
-        onChange: (value) {
-          debugPrint('key-distance-map: $value');
-        },
-      ),
+      // SliderSettingsTile(
+      //   title: 'Tree map radius (metres)',
+      //   settingKey: 'key-distance-map',
+      //   defaultValue: 100,
+      //   min: 25,
+      //   max: 250,
+      //   step: 5,
+      //   leading: const Icon(Icons.social_distance),
+      //   onChange: (value) {
+      //     debugPrint('key-distance-map: $value');
+      //   },
+      // ),
 
       SimpleSettingsTile(
         title: 'Advanced Settings',

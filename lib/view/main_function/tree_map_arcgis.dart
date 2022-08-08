@@ -33,6 +33,7 @@ class TreeMap extends StatefulWidget {
 
 class _TreeMapState extends State<TreeMap> {
   var marker = <Marker>{};
+  var groupCircle = <Circle>{};
   var token = ""; // for map access
 
   bool mapHybrid = false;
@@ -43,6 +44,7 @@ class _TreeMapState extends State<TreeMap> {
   double searchLongitude = 0;
 
   late BitmapDescriptor mapMarker;
+
 
   @override
   void initState() {
@@ -59,40 +61,65 @@ class _TreeMapState extends State<TreeMap> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       },
       child: Scaffold(
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
-              child: mapLoading 
-                ? const Center(child: CircularProgressIndicator(),)
-                : GoogleMap(
-                  myLocationButtonEnabled: true,
-                  myLocationEnabled: true,
-                  mapToolbarEnabled: false,
-                  mapType: mapHybrid ? MapType.hybrid : MapType.normal,
-                  rotateGesturesEnabled: false,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(searchLatitude, searchLongitude),
-                    zoom: 18,
-                    tilt: 0
-                  ),
-                  markers: marker,
-                  onLongPress: (LatLng location) {
-                    setState(() {
-                      const MarkerId markerId = MarkerId("RANDOM_ID");
-                      Marker newMarker = Marker(
-                        markerId: markerId,
-                        draggable: true,
-                        position: location, 
-                        icon: BitmapDescriptor.defaultMarker,
-                        onTap: () {
-                          longPressPointDialog(context, location);
-                        }
-                      );
+            Column(
+              children: [
+                Expanded(
+                  child: mapLoading 
+                    ? const Center(child: CircularProgressIndicator(),)
+                    : GoogleMap(
+                      myLocationButtonEnabled: true,
+                      myLocationEnabled: true,
+                      mapToolbarEnabled: false,
+                      mapType: mapHybrid ? MapType.hybrid : MapType.normal,
+                      rotateGesturesEnabled: false,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(searchLatitude, searchLongitude),
+                        zoom: 18,
+                        tilt: 0
+                      ),
+                      markers: marker,
+                      circles: groupCircle,
+                      onLongPress: (LatLng location) {
+                        setState(() {
+                          const MarkerId markerId = MarkerId("RANDOM_ID");
+                          Marker newMarker = Marker(
+                            markerId: markerId,
+                            draggable: true,
+                            position: location, 
+                            icon: BitmapDescriptor.defaultMarker,
+                            onTap: () {
+                              longPressPointDialog(context, location);
+                            }
+                          );
 
-                      marker.add(newMarker);
-                    });
-                  }
-                )
+                          marker.add(newMarker);
+                        });
+                      }
+                    )
+                ),
+              ],
+            ),
+            Positioned(
+              child: Transform.scale(
+                scale: 0.75,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  child: SliderSettingsTile(
+                    title: 'Tree group radius (metres)',
+                    settingKey: 'key-distance-map',
+                    defaultValue: 100,
+                    min: 25,
+                    max: 250,
+                    step: 5,
+                    leading: const Icon(Icons.social_distance),
+                    onChange: (value) {
+                      debugPrint('key-distance-map: $value');
+                    },
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -174,6 +201,16 @@ class _TreeMapState extends State<TreeMap> {
       searchLongitude = search.longitude;
     }
 
+    groupCircle = {
+      Circle(
+        circleId: const CircleId("group"),
+        center: LatLng(searchLatitude, searchLongitude),
+        radius: Settings.getValue('key-distance-map', defaultValue: 100)!,
+        strokeColor: Colors.black54,
+        strokeWidth: 3
+      ),
+    };
+
     // get token for oAuth
     token = "";
     final response = await http.get(Uri.parse(
@@ -183,7 +220,6 @@ class _TreeMapState extends State<TreeMap> {
   
     token = json['token'].toString();
     log("token:$token");
-
 
     double distance = 100;
 
