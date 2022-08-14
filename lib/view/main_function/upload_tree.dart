@@ -152,14 +152,11 @@ class _UploadTreeState extends State<UploadTree> {
         editControllerPreset();
       }
     }
-    
 
     super.initState();
     _locClassDropDown = setDropDown(locClassItems);
     _locCategoryDropDown = setDropDown(locCategoryItems);
     _treeLocDropDown = setDropDown(treeLocItems);
-
-    debugState("access level: $globalLevel");
   }
 
   // set the three drop down menu
@@ -629,6 +626,9 @@ class _UploadTreeState extends State<UploadTree> {
     // check if the GPS service is enabled 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      setState(() {
+        locationLoading = false;
+      });
       denyGPS();
       return Future.error('Location services are disabled.');
     }
@@ -806,7 +806,7 @@ class _UploadTreeState extends State<UploadTree> {
             builder: (context) => TakePictureScreen(camera: firstCamera))
     );
     if (image == null) {
-      showHint(context, "No image selected!");
+      showHint(context, "No image taken!");
       setState(() {
         imageProcessing = false;
       });
@@ -1172,7 +1172,7 @@ class _UploadTreeState extends State<UploadTree> {
   AlertDialog geolocatorEnabled(BuildContext context) {
     return AlertDialog(
       title: const Text('GPS service'),
-      content: const Text('Please enable the GPS service to access the rest fucntions'),
+      content: const Text('Please enable the GPS service to access the rest functions'),
       actions: <Widget>[
         TextButton(
           onPressed: () {

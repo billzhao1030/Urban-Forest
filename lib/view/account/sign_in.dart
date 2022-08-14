@@ -184,7 +184,7 @@ class _SignInViewState extends State<SignInView> {
         value.id
       );
 
-      user.profileToDebug(); // DEBUG
+      // user.profileToDebug(); // DEBUG
 
       if (user.hasSignUpVerified) {
         // set the shared preference

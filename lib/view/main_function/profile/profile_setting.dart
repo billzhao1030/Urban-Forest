@@ -47,7 +47,6 @@ class _UserProfileState extends State<UserProfile> {
     super.initState();
 
     debugState("Profile section");
-    widget.user.profileToDebug();
   }
 
   @override

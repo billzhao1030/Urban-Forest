@@ -1,7 +1,7 @@
-import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 
 class TakePictureScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
             return Center(child: CameraPreview(_controller));
           } else {
             return const Center(child: CircularProgressIndicator());
-          }
+          } 
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -56,21 +56,6 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
       ),
-    );
-  }
-}
-
-class DisplayPictureScreen extends StatelessWidget {
-  final String imagePath;
-
-  const DisplayPictureScreen({Key? key, required this.imagePath})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Display the Picture")),
-      body: Image.file(File(imagePath)),
     );
   }
 }

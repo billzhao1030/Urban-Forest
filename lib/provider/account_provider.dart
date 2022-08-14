@@ -41,7 +41,7 @@ class AccountModel extends ChangeNotifier {
         value.id
       );
     });
-    modelUser.profileToDebug();
+    //modelUser.profileToDebug();
 
     notifyListeners();
   }
