@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/view/account/verify_email.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../reusable_widgets/reusable_wiget.dart';
 
 class SignUpView extends StatefulWidget {
-  const SignUpView({ Key? key }) : super(key: key);
+  const SignUpView({ Key? key, required this.controller }) : super(key: key);
+  final VideoPlayerController controller;
 
   @override
   State<SignUpView> createState() => _SignUpViewState();
@@ -24,7 +26,23 @@ class _SignUpViewState extends State<SignUpView> {
 
   final _formKey = GlobalKey<FormState>(); // for validation
 
+  VideoPlayerController? _controller;
+
   bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pointing the video controller to our local asset.
+    _controller = VideoPlayerController.asset("assets/images/background.mp4")
+      ..initialize().then((_) {
+        // Once the video has been loaded we play the video and set looping to true.
+        _controller!.play();
+        _controller!.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
+  }
 
   @override
   void dispose() {
@@ -35,37 +53,56 @@ class _SignUpViewState extends State<SignUpView> {
     _firstNameTextController.dispose();
     _lastNameTextController.dispose();
 
+    _controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        var currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    return WillPopScope(
+      onWillPop: () {
+        widget.controller.play();
+        Navigator.pop(context, false);
+        return Future.value(false);
       },
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: const Text(
-            "Sign Up",
-            style: TextStyle(
-              fontSize: 24, 
-              fontWeight: FontWeight.bold
+      child: GestureDetector(
+        onTap: () {
+          var currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+    
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: const Text(
+              "Sign Up",
+              style: TextStyle(
+                fontSize: 24, 
+                fontWeight: FontWeight.bold
+              ),
             ),
           ),
+          body: SingleChildScrollView(
+            child: Stack(
+              children: [
+                FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: VideoPlayer(_controller!),
+                  ),
+                ),
+                signUpPageView(context)
+              ]
+            ),
+          )
         ),
-        body: backgroundDecoration(
-          context, 
-          signUpPageView(context)
-        )
       ),
     );
   }
@@ -173,7 +210,8 @@ class _SignUpViewState extends State<SignUpView> {
                             builder: (context) => VerifyEmail(
                               userName: _userNameTextController.text.trim(),
                               lastName: _lastNameTextController.text.trim(),
-                              firstName: _firstNameTextController.text.trim()
+                              firstName: _firstNameTextController.text.trim(),
+                              controller: _controller!,
                             )
                           )
                         );

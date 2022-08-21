@@ -59,8 +59,8 @@ class _FormTextBoxState extends State<FormTextBox> {
           obscureText: widget.isPasswordType && !_canViewPassword,
           enableSuggestions: !widget.isPasswordType,
           autocorrect: !widget.isPasswordType,
-          cursorColor: Colors.white,
-          style: TextStyle(color: Colors.white.withOpacity(0.9)),
+          cursorColor: Colors.white.withOpacity(1),
+          style: TextStyle(color: Colors.white.withOpacity(1), fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             errorMaxLines: 3,
             prefixIcon: Icon(
@@ -82,10 +82,10 @@ class _FormTextBoxState extends State<FormTextBox> {
             ) : null,
 
             labelText: widget.labelText,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+            labelStyle: TextStyle(color: Colors.white.withOpacity(1), fontWeight: FontWeight.bold),
             filled: true,
             floatingLabelBehavior: FloatingLabelBehavior.never,
-            fillColor: Colors.white.withOpacity(0.3),
+            fillColor: Colors.white.withOpacity(0.4),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30.0),
                 borderSide: const BorderSide(width: 0, style: BorderStyle.none)

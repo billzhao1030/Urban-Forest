@@ -15,6 +15,7 @@ import 'package:urban_forest/view/account/sign_in.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:urban_forest/view/main_function/home_screen.dart';
+import 'package:video_player/video_player.dart';
 
 
 bool needSignIn = true; // judge if user need to sign in
@@ -90,6 +91,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: AnimatedSplashScreen(
         duration: splashDuration,
@@ -97,15 +99,15 @@ class _SplashScreenState extends State<SplashScreen> {
         pageTransitionType: PageTransitionType.bottomToTop,
         backgroundColor: const Color.fromARGB(255, 127, 238, 127),
         nextScreen: hasInternet ? const StartApp() : const CheckInternet(), // the next screen
-        splashIconSize: width * 1.3,
+        splashIconSize: 1.3,
         splash: SingleChildScrollView(
-          child: splashContent(width)
+          child: splashContent(width, height)
         ),
       ),
     );
   }
 
-  Column splashContent(double width) {
+  Column splashContent(double width, double height) {
     return Column(
       children: [
         // logo image
@@ -157,7 +159,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-
 // main entry point of the app
 class StartApp extends StatefulWidget {
   const StartApp({ Key? key }) : super(key: key);
@@ -177,6 +178,11 @@ class _StartAppState extends State<StartApp> {
     getAcknowledge();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   // determine where to go on start
   @override
   Widget build(BuildContext context) {
@@ -185,19 +191,19 @@ class _StartAppState extends State<StartApp> {
         primarySwatch: Colors.green, // primary color
       ),
       home: hasAcknowledged 
-      ? (
-        needSignIn 
         ? (
-          passErrorWhenAutoSignIn 
-          ? SignInView(
-            filledEmail: email, haserror: true,
-          ) : SignInView(
-            filledEmail: email,
+          needSignIn 
+          ? (
+            passErrorWhenAutoSignIn 
+            ? SignInView(
+              filledEmail: email, haserror: true,
+            ) : SignInView(
+              filledEmail: email,
+            )
           )
-        )
-        : const HomeScreen() // go to home screen directly if signed in
-      ) 
-      : const Acknowledge(), // go to terms of service is not acknowleged
+          : const HomeScreen() // go to home screen directly if signed in
+        ) 
+        : const Acknowledge(),
     );
   }
 
@@ -225,18 +231,45 @@ class CheckInternet extends StatefulWidget {
 }
 
 class _CheckInternetState extends State<CheckInternet> {
+  VideoPlayerController? _controller;
+
+  @override
+  void initState() {
+    _controller = VideoPlayerController.asset("assets/images/background.mp4")
+      ..initialize().then((_) {
+        // Once the video has been loaded we play the video and set looping to true.
+        _controller!.play();
+        _controller!.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          backgroundDecoration(
-            context, 
-            null
-          ),
-          warningDialog()
-        ],
+      body: SingleChildScrollView(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            FittedBox(
+              fit: BoxFit.fill,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: VideoPlayer(_controller!),
+              ),
+            ),
+            warningDialog()
+          ],
+        ),
       ),
     );
   }
@@ -278,3 +311,4 @@ class _CheckInternetState extends State<CheckInternet> {
     );
   }
 }
+

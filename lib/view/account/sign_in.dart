@@ -6,6 +6,7 @@ import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/account/reset_password.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../reusable_widgets/reusable_wiget.dart';
 import '../main_function/home_screen.dart';
@@ -34,6 +35,7 @@ class _SignInViewState extends State<SignInView> {
   final TextEditingController _emailTextController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>(); // for validation
+  VideoPlayerController? _controller;
 
   bool loading = false;
 
@@ -41,12 +43,20 @@ class _SignInViewState extends State<SignInView> {
   void dispose() {
     _passwordTextController.dispose();
     _emailTextController.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
-    super.initState();
+    _controller = VideoPlayerController.asset("assets/images/background.mp4")
+      ..initialize().then((_) {
+        // Once the video has been loaded we play the video and set looping to true.
+        _controller!.play();
+        _controller!.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
 
     // set the controller text if has pre-entered fields
     _emailTextController.text = widget.filledEmail;
@@ -56,6 +66,7 @@ class _SignInViewState extends State<SignInView> {
         showHint(context, "Error occurs when sign in\nYour account is diabled/deleted by admin", keep: true);
       });
     }
+    super.initState();
   }
 
   @override
@@ -70,11 +81,23 @@ class _SignInViewState extends State<SignInView> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       },
       child: Scaffold(
-        body: backgroundDecoration(
-          context, 
-          signInPageView(context)
-        )
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              FittedBox(
+                fit: BoxFit.fill,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: VideoPlayer(_controller!),
+                ),
+              ),
+              signInPageView(context)
+            ]
+          ),
+        ),
       ),
+
     );
   }
 
@@ -117,7 +140,7 @@ class _SignInViewState extends State<SignInView> {
             ),
 
             // forget password
-            const ForgetPassword(),
+            forgetPassword(),
 
             // sign in
             !loading ? firebaseButton(context, "Log In", () {
@@ -146,7 +169,7 @@ class _SignInViewState extends State<SignInView> {
             ),
 
             // sign up section
-            const SignUpOption()
+            signUp()
           ]
         ),
       )
@@ -238,72 +261,14 @@ class _SignInViewState extends State<SignInView> {
       loading = false;
     });
   }
-}
 
-
-// widget of logo image -- stateless
-class LogoWidget extends StatelessWidget {
-  const LogoWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Image.asset(
-      logoFileName,
-      fit: BoxFit.fitHeight,
-      width: MediaQuery.of(context).size.height * 0.3,
-      height: MediaQuery.of(context).size.height * 0.3,
-      color: Colors.white,
-    );
-  }
-}
-
-// widget of forget password button -- stateless
-class ForgetPassword extends StatelessWidget {
-  const ForgetPassword({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 35,
-      alignment: Alignment.bottomRight,
-      child: TextButton(
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: Colors.white70),
-          textAlign: TextAlign.right,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ResetPasswordView(),
-            )
-          );
-        },
-      ),
-    );
-  }
-}
-
-// widget of sign up section -- stateless
-class SignUpOption extends StatelessWidget {
-  const SignUpOption({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Row signUp(){
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
           "Don't have account?   ",
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Colors.white),
         ),
         GestureDetector(
           onTap: () {
@@ -311,7 +276,7 @@ class SignUpOption extends StatelessWidget {
               context, 
               MaterialPageRoute(
                 builder: ((context) {
-                  return const SignUpView();
+                  return SignUpView(controller: _controller!,);
                 })
               )
             );
@@ -329,4 +294,49 @@ class SignUpOption extends StatelessWidget {
       ],
     );
   }
+
+  Widget forgetPassword() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: 35,
+      alignment: Alignment.bottomRight,
+      child: TextButton(
+        child: const Text(
+          "Forgot Password?",
+          style: TextStyle(color: Colors.white),
+          textAlign: TextAlign.right,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResetPasswordView(controller: _controller!,),
+            )
+          );
+        },
+      ),
+    );
+  }
 }
+
+
+// widget of logo image -- stateless
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      logoFileName,
+      fit: BoxFit.fitHeight,
+      width: MediaQuery.of(context).size.height * 0.25,
+      height: MediaQuery.of(context).size.height * 0.25,
+      color: Colors.white,
+    );
+  }
+}
+
+
+

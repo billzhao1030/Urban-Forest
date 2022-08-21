@@ -4,6 +4,7 @@ import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
+import 'package:video_player/video_player.dart';
 
 class Acknowledge extends StatefulWidget {
   const Acknowledge({ Key? key }) : super(key: key);
@@ -14,6 +15,26 @@ class Acknowledge extends StatefulWidget {
 
 class _AcknowledgeState extends State<Acknowledge> {
   bool confirm = false;
+  VideoPlayerController? _controller;
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset("assets/images/background.mp4")
+      ..initialize().then((_) {
+        // Once the video has been loaded we play the video and set looping to true.
+        _controller!.play();
+        _controller!.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +42,14 @@ class _AcknowledgeState extends State<Acknowledge> {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          backgroundDecoration(context, null),
+          FittedBox(
+            fit: BoxFit.fill,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: VideoPlayer(_controller!),
+            ),
+          ),
           acknowledgeDialog()
         ],
       )

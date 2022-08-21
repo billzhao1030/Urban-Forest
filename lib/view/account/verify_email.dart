@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/view/account/sign_in.dart';
-
-import '../../utils/color_utils.dart';
+import 'package:video_player/video_player.dart';
 import '../../utils/debug_format.dart';
 import '../../utils/reference.dart';
 
@@ -13,12 +12,14 @@ class VerifyEmail extends StatefulWidget {
     Key? key, 
     required this.firstName, 
     required this.lastName, 
-    required this.userName 
+    required this.userName, 
+    required this.controller 
   }) : super(key: key);
 
   final String firstName;
   final String lastName;
   final String userName;
+  final VideoPlayerController controller;
 
   @override
   State<VerifyEmail> createState() => _VerifyEmailState();
@@ -29,9 +30,19 @@ class _VerifyEmailState extends State<VerifyEmail> {
   bool isEmailVerified = false;
   bool canResendEmail = false;
 
+  VideoPlayerController? _controller;
+
   @override
   void initState() {
     super.initState();
+    _controller = VideoPlayerController.asset("assets/images/background.mp4")
+      ..initialize().then((_) {
+        // Once the video has been loaded we play the video and set looping to true.
+        _controller!.play();
+        _controller!.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
 
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     debugState(FirebaseAuth.instance.currentUser!.uid);
@@ -100,6 +111,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
   @override
   void dispose() {
+    _controller!.dispose();
     timer?.cancel();
     super.dispose();
   }
@@ -111,49 +123,64 @@ class _VerifyEmailState extends State<VerifyEmail> {
     );
   }
 
-  Scaffold verifyScaffold() {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Verify Email")),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              hexStringToColor(backgroundColorArray[0]),
-              hexStringToColor(backgroundColorArray[1]),
-              hexStringToColor(backgroundColorArray[2]),
-            ], 
-            begin: Alignment.topCenter, 
-            end: Alignment.bottomCenter
-          )
+  Widget verifyScaffold() {
+    return WillPopScope(
+      onWillPop: () {
+        widget.controller.play();
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: const Text(
+              "Verify Email",
+              style: TextStyle(
+                fontSize: 24, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, MediaQuery.of(context).size.height * 0.3, 20, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "A verification email has been sent to your email",
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.center,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              FittedBox(
+                fit: BoxFit.fill,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: VideoPlayer(_controller!),
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50)
-                  ),
-                  icon: const Icon(Icons.email, size: 32),
-                  label: const Text(
-                    "Resent Email",
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  onPressed: canResendEmail ? sendVerificationEmail : null
-                ),
-              ],
-            )
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                    20, MediaQuery.of(context).size.height * 0.4, 20, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "A verification email has been sent to your email",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(50)
+                      ),
+                      icon: const Icon(Icons.email, size: 32),
+                      label: const Text(
+                        "Resent Email",
+                        style: TextStyle(fontSize: 24),
+                      ),
+                      onPressed: canResendEmail ? sendVerificationEmail : null
+                    ),
+                  ],
+                )
+              ),
+            ],
           )
         ),
       ),
