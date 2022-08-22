@@ -91,7 +91,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: AnimatedSplashScreen(
         duration: splashDuration,
@@ -99,15 +98,15 @@ class _SplashScreenState extends State<SplashScreen> {
         pageTransitionType: PageTransitionType.bottomToTop,
         backgroundColor: const Color.fromARGB(255, 127, 238, 127),
         nextScreen: hasInternet ? const StartApp() : const CheckInternet(), // the next screen
-        splashIconSize: 1.3,
+        splashIconSize: width * 1.3,
         splash: SingleChildScrollView(
-          child: splashContent(width, height)
+          child: splashContent(width)
         ),
       ),
     );
   }
 
-  Column splashContent(double width, double height) {
+  Column splashContent(double width) {
     return Column(
       children: [
         // logo image
