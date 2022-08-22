@@ -44,7 +44,7 @@ class _TreeMapState extends State<TreeMap> {
   double searchLongitude = 0;
 
   late BitmapDescriptor mapMarker;
-
+  bool addPin = false;
 
   @override
   void initState() {
@@ -93,8 +93,13 @@ class _TreeMapState extends State<TreeMap> {
                               longPressPointDialog(context, location);
                             }
                           );
+                          
+                          if (addPin) {
+                            marker.remove(marker.last);
+                          }
 
                           marker.add(newMarker);
+                          addPin = true;
                         });
                       }
                     )
@@ -128,6 +133,7 @@ class _TreeMapState extends State<TreeMap> {
           child: Row(
             children: [
               FloatingActionButton(
+                heroTag: "refresh",
                 child: const Icon(Icons.refresh),
                 onPressed: (){
                   setState(() {
@@ -138,6 +144,7 @@ class _TreeMapState extends State<TreeMap> {
               ),
               const SizedBox(width: 8,),
               FloatingActionButton(
+                heroTag: "mapType",
                 child: const Icon(Icons.map),
                 backgroundColor: mapHybrid ? Colors.green : Colors.grey,
                 onPressed: (){

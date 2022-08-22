@@ -222,7 +222,7 @@ class _UploadTreeState extends State<UploadTree> {
 
         // get the location button
         const SizedBox(height: 10),
-        Row(
+        isAddFromMap ? Container() : Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
