@@ -168,6 +168,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
                         minimumSize: const Size.fromHeight(50)
                       ),
                       icon: const Icon(Icons.email, size: 32),

@@ -7,7 +7,6 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urban_forest/provider/user.dart';
-import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
 import 'package:urban_forest/utils/reference.dart';
 import 'package:urban_forest/view/account/acknowledge.dart';
