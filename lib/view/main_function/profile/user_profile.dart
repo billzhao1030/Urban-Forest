@@ -163,6 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 12,),
                     ExpandableSettingsTile(
+                      expanded: true,
                       leading: const Icon(Icons.info),
                       title: 'Advanced information',
                       children: <Widget>[
@@ -186,24 +187,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               style: advInfoStyle,
                             ),
                             const SizedBox(height: 16,),
-
-                            Text(
-                              "Add Tree: ${widget.model.modelUser.requestAdd}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 16,),
-
-                            Text(
-                              "Edit Tree: ${widget.model.modelUser.requestUpdate}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 16,),
-
-                            Text(
-                              "Request Accepted: ${widget.model.modelUser.requestAccepted}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 36,),
                           ],
                         )
                       ],

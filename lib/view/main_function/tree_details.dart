@@ -52,7 +52,7 @@ class _TreeDetailState extends State<TreeDetail> {
           child: Stack(
             children: [
               DataTable(
-                dataRowHeight: 65,
+                dataRowHeight: 75,
                 dataTextStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold

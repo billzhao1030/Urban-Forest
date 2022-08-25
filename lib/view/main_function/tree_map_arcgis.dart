@@ -110,7 +110,7 @@ class _TreeMapState extends State<TreeMap> {
               child: Transform.scale(
                 scale: 0.75,
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.2,
+                  height: MediaQuery.of(context).size.height * 0.23,
                   child: SliderSettingsTile(
                     title: 'Tree group radius (metres)',
                     settingKey: 'key-distance-map',

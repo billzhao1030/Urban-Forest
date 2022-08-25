@@ -226,7 +226,7 @@ class _UploadTreeState extends State<UploadTree> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: isAddTree ? MediaQuery.of(context).size.width * 0.35 : MediaQuery.of(context).size.width * 0.5,
+              width: isAddTree ? MediaQuery.of(context).size.width * 0.5 : MediaQuery.of(context).size.width * 0.5,
               child: ElevatedButton(
                 onPressed: () async {
                   processLocation();
@@ -302,7 +302,7 @@ class _UploadTreeState extends State<UploadTree> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.42,
                 child: ElevatedButton(
                   onPressed: () async {
                     setState(() {
@@ -318,7 +318,7 @@ class _UploadTreeState extends State<UploadTree> {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.42,
                 child: ElevatedButton(
                   onPressed: () async {
                     setState(() {
@@ -327,7 +327,7 @@ class _UploadTreeState extends State<UploadTree> {
                     });
                     await getFromGallery();
                   }, 
-                  child: formText("Choose a photo", fontsize: 18, fontStyle: FontStyle.italic)
+                  child: formText("Pick a photo", fontsize: 18, fontStyle: FontStyle.italic)
                 ),
               ),
             ),
