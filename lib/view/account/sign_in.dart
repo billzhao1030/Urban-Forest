@@ -220,7 +220,7 @@ class _SignInViewState extends State<SignInView> {
         globalLevel = user.accessLevel;
         debugState("Now global level change to $globalLevel");
 
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const HomeScreen(),

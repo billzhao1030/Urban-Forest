@@ -94,7 +94,7 @@ class _SignUpViewState extends State<SignUpView> {
                   fit: BoxFit.fill,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
+                    height: MediaQuery.of(context).size.height*1.2,
                     child: VideoPlayer(_controller!),
                   ),
                 ),
