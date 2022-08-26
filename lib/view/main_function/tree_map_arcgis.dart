@@ -187,7 +187,7 @@ class _TreeMapState extends State<TreeMap> {
         'Location permissions are permanently denied, we cannot request permissions.');
     } 
 
-    return await Geolocator.getCurrentPosition(forceAndroidLocationManager: true, desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition();
   }
 
   void setMarker() async {
@@ -198,7 +198,6 @@ class _TreeMapState extends State<TreeMap> {
   // refetch all trees
   dataLoading({LatLng? search}) async {
     // get location
-    debugState("start get loaction");
     Position position;
     if (search == null) {
       position = await _determinePosition();

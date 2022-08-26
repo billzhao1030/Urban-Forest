@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:urban_forest/reusable_widgets/reusable_methods.dart';
 import 'package:urban_forest/utils/debug_format.dart';
-import 'package:urban_forest/view/account/verify_email.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../reusable_widgets/reusable_wiget.dart';
+import '../../utils/reference.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({ Key? key, required this.controller }) : super(key: key);
@@ -29,6 +31,12 @@ class _SignUpViewState extends State<SignUpView> {
   VideoPlayerController? _controller;
 
   bool loading = false;
+
+  bool startVerify = false;
+
+  Timer? timer = Timer(const Duration(seconds: 5), () {});
+  bool isEmailVerified = false;
+  bool canResendEmail = false;
 
   @override
   void initState() {
@@ -54,6 +62,7 @@ class _SignUpViewState extends State<SignUpView> {
     _lastNameTextController.dispose();
 
     _controller!.dispose();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -62,8 +71,13 @@ class _SignUpViewState extends State<SignUpView> {
     return WillPopScope(
       onWillPop: () {
         widget.controller.play();
-        Navigator.pop(context, false);
-        return Future.value(false);
+        if (startVerify) {
+          Navigator.pop(context, _emailTextController.text);
+          return Future.value(true);
+        } else {
+          Navigator.pop(context);
+          return Future.value(false);
+        }  
       },
       child: GestureDetector(
         onTap: () {
@@ -98,7 +112,35 @@ class _SignUpViewState extends State<SignUpView> {
                     child: VideoPlayer(_controller!),
                   ),
                 ),
-                signUpPageView(context)
+                !startVerify ? 
+                  signUpPageView(context) : 
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        20, MediaQuery.of(context).size.height * 0.4, 20, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "A verification email has been sent to your email",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.green,
+                            minimumSize: const Size.fromHeight(50)
+                          ),
+                          icon: const Icon(Icons.email, size: 32),
+                          label: const Text(
+                            "Resent Email",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          onPressed: canResendEmail ? sendVerificationEmail : null
+                        ),
+                      ],
+                    )
+                  ),
               ]
             ),
           )
@@ -204,17 +246,39 @@ class _SignUpViewState extends State<SignUpView> {
                         email: _emailTextController.text.trim(), 
                         password: _passwordTextController.text.trim()
                       ).then((value) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => VerifyEmail(
-                              userName: _userNameTextController.text.trim(),
-                              lastName: _lastNameTextController.text.trim(),
-                              firstName: _firstNameTextController.text.trim(),
-                              controller: _controller!,
-                            )
-                          )
-                        );
+                        setState(() {
+                          startVerify = true;
+                        });
+                        isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+                        debugState(FirebaseAuth.instance.currentUser!.uid);
+
+                        var user = FirebaseAuth.instance.currentUser!;
+                        var uid = user.uid;
+
+                        dbUser.doc(uid).set({
+                          'uid': uid,
+                          'email': _emailTextController.text.trim(),
+                          'firstName': _userNameTextController.text.trim(),
+                          'lastName': _lastNameTextController.text.trim(),
+                          'userName': _userNameTextController.text.trim(),
+                          'hasSignUpVerified': false,
+                          'accessLevel': 1,
+                          'requestAccepted': 0,
+                          'requestAdd': 0,
+                          'requestUpdate': 0
+                        }).catchError((error) {
+                          debugState(error.toString());
+                        });
+
+                        if (!isEmailVerified) {
+                          sendVerificationEmail();
+
+                          timer = Timer.periodic(
+                            const Duration(seconds: 3),
+                            (_) => checkEmailVerified(),
+                          );
+                        }
+
                         firebaseLoading(false);
                       }).onError((error, stackTrace) {
                         onFormSubmitError(error);
@@ -262,5 +326,40 @@ class _SignUpViewState extends State<SignUpView> {
     }
 
     firebaseLoading(false);
+  }
+
+  Future sendVerificationEmail() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+      await user.sendEmailVerification();
+
+      setState(() => canResendEmail = false);
+      await Future.delayed(const Duration(seconds: 6));
+      setState(() => canResendEmail = true);
+    } catch (e) {
+      debugState(e.toString());
+    }
+  }
+
+  Future checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser!.reload();
+
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+
+    if (isEmailVerified) {
+      timer?.cancel();
+
+      var uid = FirebaseAuth.instance.currentUser!.uid;
+
+      await dbUser.doc(uid).update({
+        'hasSignUpVerified': true 
+      }).catchError((error) {
+        debugState(error.toString());
+      });
+
+      Navigator.pop(context, _emailTextController.text);
+    }
   }
 }

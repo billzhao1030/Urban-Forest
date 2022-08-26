@@ -86,7 +86,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final splashDuration = 3000; 
+  final splashDuration = 3600; 
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;

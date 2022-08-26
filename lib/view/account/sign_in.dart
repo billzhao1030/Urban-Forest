@@ -271,8 +271,8 @@ class _SignInViewState extends State<SignInView> {
           style: TextStyle(color: Colors.white),
         ),
         GestureDetector(
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            _emailTextController.text = await Navigator.push(
               context, 
               MaterialPageRoute(
                 builder: ((context) {
@@ -280,6 +280,7 @@ class _SignInViewState extends State<SignInView> {
                 })
               )
             );
+            showHint(context, 'Email verified!');
           },
           child: const Text(
             "Sign Up",
