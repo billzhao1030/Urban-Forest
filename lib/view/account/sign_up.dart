@@ -75,8 +75,8 @@ class _SignUpViewState extends State<SignUpView> {
           Navigator.pop(context, _emailTextController.text);
           return Future.value(true);
         } else {
-          Navigator.pop(context);
-          return Future.value(false);
+          Navigator.pop(context, ' ');
+          return Future.value(true);
         }  
       },
       child: GestureDetector(

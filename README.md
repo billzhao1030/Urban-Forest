@@ -15,3 +15,5 @@ For any issues about the system, please contact:
 - [Cong Danh Tran](mailto:cdtran@utas.edu.au)
 - [Vivian Lun](mailto:xlun@utas.edu.au)
 
+Use flutter build apk --release --no-sound-null-safety when building the release mode APK
+
