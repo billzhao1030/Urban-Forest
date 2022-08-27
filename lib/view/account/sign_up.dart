@@ -71,7 +71,7 @@ class _SignUpViewState extends State<SignUpView> {
     return WillPopScope(
       onWillPop: () {
         widget.controller.play();
-        if (startVerify) {
+        if (startVerify && isEmailVerified) {
           Navigator.pop(context, _emailTextController.text);
           return Future.value(true);
         } else {
@@ -93,9 +93,9 @@ class _SignUpViewState extends State<SignUpView> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            title: const Text(
-              "Sign Up",
-              style: TextStyle(
+            title: Text(
+              !startVerify ? "Sign Up" : "Verify Email",
+              style: const TextStyle(
                 fontSize: 24, 
                 fontWeight: FontWeight.bold
               ),

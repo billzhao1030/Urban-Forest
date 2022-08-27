@@ -187,6 +187,7 @@ class _StartAppState extends State<StartApp> {
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.green, // primary color
+        primaryColor: Colors.green,
       ),
       home: hasAcknowledged 
         ? (

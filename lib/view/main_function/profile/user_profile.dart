@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
   );
   TextStyle advInfoStyle = const TextStyle(
     color: Colors.black54,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: FontWeight.bold,
     fontStyle: FontStyle.italic
   );
@@ -186,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               "Access Level: ${widget.model.modelUser.accessLevel}",
                               style: advInfoStyle,
                             ),
-                            const SizedBox(height: 16,),
+                            const SizedBox(height: 32,),
                           ],
                         )
                       ],
