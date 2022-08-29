@@ -121,7 +121,7 @@ class _SignUpViewState extends State<SignUpView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "A verification email has been sent to your email",
+                          "A verification email has been sent to your email (check spam)",
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),

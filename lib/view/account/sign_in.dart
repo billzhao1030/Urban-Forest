@@ -63,7 +63,7 @@ class _SignInViewState extends State<SignInView> {
 
     if (widget.haserror != null) {
       Future.delayed(Duration.zero, () {
-        showHint(context, "Error occurs when sign in\nYour account is diabled/deleted by admin", keep: true);
+        showHint(context, "Error occurs when sign in\nYour account is disabled/deleted by admin", keep: true);
       });
     }
     super.initState();

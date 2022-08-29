@@ -20,7 +20,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   final _formKey = GlobalKey<FormState>(); // for validation
 
-  final String successSend = "We have sent the password reset email\nYou can close this window safely now";
+  final String successSend = "We have sent the password reset email\nCheck spam!\nYou can close this window safely now";
   bool isSend = false;
 
   bool loading = false;
