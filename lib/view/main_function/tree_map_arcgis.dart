@@ -44,7 +44,6 @@ class _TreeMapState extends State<TreeMap> {
   double searchLongitude = 0;
 
   late BitmapDescriptor mapMarker;
-  bool addPin = false;
 
   @override
   void initState() {
@@ -83,6 +82,7 @@ class _TreeMapState extends State<TreeMap> {
                       circles: groupCircle,
                       onLongPress: (LatLng location) {
                         setState(() {
+                          debugState("hh");
                           const MarkerId markerId = MarkerId("RANDOM_ID");
                           Marker newMarker = Marker(
                             markerId: markerId,
@@ -93,13 +93,8 @@ class _TreeMapState extends State<TreeMap> {
                               longPressPointDialog(context, location);
                             }
                           );
-                          
-                          if (addPin) {
-                            marker.remove(marker.last);
-                          }
-
+                        
                           marker.add(newMarker);
-                          addPin = true;
                         });
                       }
                     )
