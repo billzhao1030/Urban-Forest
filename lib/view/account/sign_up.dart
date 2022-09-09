@@ -258,7 +258,7 @@ class _SignUpViewState extends State<SignUpView> {
                         dbUser.doc(uid).set({
                           'uid': uid,
                           'email': _emailTextController.text.trim(),
-                          'firstName': _userNameTextController.text.trim(),
+                          'firstName': _firstNameTextController.text.trim(),
                           'lastName': _lastNameTextController.text.trim(),
                           'userName': _userNameTextController.text.trim(),
                           'hasSignUpVerified': false,

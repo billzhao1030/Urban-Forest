@@ -82,7 +82,6 @@ class _TreeMapState extends State<TreeMap> {
                       circles: groupCircle,
                       onLongPress: (LatLng location) {
                         setState(() {
-                          debugState("hh");
                           const MarkerId markerId = MarkerId("RANDOM_ID");
                           Marker newMarker = Marker(
                             markerId: markerId,
