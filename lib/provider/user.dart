@@ -52,7 +52,7 @@ class UserAccount {
     } else if (levelPoints < 150) {
       return 80;
     } else {
-      return 9999;
+      return 999;
     }
   }
 

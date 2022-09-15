@@ -702,13 +702,13 @@ class _UploadTreeState extends State<UploadTree> {
       request.requestEmail = widget.model.modelUser.emailAddress;
       request.requestTime = DateTime.now().millisecondsSinceEpoch;
 
-      controllerToTree(requestTree);
+      await controllerToTree(requestTree);
 
       request.toTable();
 
       // add the tree to the firebase
       await request.uploadFirebase();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       setState(() {
         databaseUploading = false;
@@ -717,7 +717,7 @@ class _UploadTreeState extends State<UploadTree> {
       showHint(context, "Request uploaded to Firebase!");
     }
 
-    resetForm();
+    //resetForm();
 
     if (!isAddTree || isAddFromMap) {
       await Future.delayed(const Duration(milliseconds: 1500));
@@ -1029,7 +1029,7 @@ class _UploadTreeState extends State<UploadTree> {
     return token;
   }
 
-  controllerToTree(Tree requestTree) {
+  controllerToTree(Tree requestTree) async {
     // set the species fields
     requestTree.scientificName = _scientificController.text.trim();
     requestTree.shortScientificName = shortScientificName.trim();
@@ -1066,7 +1066,12 @@ class _UploadTreeState extends State<UploadTree> {
       requestTree.condition = _conditionController.text.trim();
     }
 
-    requestTree.ASSNBRI = (globalLevel > 1) ? _assetIDController.text.trim() : "";
+    var addSize = 0;
+    await dbRequests.where("ASSNBRI", isGreaterThan: "999999").get().then((value) {
+      addSize = (value.size)+1;
+    });
+
+    requestTree.ASSNBRI = (globalLevel > 1) ? _assetIDController.text.trim() : "np$addSize";
 
     requestTree.last_edite = FirebaseAuth.instance.currentUser!.email!; // write the last edit email in db
 

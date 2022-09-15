@@ -112,7 +112,7 @@ class _UserProfileState extends State<UserProfile> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "${widget.model.modelUser.levelName} (${widget.model.modelUser.levelPoints}):",
+                "${widget.model.modelUser.levelName} (${widget.model.modelUser.levelPoints})",
                 style: const TextStyle(
                   color: Colors.grey,
                   fontWeight: FontWeight.bold
