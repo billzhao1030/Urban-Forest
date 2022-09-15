@@ -717,7 +717,7 @@ class _UploadTreeState extends State<UploadTree> {
       showHint(context, "Request uploaded to Firebase!");
     }
 
-    //resetForm();
+    resetForm();
 
     if (!isAddTree || isAddFromMap) {
       await Future.delayed(const Duration(milliseconds: 1500));
