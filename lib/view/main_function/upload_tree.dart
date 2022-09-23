@@ -180,30 +180,35 @@ class _UploadTreeState extends State<UploadTree> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: !isAddTree || isAddFromMap, // if edit then add back button
+    return Theme(
+      data: ThemeData(
+        primarySwatch: Colors.green, // primary color
       ),
-      body: GestureDetector(
-        onTap: () {
-          SystemChannels.textInput.invokeMethod('TextInput.hide');
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-        child: backgroundDecoration(
-          context, 
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
-              child: Form(
-                key: _formKey,
-                child: treeFormColumn()
-              ),
-            )
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: !isAddTree || isAddFromMap, // if edit then add back button
+        ),
+        body: GestureDetector(
+          onTap: () {
+            SystemChannels.textInput.invokeMethod('TextInput.hide');
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+          child: backgroundDecoration(
+            context, 
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 24, 8, 8),
+                child: Form(
+                  key: _formKey,
+                  child: treeFormColumn()
+                ),
+              )
+            ),
+            dismiss: false // let dismiss manual
           ),
-          dismiss: false // let dismiss manual
         ),
       ),
     );
@@ -697,7 +702,7 @@ class _UploadTreeState extends State<UploadTree> {
       // get the tree and set the version to 1
       request.tree = isAddTree ? Tree() : widget.tree!;
       Tree requestTree = request.tree;
-      requestTree.version = isAddTree ? 1 : (requestTree.version);
+      requestTree.version = isAddTree ? 1 : (requestTree.version + 1);
       request.requestUID = uid;
       request.requestEmail = widget.model.modelUser.emailAddress;
       request.requestTime = DateTime.now().millisecondsSinceEpoch;

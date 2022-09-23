@@ -1,6 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:urban_forest/provider/account_provider.dart';
 import 'package:urban_forest/provider/user.dart';
@@ -46,18 +47,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AccountModel(),
-      child: GestureDetector(
-        onTap: () {
-          var currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.unfocus();
-          }
-        },
-        child: Consumer<AccountModel> (
-          builder: iOSTabBar,
-        )
+    return Theme(
+      data: ThemeData(
+        primarySwatch: Colors.green, // primary color
+      ),
+      child: ChangeNotifierProvider(
+        create: (context) => AccountModel(),
+        child: GestureDetector(
+          onTap: () {
+            var currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+          },
+          child: Consumer<AccountModel> (
+            builder: iOSTabBar,
+          )
+        ),
       ),
     );
   }

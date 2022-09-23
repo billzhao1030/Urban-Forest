@@ -51,24 +51,29 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        var currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Profile & Setting",
-            textAlign: TextAlign.center,
+    return Theme(
+      data: ThemeData(
+        primarySwatch: Colors.green, // primary color
+      ),
+      child: GestureDetector(
+        onTap: () {
+          var currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+    
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              "Profile & Setting",
+              textAlign: TextAlign.center,
+            ),
+            automaticallyImplyLeading: false,
           ),
-          automaticallyImplyLeading: false,
+          body: settingArea(context),
         ),
-        body: settingArea(context),
       ),
     );
   }

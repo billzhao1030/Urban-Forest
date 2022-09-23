@@ -66,137 +66,142 @@ class _ProfilePageState extends State<ProfilePage> {
         
         return Future.value(false);
       },
-      child: SettingsScreen(
-        title: "User Profile",
-        children: [
-          backgroundDecoration(
-            context, 
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    profileInEdit ? FormTextBox(
-                      labelText: "Edit User Name", 
-                      icon: Icons.person_outline, 
-                      isUserName: true, 
-                      isPasswordType: false, 
-                      controller: _userNameTextController
-                    ) : Text(
-                      "Username: ${_userNameTextController.text}",
-                      style: infoStyle,
-                    ),
-                    const SizedBox(height: 16,),
-              
-                    profileInEdit ? FormTextBox(
-                      labelText: "Edit First Name", 
-                      icon: Icons.person_outline, 
-                      isUserName: true, 
-                      isPasswordType: false, 
-                      controller: _firstNameTextController,
-                      nameField: true,
-                    ) : Text(
-                      "First name: ${_firstNameTextController.text}",
-                      style: infoStyle,
-                    ),
-                    const SizedBox(height: 16,),
-              
-                    profileInEdit ? FormTextBox(
-                      labelText: "Edit Last Name", 
-                      icon: Icons.person_outline, 
-                      isUserName: true, 
-                      isPasswordType: false, 
-                      controller: _lastNameTextController,
-                      nameField: true,
-                    ) : Text(
-                      "Last name: ${_lastNameTextController.text}",
-                      style: infoStyle,
-                    ),
-                    const SizedBox(height: 16,),
-
-                    firebaseButton(context, "Edit", () {
-                        setState(() {
-                          profileInEdit = true;
-                        });
-                      }
-                    ),
-              
-                    profileInEdit ? firebaseButton(context, "Save", () async {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            profileUploading = true;
-                          });
-                          var uid = widget.model.modelUser.uid;
-              
-                          await dbUser.doc(uid).update({
-                            "userName": _userNameTextController.text.trim(),
-                            "firstName": _firstNameTextController.text.trim(),
-                            "lastName": _lastNameTextController.text.trim()
-                          }).then((value) => debugState("updated"),);
+      child: Theme(
+        data: ThemeData(
+          primarySwatch: Colors.green, // primary color
+        ),
+        child: SettingsScreen(
+          title: "User Profile",
+          children: [
+            backgroundDecoration(
+              context, 
+              Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      profileInEdit ? FormTextBox(
+                        labelText: "Edit User Name", 
+                        icon: Icons.person_outline, 
+                        isUserName: true, 
+                        isPasswordType: false, 
+                        controller: _userNameTextController
+                      ) : Text(
+                        "Username: ${_userNameTextController.text}",
+                        style: infoStyle,
+                      ),
+                      const SizedBox(height: 16,),
                 
-                          await widget.model.getUser();
+                      profileInEdit ? FormTextBox(
+                        labelText: "Edit First Name", 
+                        icon: Icons.person_outline, 
+                        isUserName: true, 
+                        isPasswordType: false, 
+                        controller: _firstNameTextController,
+                        nameField: true,
+                      ) : Text(
+                        "First name: ${_firstNameTextController.text}",
+                        style: infoStyle,
+                      ),
+                      const SizedBox(height: 16,),
                 
+                      profileInEdit ? FormTextBox(
+                        labelText: "Edit Last Name", 
+                        icon: Icons.person_outline, 
+                        isUserName: true, 
+                        isPasswordType: false, 
+                        controller: _lastNameTextController,
+                        nameField: true,
+                      ) : Text(
+                        "Last name: ${_lastNameTextController.text}",
+                        style: infoStyle,
+                      ),
+                      const SizedBox(height: 16,),
+      
+                      firebaseButton(context, "Edit", () {
                           setState(() {
-                            profileInEdit = false;
-                            profileUploading = false;
-
-                            showHint(context, "Profile saved");
+                            profileInEdit = true;
                           });
                         }
-                      }
-                    ) : Container (),
-
-                    !resetEmailSending ? firebaseButton(context, "Reset password", () async {
-                      var response = await showDialog(context: context, builder: (BuildContext context) {
-                        return resetPasswordInProfile(context);
-                      });
-
-                      if (!response.toString().contains("No")) {
-                        showHint(context, 'Please follow the steps in the email we sent you to reset the password');
-                      }
-                    }) : Container (
-                      margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-                      child: const CircularProgressIndicator(
-                        color: Colors.white,
                       ),
-                    ),
-                    const SizedBox(height: 12,),
-                    ExpandableSettingsTile(
-                      expanded: true,
-                      leading: const Icon(Icons.info),
-                      title: 'Advanced information',
-                      children: <Widget>[
-                        Column(
-                          //crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "UID: ${widget.model.modelUser.uid}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 16,),
-
-                            Text(
-                              "Email: ${widget.model.modelUser.emailAddress}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 16,),
-
-                            Text(
-                              "Access Level: ${widget.model.modelUser.accessLevel}",
-                              style: advInfoStyle,
-                            ),
-                            const SizedBox(height: 32,),
-                          ],
-                        )
-                      ],
-                    ) 
-                  ],
-                ),
+                
+                      profileInEdit ? firebaseButton(context, "Save", () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              profileUploading = true;
+                            });
+                            var uid = widget.model.modelUser.uid;
+                
+                            await dbUser.doc(uid).update({
+                              "userName": _userNameTextController.text.trim(),
+                              "firstName": _firstNameTextController.text.trim(),
+                              "lastName": _lastNameTextController.text.trim()
+                            }).then((value) => debugState("updated"),);
+                  
+                            await widget.model.getUser();
+                  
+                            setState(() {
+                              profileInEdit = false;
+                              profileUploading = false;
+      
+                              showHint(context, "Profile saved");
+                            });
+                          }
+                        }
+                      ) : Container (),
+      
+                      !resetEmailSending ? firebaseButton(context, "Reset password", () async {
+                        var response = await showDialog(context: context, builder: (BuildContext context) {
+                          return resetPasswordInProfile(context);
+                        });
+      
+                        if (!response.toString().contains("No")) {
+                          showHint(context, 'Please follow the steps in the email we sent you to reset the password');
+                        }
+                      }) : Container (
+                        margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 12,),
+                      ExpandableSettingsTile(
+                        expanded: true,
+                        leading: const Icon(Icons.info),
+                        title: 'Advanced information',
+                        children: <Widget>[
+                          Column(
+                            //crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "UID: ${widget.model.modelUser.uid}",
+                                style: advInfoStyle,
+                              ),
+                              const SizedBox(height: 16,),
+      
+                              Text(
+                                "Email: ${widget.model.modelUser.emailAddress}",
+                                style: advInfoStyle,
+                              ),
+                              const SizedBox(height: 16,),
+      
+                              Text(
+                                "Access Level: ${widget.model.modelUser.accessLevel}",
+                                style: advInfoStyle,
+                              ),
+                              const SizedBox(height: 32,),
+                            ],
+                          )
+                        ],
+                      ) 
+                    ],
+                  ),
+                )
               )
             )
-          )
-        ]
+          ]
+        ),
       ),
     );
   }

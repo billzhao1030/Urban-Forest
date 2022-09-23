@@ -30,37 +30,47 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleSettingsTile(
-      title: 'Account Setting',
-      subtitle: 'Privacy, Account, Searching',
-      leading: settingIcon(Icons.settings, Colors.green),
-      child: SettingsScreen(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SettingsGroup(
-              title: "General", 
-              children: [
-                buildPrivacy(),
-                const SizedBox(height: 12,),
-                buildPlantPP(),
-                const SizedBox(height: 12,),
-                buildProfile()
-              ]
+    return Theme(
+      data: ThemeData(
+        primarySwatch: Colors.green, // primary color
+      ),
+      child: SimpleSettingsTile(
+        title: 'Account Setting',
+        subtitle: 'Privacy, Account, Searching',
+        leading: settingIcon(Icons.settings, Colors.green),
+        child: SettingsScreen(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SettingsGroup(
+                title: "General", 
+                children: [
+                  Theme(
+                    data: ThemeData(
+                      primarySwatch: Colors.green, // primary color
+                    ),
+                    child: buildPrivacy()
+                  ),
+                  const SizedBox(height: 12,),
+                  buildPlantPP(),
+                  const SizedBox(height: 12,),
+                  buildProfile()
+                ]
+              ),
             ),
-          ),
-
-          const SizedBox(height: 28,),
-          (globalLevel > 1) ? Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SettingsGroup(
-              title: "System Setting", 
-              children: [
-                buildAdvancedSettings()
-              ]
-            ),
-          ) : Container()
-        ]
+    
+            const SizedBox(height: 28,),
+            (globalLevel > 1) ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SettingsGroup(
+                title: "System Setting", 
+                children: [
+                  buildAdvancedSettings()
+                ]
+              ),
+            ) : Container()
+          ]
+        ),
       ),
     );
   }
@@ -111,8 +121,8 @@ class _AccountPageState extends State<AccountPage> {
   Widget buildAdvancedSettings() =>  ExpandableSettingsTile(
     leading: const Icon(Icons.developer_mode),
     expanded: true,
-    title: 'Advanced Settings',
-    subtitle: 'Map distance, Upload method',
+    title: 'Advanced Setting',
+    subtitle: 'Upload method',
     children: <Widget>[
       CheckboxSettingsTile(
         leading: const Icon(Icons.upload),
@@ -125,8 +135,8 @@ class _AccountPageState extends State<AccountPage> {
       ),
 
       SimpleSettingsTile(
-        title: 'Advanced Settings',
-        subtitle: 'These settings is only available for advanced users',
+        title: 'Advanced Setting',
+        subtitle: 'This setting is only available for advanced users',
         enabled: false,
       )
     ],
