@@ -920,6 +920,7 @@ class _UploadTreeState extends State<UploadTree> {
 
   Future<bool> _longDistanceWarning(BuildContext context, double distance) async {
     return await showDialog(
+      barrierDismissible: false,
       context: context, 
       builder: (BuildContext context) => longDistanceAlert(context, distance)
     );
