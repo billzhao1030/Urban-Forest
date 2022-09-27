@@ -31,29 +31,34 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Center(child: CameraPreview(_controller));
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          } 
-        },
+    return Theme(
+      data: ThemeData(
+        primarySwatch: Colors.green, // primary color
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.camera_alt),
-        onPressed: () async {
-          try {
-            await _initializeControllerFuture;
-
-            final image = await _controller.takePicture();
-            Navigator.pop(context, image);
-          } catch (e) {
-            debugState(e.toString());
-          }
-        },
+      child: Scaffold(
+        body: FutureBuilder<void>(
+          future: _initializeControllerFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Center(child: CameraPreview(_controller));
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            } 
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.camera_alt),
+          onPressed: () async {
+            try {
+              await _initializeControllerFuture;
+    
+              final image = await _controller.takePicture();
+              Navigator.pop(context, image);
+            } catch (e) {
+              debugState(e.toString());
+            }
+          },
+        ),
       ),
     );
   }
