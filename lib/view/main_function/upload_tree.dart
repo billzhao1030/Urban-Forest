@@ -289,9 +289,9 @@ class _UploadTreeState extends State<UploadTree> {
             ),
             margin: const EdgeInsets.all(4.0),
             children: [
-              //latitude and longtitude
+              //latitude and longitude
               treeLocation("Latitude", "Latitude (read only))", _latitudeController),
-              treeLocation("Longtitude", "Longtitude (read only)", _longitudeController),
+              treeLocation("Longitude", "Longitude (read only)", _longitudeController),
               treeAddress("Street", "Street name", _streetNameController),
               treeAddress("Suburb", "Locality", _surburbController)
             ],
@@ -1411,7 +1411,7 @@ class _UploadTreeState extends State<UploadTree> {
     );
   }
 
-  // latitude and longtitude
+  // latitude and longitude
   CupertinoTextFormFieldRow treeLocation(String prefix, String placeHolder, TextEditingController _controller) {
     return CupertinoTextFormFieldRow(
       controller: _controller,
