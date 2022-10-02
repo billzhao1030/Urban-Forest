@@ -599,7 +599,7 @@ class _UploadTreeState extends State<UploadTree> {
         child: Column(
           children: [
             Image.asset(
-              "assets/images/location_instruction.jpg",
+              "assets/images/location_instruction.png",
               fit: BoxFit.fitHeight,
             ),
             Padding(

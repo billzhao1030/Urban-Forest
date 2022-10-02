@@ -13,7 +13,7 @@ import '../main_function/home_screen.dart';
 import 'sign_up.dart';
 
 
-const logoFileName = "assets/images/logo2.png"; // logo in assets/images
+const logoFileName = "assets/images/logo4.png"; // logo in assets/images
 
 // sign in view -- root widget for sign in
 class SignInView extends StatefulWidget {
@@ -335,8 +335,8 @@ class LogoWidget extends StatelessWidget {
     return Image.asset(
       logoFileName,
       fit: BoxFit.fitHeight,
-      width: MediaQuery.of(context).size.height * 0.25,
-      height: MediaQuery.of(context).size.height * 0.25,
+      width: MediaQuery.of(context).size.height * 0.28,
+      height: MediaQuery.of(context).size.height * 0.28,
       color: Colors.white,
     );
   }
