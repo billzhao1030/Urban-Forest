@@ -10,7 +10,16 @@ CollectionReference dbRequests = FirebaseFirestore.instance.collection(fireStore
 CollectionReference dbBug = FirebaseFirestore.instance.collection(fireStoreBug);
 CollectionReference dbFeedback = FirebaseFirestore.instance.collection(fireStoreFeedback);
 
-const backgroundColorArray = ["afef8d", "23cb23", "225508"];
+const backgroundColorArray = [
+  // "afef8d", "23cb23", "225508"
+  "c7f425", "bdef28", "b4eb2a",
+  "aae62d", "a0e22f", "97dd32",
+  "8dd935", "83d437", "79d03a",
+  "70cb3c", "66c73f", "5cc242", 
+  "53bd44", "49b947", "3fb449", 
+  "36b04c", "2cab4f", "22a751", 
+  "18a254", "0f9e56", "059959"
+];
 
 const tokenPass = "s9J2bKo0Wbdfu2nLkDf6fHs";
 

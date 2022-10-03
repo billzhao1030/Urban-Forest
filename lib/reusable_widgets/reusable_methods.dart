@@ -13,16 +13,16 @@ void showHint(BuildContext context, String message, {bool verify = false, double
 
 // background for most of screen
 Container backgroundDecoration(BuildContext context, Widget? child, {bool? dismiss = true}) {
+  List<Color> colorArray = [];
+  for (var i=0; i<18; i++) {
+    colorArray.add(hexStringToColor(backgroundColorArray[i]));
+  }
   return Container(
     width: MediaQuery.of(context).size.width,
     height: MediaQuery.of(context).size.height,
     decoration: BoxDecoration(
       gradient: LinearGradient(
-        colors: [
-          hexStringToColor(backgroundColorArray[0]),
-          hexStringToColor(backgroundColorArray[1]),
-          hexStringToColor(backgroundColorArray[2]),
-        ], 
+        colors: colorArray, 
         begin: Alignment.topCenter, 
         end: Alignment.bottomCenter
       )
